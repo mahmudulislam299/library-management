@@ -60,4 +60,9 @@ router.post("/signin", async (req, res) => {
   }
 });
 
+
+router.get("/ping", (req, res) => res.json({ ok: true, scope: "auth" }));
+
+
+
 export default router;

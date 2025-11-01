@@ -14,10 +14,9 @@ function Footer() {
                     <div className="contact-details">
                         <h1>Contact Us</h1>
                         <p>Librarian</p>
-                        <p>Government School</p>
-                        <p>Visakhapatnam-530041</p>
-                        <p>Andhra Pradesh</p>
-                        <p>India</p>
+                        <p>Stamford University</p>
+                        <p>Dhaka</p>
+                        <p>Bangladesh</p>
                         <p><b>Email:</b>example@gmail.com</p>
                     </div>
                     <div className='usefull-links'>
@@ -42,7 +41,7 @@ function Footer() {
                 </div>
             </div>
             <div className='copyright-details'>
-                <p className='footer-copyright'>&#169; 2020 copyright all right reserved<br /><span>Designed with ❤️ by Pranavdhar Reddy</span></p>
+                <p className='footer-copyright'>&#169; 2020 copyright all right reserved<br /><span>Designed with ❤️ by Mahmudul Islam</span></p>
             </div>
         </div>
     )
