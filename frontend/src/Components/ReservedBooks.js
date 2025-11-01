@@ -22,7 +22,7 @@ function ReservedBooks() {
                     <td>10/7/2025</td>
                 </tr>
                 <tr>
-                    <td>Nondi</td>
+                    <td>Aisharjaa</td>
                     <td>Computer Networks</td>
                     <td>15/9/2025</td>
                 </tr>
@@ -32,12 +32,12 @@ function ReservedBooks() {
                     <td>02/9/2025</td>
                 </tr>
                 <tr>
-                    <td>Safwan</td>
+                    <td>Nadia</td>
                     <td>Artificial Intelligence</td>
                     <td>21/7/2025</td>
                 </tr>
                 <tr>
-                    <td>Mim</td>
+                    <td>Farhana</td>
                     <td>Machine learning</td>
                     <td>02/7/2025</td>
                 </tr>
