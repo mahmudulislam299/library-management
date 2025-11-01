@@ -9,7 +9,7 @@ function PopularBooks() {
         <div className="popularbook-images">
           <img
             className="popular-book"
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRS34iIDoKVXOhKhdwsiGSLc9RJmtq_lSQDig&usqp=CAU"
+            src="book1.jpg"
             alt=""
           ></img>
           <img
