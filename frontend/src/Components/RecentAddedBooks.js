@@ -7,11 +7,11 @@ function RecentAddedBooks() {
             <h className='recentbooks-title'>Recent Uploads</h>
             <div className='recentbooks'>
                 <div className='images'>
-                    <img className='recent-book' src='https://inkinmytea.files.wordpress.com/2011/12/apj.jpg?w=640' alt=''></img>
-                    <img className='recent-book' src='https://images-na.ssl-images-amazon.com/images/I/91VokXkn8hL.jpg' alt=''></img>
-                    <img className='recent-book' src='https://images-na.ssl-images-amazon.com/images/I/81-QB7nDh4L.jpg' alt=''></img>
-                    <img className='recent-book' src='https://images-na.ssl-images-amazon.com/images/I/71m-MxdJ2WL.jpg' alt=''></img>
-                    <img className='recent-book' src='https://images-na.ssl-images-amazon.com/images/I/71t4GuxLCuL.jpg' alt=''></img>
+                    <img className='recent-book' src='book11.jpg' alt=''></img>
+                    <img className='recent-book' src='book12.jpg' alt=''></img>
+                    <img className='recent-book' src='book13.jpg' alt=''></img>
+                    <img className='recent-book' src='book14.webp' alt=''></img>
+                    <img className='recent-book' src='book15.jpeg' alt=''></img>
                     <img className='recent-book' src='https://19en282jw7pc3zpwj22pg8v0-wpengine.netdna-ssl.com/wp-content/uploads/2021/01/Good-to-Great-Jim-Collins.jpg' alt=''></img>
                     <img className='recent-book' src='https://images-na.ssl-images-amazon.com/images/I/81mXQdi5x+L.jpg' alt=''></img>
                     <img className='recent-book' src='https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1498813353l/34267304.jpg' alt=''></img>
