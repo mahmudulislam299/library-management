@@ -1,55 +1,123 @@
-.popularbooks-container{
-    background-color: rgb(223, 255, 255);
-    display: flex;
-    flex-direction: column;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+:root {
+  --primary: #4c1aa3;
+  --accent: #ee8120;
+  --bg: #e6f7ff;
+  --card: #ffffff;
+  --radius: 14px;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --transition: all 0.35s ease;
+  --book-width: 160px;
+  --gap: 2.5vw;
 }
 
-.popularbooks{
-    padding: 20px;
-    overflow: hidden;
-    width: 100%;
-    margin: 0 auto;	
-    position: relative;
-	display: flex;
-    height: auto;
+/* Container */
+.popularbooks-container {
+  padding: 70px 20px;
+  background: linear-gradient(135deg, #f0f9ff 0%, var(--bg) 100%);
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
 }
 
-.popularbooks:hover div{
-    animation-play-state: paused;
+/* Title */
+.popularbooks-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-align: center;
+  margin-bottom: 50px;
+  position: relative;
 }
 
-.popularbooks-title{
-    position: relative;
-    color: #0E2431;
-    margin-top: 20px;
-    margin-bottom: 50px;
-    text-align: center;
-    font-size: 32px;
+.popularbooks-title::after {
+  content: '';
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), #ff9a56);
+  border-radius: 2px;
 }
 
-.popular-book:hover{
-    transform: scale(1.15);
-    transition: all ease 0.7s;
-    animation-play-state: paused;
+/* Scrolling Container */
+.popularbooks {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(6px);
+  box-shadow: var(--shadow);
+  padding: 20px 0;
 }
 
-.popularbook-images{
-    animation: marquee 15s linear infinite;
-    display: flex;
-    position: relative;
-    align-items: center;
-    justify-content: center;
+/* Track - Single Row */
+.popularbook-track {
+  display: flex;
+  gap: var(--gap);
+  animation: scroll-left 15s linear infinite;
+  will-change: transform;
 }
 
-.popular-book{
-    display: block;
-    width: 150px;
-    height: auto;
-    margin: 0 1vw;
-    border-radius: 5px;
+/* Book */
+.popular-book {
+  width: var(--book-width);
+  height: 240px;
+  flex-shrink: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  cursor: pointer;
 }
 
-@keyframes marquee {
-	0%   { transform: translateX(0%); }
-	100% { transform: translateX(-100%); }
+.popular-book:hover {
+  transform: scale(1.12);
+  box-shadow: 0 12px 25px rgba(76, 26, 163, 0.18);
+  z-index: 5;
+}
+
+.popular-book img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Pause on Hover */
+.popularbooks:hover .popularbook-track {
+  animation-play-state: paused;
+}
+
+/* Seamless Infinite Scroll */
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  :root {
+    --book-width: 130px;
+    --gap: 3vw;
+  }
+  .popular-book { height: 195px; }
+  .popularbooks-title { font-size: 2rem; margin-bottom: 35px; }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --book-width: 110px;
+    --gap: 3.5vw;
+  }
+  .popular-book { height: 165px; }
 }

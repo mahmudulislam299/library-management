@@ -2,76 +2,37 @@ import React from "react";
 import "./PopularBooks.css";
 
 function PopularBooks() {
+  const books = [
+    "book1.jpg",
+    "book2.webp",
+    "book3.jpg",
+    "book4.jpg",
+    "book5.jpg",
+    "book6.jpg",
+    "book7.jpg",
+    "book8.jpg",
+    "book9.webp",
+    "book10.jpg",
+    "book11.jpg",
+    "book12.jpg",
+  ];
+
   return (
-    <div className="popularbooks-container">
-      <h className="popularbooks-title">Popular Books</h>
+    <section className="popularbooks-container">
+      <h2 className="popularbooks-title">Popular Books</h2>
       <div className="popularbooks">
-        <div className="popularbook-images">
-          <img
-            className="popular-book"
-            src="book1.jpg"
-            alt=""
-          ></img>
-          <img
-            className="popular-book"
-            src="book2.webp"
-            alt=""
-          ></img>
-          <img
-            className="popular-book"
-            src="book3.jpg"
-            alt=""
-          ></img>
-          <img
-            className="popular-book"
-            src="book4.jpg"
-            alt=""
-          ></img>
-          <img
-            className="popular-book"
-            src="book5.jpg"
-            alt=""
-          ></img>
-          <img
-            className="popular-book"
-            src="book6.jpg"
-            alt=""
-          ></img>
-        </div>
-        <div className="popularbook-images">
-          <img
-            className="popular-book"
-            src="book7.jpg"
-            alt=""
-          ></img>
-          <img
-            className="popular-book"
-            src="book8.jpg"
-            alt=""
-          ></img>
-          <img
-            className="popular-book"
-            src="book9.webp"
-            alt=""
-          ></img>
-          <img
-            className="popular-book"
-            src="book10.jpg"
-            alt=""
-          ></img>
-          <img
-            className="popular-book"
-            src=" ?q=tbn:ANd9GcRfRHNwRyPkTxnMOzOvv5dOK4OS_lq4-2Yugg&usqp=CAU"
-            alt=""
-          ></img>
-          <img
-            className="popular-book"
-            src=" ?q=tbn:ANd9GcQ7ElcNy_v2Ri1H3VhYjYP1MzR6zBUwFQWbOirCkaqcfOqJnbrK5ZvdZNUwEfrlmJwn7pA&usqp=CAU"
-            alt=""
-          ></img>
+        <div className="popularbook-track">
+          {/* First set */}
+          {books.map((src, i) => (
+            <img key={i} className="popular-book" src={src} alt={`Book ${i + 1}`} />
+          ))}
+          {/* Duplicate set for seamless loop */}
+          {books.map((src, i) => (
+            <img key={`dup-${i}`} className="popular-book" src={src} alt={`Book ${i + 1}`} />
+          ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
