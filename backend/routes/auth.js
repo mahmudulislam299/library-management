@@ -35,30 +35,73 @@ router.post("/register", async (req, res) => {
   }
 });
 
-/* User Login */
+// /* User Login */
+// router.post("/signin", async (req, res) => {
+//   try {
+//     console.log(req.body, "req");
+//     const user = req.body.admissionId
+//       ? await User.findOne({
+//           admissionId: req.body.admissionId,
+//         })
+//       : await User.findOne({
+//           employeeId: req.body.employeeId,
+//         });
+
+//     console.log(user, "user");
+
+//     !user && res.status(404).json("User not found");
+
+//     const validPass = await bcrypt.compare(req.body.password, user.password);
+//     !validPass && res.status(400).json("Wrong Password");
+
+//     res.status(200).json(user);
+//   } catch (err) {
+//     console.log(err);
+//   }
+// });
+
 router.post("/signin", async (req, res) => {
   try {
-    console.log(req.body, "req");
-    const user = req.body.admissionId
-      ? await User.findOne({
-          admissionId: req.body.admissionId,
-        })
-      : await User.findOne({
-          employeeId: req.body.employeeId,
-        });
+    const { admissionId, employeeId, email, password } = req.body;
 
-    console.log(user, "user");
+    // 1) Validate inputs
+    if (!password || (!admissionId && !employeeId && !email)) {
+      return res
+        .status(400)
+        .json({ message: "Provide admissionId/employeeId/email and password" });
+    }
 
-    !user && res.status(404).json("User not found");
+    // 2) Build a flexible query (login with admissionId OR employeeId OR email)
+    const or = [];
+    if (admissionId) or.push({ admissionId });
+    if (employeeId) or.push({ employeeId });
+    if (email)      or.push({ email });
 
-    const validPass = await bcrypt.compare(req.body.password, user.password);
-    !validPass && res.status(400).json("Wrong Password");
+    const user = await User.findOne({ $or: or });
 
-    res.status(200).json(user);
+    // 3) Handle "user not found" and STOP execution
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // 4) Verify password
+    const validPass = await bcrypt.compare(password, user.password);
+    if (!validPass) {
+      return res.status(401).json({ message: "Invalid password" });
+    }
+
+    // 5) (Optional) Remove password from response
+    const { password: _, ...safeUser } = user.toObject();
+
+    // 6) Return user (or generate and return a JWT here)
+    return res.status(200).json(safeUser);
   } catch (err) {
-    console.log(err);
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
   }
 });
+
+
 
 
 router.get("/ping", (req, res) => res.json({ ok: true, scope: "auth" }));
