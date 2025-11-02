@@ -40,17 +40,17 @@
   50%     { transform: translate(-6%,-6%) rotate(1.5deg); }
 }
 
-/* Card */
+/* Card – allow overflow for mobile sidebar */
 .dashboard-card {
-  width: 90vw;
+  width: 100vw;
   max-width: 1600px;
-  height: 90vh;
+  height: 100vh;
   background: var(--card);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
   display: flex;
-  overflow: hidden;
+  overflow: visible; /* ← CRITICAL: allows mobile sidebar to scroll */
   position: relative;
 }
 
@@ -67,7 +67,7 @@
   box-shadow: 0 8px 25px rgba(0,0,0,.4);
 }
 
-/* Sidebar */
+/* Sidebar – SCROLLABLE on desktop */
 .dashboard-options {
   background: rgba(15,26,46,.95);
   backdrop-filter: blur(12px);
@@ -80,16 +80,41 @@
   border-right: 1px solid var(--border);
   transition: var(--transition);
   z-index: 10;
+
+  /* ← ENABLE SCROLL */
+  max-height: 100vh;
+  overflow-y: auto;
+  padding-bottom: 20px;
 }
 
+/* Mobile Sidebar – .active */
 .dashboard-options.active {
   position: fixed;
   left: 0;
   top: 0;
   width: 280px;
   height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto; /* ← SCROLL WORKS */
   border-radius: 0;
   border-right: none;
+  z-index: 100;
+  transition: left 0.45s ease;
+}
+
+/* Custom Scrollbar (optional – clean look) */
+.dashboard-options::-webkit-scrollbar,
+.dashboard-options.active::-webkit-scrollbar {
+  width: 6px;
+}
+.dashboard-options::-webkit-scrollbar-track,
+.dashboard-options.active::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dashboard-options::-webkit-scrollbar-thumb,
+.dashboard-options.active::-webkit-scrollbar-thumb {
+  background: rgba(226,232,240,.3);
+  border-radius: 3px;
 }
 
 /* Logo */
@@ -268,7 +293,9 @@
     height: 100vh;
     border-radius: 0;
     flex-direction: column;
+    overflow: visible; /* ← allow mobile sidebar */
   }
+
   .dashboard-options {
     position: fixed;
     left: -280px;
@@ -277,13 +304,17 @@
     width: 280px;
     border-radius: 0;
     z-index: 100;
+    transition: left 0.45s ease;
   }
+
   .dashboard-options.active {
     left: 0;
   }
+
   .sidebar-toggler {
     display: block;
   }
+
   .content-wrapper {
     padding: 20px;
   }
