@@ -1,34 +1,181 @@
-*{
-    margin-bottom: 0px!important;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap");
+
+/* Reuse Theme Variables */
+:root {
+  --primary-color: #4c1aa3;
+  --secondary-color: #ee8120;
+  --text-light: #f0f4f3;
+  --text-dark: #2d2d2d;
+  --bg-light: #f9f9fb;
+  --accent-bg: #e6f7ff;
+  --border-radius: 20px;
+  --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-lg: 0 20px 40px rgba(76, 26, 163, 0.15);
 }
 
-.welcome-box{
-    width: 100%;
-    height: auto;
-    background-color: rgb(223, 255, 255);
-    text-align: center;
+/* Welcome Section */
+.welcome-section {
+  width: 100%;
+  padding: 80px 20px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 50%, #d6f0ff 100%);
+  overflow: hidden;
+  position: relative;
+  font-family: 'Poppins', sans-serif;
 }
 
-.welcome-title{
-    font-size: 40px;
-    font-weight: 900;
-    padding: 15px;
-    color: blue;
-    text-shadow: 
-        1px 1px 0 #18e657,
-        2px 2px 0 #bf189b,
-        3px 3px #ffeb00,
-        4px 4px black;
-
+/* Floating Background Elements */
+.welcome-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(238, 129, 30, 0.08) 0%, transparent 70%);
+  animation: float 20s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
 }
 
-.welcome-message{
-    font-size: 25px;
-    font-weight: 800;
-    padding-bottom: 15px;
+@keyframes float {
+  0%, 100% { transform: translate(5%, 5%) rotate(0deg); }
+  50% { transform: translate(-5%, -5%) rotate(1deg); }
 }
 
-.welcome-submessage{
-    font-size: 15px;
-    font-weight: 600;
+/* Welcome Box */
+.welcome-box {
+  max-width: 1500px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  padding: 40px 20px;
+  border-radius: var(--border-radius);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: var(--transition);
+}
+
+.welcome-box:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 28px 50px rgba(76, 26, 163, 0.22);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* Title */
+.welcome-title {
+  font-size: 3.2rem;
+  font-weight: 900;
+  color: var(--primary-color);
+  margin-bottom: 16px;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, var(--primary-color), #6a3ab8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  position: relative;
+  display: inline-block;
+  transition: var(--transition);
+}
+
+.welcome-title .highlight {
+  background: linear-gradient(90deg, var(--secondary-color), #ff9a56);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+}
+
+.welcome-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--secondary-color), #ff9a56);
+  border-radius: 2px;
+  transition: var(--transition);
+}
+
+.welcome-box:hover .welcome-title::after {
+  width: 120px;
+}
+
+/* Message */
+.welcome-message {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin: 20px 0 12px;
+  letter-spacing: 0.3px;
+  opacity: 0.9;
+}
+
+/* Submessage */
+.welcome-submessage {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #555;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+/* Responsive Design */
+
+/* Mobile */
+@media (max-width: 640px) {
+  .welcome-section {
+    padding: 60px 15px;
+  }
+
+  .welcome-title {
+    font-size: 2.5rem;
+  }
+
+  .welcome-message {
+    font-size: 1.5rem;
+  }
+
+  .welcome-submessage {
+    font-size: 0.95rem;
+  }
+
+  .welcome-box {
+    padding: 30px 18px;
+  }
+}
+
+/* Tablet */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .welcome-title {
+    font-size: 2.9rem;
+  }
+
+  .welcome-message {
+    font-size: 1.6rem;
+  }
+}
+
+/* Large Desktop */
+@media (min-width: 1200px) {
+  .welcome-title {
+    font-size: 3.8rem;
+  }
+
+  .welcome-message {
+    font-size: 2rem;
+  }
+
+  .welcome-submessage {
+    font-size: 1.2rem;
+  }
 }

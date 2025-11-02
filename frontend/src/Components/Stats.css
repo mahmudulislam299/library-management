@@ -1,28 +1,168 @@
-.stats{
-    width: 100%;
-    height: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgb(223, 255, 255);
-    flex-wrap: wrap;
-    padding: 20px;
+/* Import Poppins (same as About section) */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+/* Reuse Root Variables from About.css */
+:root {
+  --primary-color: #4c1aa3;
+  --secondary-color: #ee8120;
+  --text-light: #f0f4f3;
+  --text-dark: #2d2d2d;
+  --bg-light: #f9f9fb;
+  --accent-bg: #e6f7ff;     /* Soft cyan background */
+  --card-bg: #ffffff;
+  --border-radius: 16px;
+  --transition: all 0.35s ease;
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 15px 35px rgba(76, 26, 163, 0.18);
 }
 
-.stats-icon{
-    align-items: center;
+/* Stats Section */
+.stats {
+  width: 100%;
+  padding: 70px 20px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
 }
 
-.stats-block{
-    height: 170px;
-    width: 150px;
-    border-radius: 10px;
-    margin: 25px;
-    -webkit-box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
-    box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #fff;
+/* Individual Stat Card */
+.stats-block {
+  min-height: 180px;
+  width: 170px;
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+}
+
+/* Hover Effect */
+.stats-block:hover {
+  transform: translateY(-12px) scale(1.03);
+  box-shadow: var(--shadow-lg);
+  background: linear-gradient(145deg, #ffffff, #f8faff);
+}
+
+/* Subtle Shine Effect on Hover */
+.stats-block::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: 0.6s;
+  transform: skewX(-25deg);
+}
+
+.stats-block:hover::before {
+  left: 150%;
+}
+
+/* Icon Styling */
+.stats-icon {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 12px;
+  transition: var(--transition);
+  filter: drop-shadow(0 2px 4px rgba(76, 26, 163, 0.2));
+}
+
+.stats-block:hover .stats-icon {
+  color: var(--secondary-color);
+  transform: scale(1.15);
+  filter: drop-shadow(0 4px 8px rgba(238, 129, 30, 0.3));
+}
+
+/* Stat Number */
+.stats-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 6px;
+  transition: var(--transition);
+}
+
+.stats-block:hover .stats-number {
+  color: var(--secondary-color);
+  transform: scale(1.1);
+}
+
+/* Stat Label */
+.stats-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #555;
+  letter-spacing: 0.5px;
+  text-transform: capitalize;
+}
+
+/* Responsive Adjustments */
+
+/* Mobile (≤576px) */
+@media screen and (max-width: 576px) {
+  .stats {
+    padding: 50px 15px;
+    gap: 20px;
+  }
+
+  .stats-block {
+    width: 140px;
+    min-height: 160px;
+    padding: 18px 12px;
+  }
+
+  .stats-icon {
+    font-size: 2rem;
+  }
+
+  .stats-number {
+    font-size: 1.7rem;
+  }
+
+  .stats-label {
+    font-size: 0.85rem;
+  }
+}
+
+/* Tablet (577px - 992px) */
+@media screen and (min-width: 577px) and (max-width: 992px) {
+  .stats {
+    gap: 25px;
+  }
+
+  .stats-block {
+    width: 160px;
+  }
+}
+
+/* Large Desktop */
+@media screen and (min-width: 1200px) {
+  .stats-block {
+    width: 190px;
+    min-height: 200px;
+  }
+
+  .stats-icon {
+    font-size: 2.8rem;
+  }
+
+  .stats-number {
+    font-size: 2.3rem;
+  }
 }
