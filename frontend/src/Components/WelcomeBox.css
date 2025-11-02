@@ -18,7 +18,7 @@
 .welcome-section {
   width: 100%;
   padding: 100px 20px;
-  background: var(--primary);
+  /* background: var(--primary); */
   font-family: 'Poppins', sans-serif;
   color: var(--text);
   position: relative;
@@ -57,6 +57,7 @@
   z-index: 1;
 }
 .welcome-box:hover {
+    
   transform: translateY(-12px);
   box-shadow: 0 32px 60px rgba(0,0,0,.6), var(--glow);
   border-color: var(--gold);
