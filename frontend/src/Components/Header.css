@@ -1,16 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
 
-/* Theme Variables */
+/* Elegant Library Theme */
 :root {
   --primary: #4c1aa3;
-  --accent: #ee8120;
+  --gold: #d4a017;
+  --accent: #f59e0b;
   --text-light: #f8f9fa;
   --text-dark: #2d2d2d;
-  --bg-header: #4c1aa3;
-  --border: #ddd;
-  --radius: 12px;
-  --transition: all 0.3s ease;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --bg-header: #0f1a2e;
+  --bg-mobile: #1a2338;
+  --overlay: rgba(255, 255, 255, 0.15);
+  --border: rgba(212, 160, 23, 0.2);
+  --shadow: 0 8px 25px rgba(15, 26, 46, 0.4);
+  --radius: 14px;
+  --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Reset */
@@ -30,82 +33,89 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 70px;
+  height: 74px;
   background: var(--bg-header);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 0 28px;
   z-index: 1000;
   box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
   transition: var(--transition);
 }
 
 /* Logo */
 .logo a {
   color: var(--text-light);
-  font-size: 1.5rem;
+  font-size: 1.55rem;
   font-weight: 800;
   text-decoration: none;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.6px;
   transition: var(--transition);
 }
 
 .logo a:hover {
-  color: #ff9a56;
+  color: var(--gold);
 }
 
 /* Center: Search + Nav */
 .nav-center {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 24px;
   flex: 1;
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
 /* Search Input */
 .search-input {
   flex: 1;
-  max-width: 500px;
-  height: 44px;
-  padding: 0 16px;
-  font-size: 1rem;
+  max-width: 520px;
+  height: 48px;
+  padding: 0 18px;
+  font-size: 1.02rem;
+  font-weight: 500;
   border: 2px solid transparent;
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--overlay);
   color: white;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   transition: var(--transition);
 }
 
 .search-input::placeholder {
   color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
 }
 
 .search-input:focus {
   outline: none;
   background: white;
   color: var(--text-dark);
-  border-color: var(--accent);
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(212, 160, 23, 0.2);
 }
 
 .search-input:focus::placeholder {
-  color: #aaa;
+  color: #94a3b8;
 }
 
 /* Nav Links */
 .nav-options {
   display: flex;
-  gap: 32px;
+  gap: 36px;
   list-style: none;
 }
 
 .nav-link {
   color: var(--text-light);
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: 1.08rem;
   text-decoration: none;
   position: relative;
   transition: var(--transition);
@@ -114,16 +124,17 @@ body {
 .nav-link::after {
   content: '';
   position: absolute;
-  bottom: -6px;
+  bottom: -8px;
   left: 0;
   width: 0;
-  height: 2px;
-  background: var(--accent);
+  height: 2.5px;
+  background: linear-gradient(90deg, var(--gold), var(--accent));
+  border-radius: 2px;
   transition: var(--transition);
 }
 
 .nav-link:hover {
-  color: #ff9a56;
+  color: var(--gold);
 }
 
 .nav-link:hover::after {
@@ -133,34 +144,39 @@ body {
 /* Mobile Toggle */
 .mobile-toggle {
   display: none;
-  background: none;
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   color: white;
-  font-size: 1.8rem;
+  font-size: 1.9rem;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
+  padding: 10px;
+  border-radius: 10px;
   transition: var(--transition);
+  backdrop-filter: blur(8px);
 }
 
 .mobile-toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
 }
 
 /* Mobile Menu */
 .mobile-menu {
   position: fixed;
-  top: 70px;
+  top: 74px;
   left: -100%;
   width: 100%;
-  height: calc(100vh - 70px);
-  background: #2a1a5e;
+  height: calc(100vh - 74px);
+  background: var(--bg-mobile);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 20px;
-  transition: left 0.4s ease;
+  padding: 50px 20px;
+  transition: left 0.45s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 999;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
 }
 
 .mobile-menu.active {
@@ -168,51 +184,62 @@ body {
 }
 
 .mobile-menu a {
-  color: white;
-  font-size: 1.4rem;
+  color: var(--text-light);
+  font-size: 1.45rem;
   font-weight: 600;
-  margin: 15px 0;
+  margin: 16px 0;
   text-decoration: none;
   width: 100%;
   text-align: center;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: var(--transition);
 }
 
 .mobile-menu a:hover {
-  color: var(--accent);
+  color: var(--gold);
+  background: rgba(212, 160, 23, 0.1);
+  border-radius: 8px;
 }
 
 .mobile-search {
   width: 90%;
   max-width: 400px;
-  margin-top: 20px;
-  padding: 14px 16px;
-  font-size: 1rem;
+  margin-top: 24px;
+  padding: 16px 18px;
+  font-size: 1.05rem;
   border-radius: var(--radius);
-  border: none;
-  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.15);
   color: white;
+  transition: var(--transition);
 }
 
 .mobile-search::placeholder {
   color: rgba(255, 255, 255, 0.7);
 }
 
+.mobile-search:focus {
+  outline: none;
+  background: white;
+  color: var(--text-dark);
+  border-color: var(--gold);
+}
+
 /* Responsive */
 @media (max-width: 992px) {
   .nav-center {
-    gap: 16px;
+    gap: 18px;
   }
   .search-input {
-    max-width: 350px;
+    max-width: 380px;
   }
 }
 
 @media (max-width: 768px) {
   .header {
-    padding: 0 16px;
-    height: 70px;
+    padding: 0 18px;
+    height: 74px;
   }
 
   .nav-center {
@@ -226,9 +253,19 @@ body {
 
 @media (max-width: 480px) {
   .logo a {
-    font-size: 1.3rem;
+    font-size: 1.35rem;
   }
+
   .mobile-toggle {
-    font-size: 1.6rem;
+    font-size: 1.7rem;
+    padding: 8px;
+  }
+
+  .mobile-menu a {
+    font-size: 1.35rem;
+  }
+
+  .mobile-search {
+    padding: 14px 16px;
   }
 }

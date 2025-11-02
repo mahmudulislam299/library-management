@@ -1,56 +1,181 @@
-.news-container{
-    width: 100%;
-    height: auto;
-    background-color: rgb(223, 255, 255);
-    display: flex;
-    flex-direction: column;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+/* === STAMFORD LIBRARY WHITE THEME === */
+:root {
+  --bg:      #f8f9fa;     /* Soft White */
+  --card:    #ffffff;     /* Pure White */
+  --gold:    #d4a017;     /* Warm Gold */
+  --accent:  #f59e0b;     /* Amber */
+  --text:    #1a2338;     /* Deep Navy */
+  --border:  rgba(212, 160, 23, 0.2);
+  --shadow:  0 12px 32px rgba(15, 26, 46, 0.08);
+  --glow:    0 0 20px rgba(212, 160, 23, 0.15);
+  --radius:  18px;
+  --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.news-data{
-    display: flex;
-    justify-content: space-around;
-    margin-top: 20px;
+/* Section */
+.news-section {
+  padding: 100px 20px 80px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Poppins', sans-serif;
 }
 
-.news-title{
-    position: relative;
-    color: #0E2431;
-    margin-top: 10px;
-    margin-bottom: 50px;
-    text-align: center;
-    font-size: 32px;
-    padding-top: 15px;
+/* Title */
+.news-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 70px;
+  letter-spacing: -0.8px;
+  position: relative;
 }
 
-.news-subtitle{
-    font-size: 25px;
-    text-align: center;
+.news-title::after {
+  content: '';
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 5px;
+  background: linear-gradient(90deg, var(--gold), var(--accent));
+  border-radius: 3px;
+  box-shadow: var(--glow);
 }
 
-.news-competition-event{
-    border:2px solid brown;
-    border-radius: 5px;
-    text-align: left;
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px!important;
+/* Grid */
+.news-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
 }
 
-.news-quiz-event{
-    border:2px solid brown;
-    border-radius: 5px;
-    text-align: left;
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px!important;
+/* Column */
+.news-column {
+  background: var(--card);
+  padding: 35px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: var(--transition);
 }
 
-.news-empty{
-    width: 25px;
+.news-column:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 45px rgba(15, 26, 46, 0.12), var(--glow);
+  border-color: var(--gold);
 }
 
-@media screen and (max-width:768px) {
-    .news-data{
-        flex-direction: column;
-    }    
+/* Subtitle */
+.news-subtitle {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.news-subtitle::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* News List */
+.news-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* News Item */
+.news-item {
+  background: rgba(248, 249, 250, 0.7);
+  padding: 18px;
+  border-radius: 14px;
+  border-left: 4px solid var(--gold);
+  transition: var(--transition);
+  backdrop-filter: blur(6px);
+}
+
+.news-item:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateX(6px);
+  border-left-color: var(--accent);
+  box-shadow: 0 8px 20px rgba(212, 160, 23, 0.1);
+}
+
+.news-item h4 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.news-item p {
+  font-size: 0.98rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .news-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .news-section {
+    padding: 80px 15px 60px;
+  }
+
+  .news-title {
+    font-size: 2.3rem;
+    margin-bottom: 55px;
+  }
+
+  .news-column {
+    padding: 30px;
+  }
+
+  .news-subtitle {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .news-title {
+    font-size: 2rem;
+    margin-bottom: 45px;
+  }
+
+  .news-subtitle {
+    font-size: 1.4rem;
+  }
+
+  .news-item {
+    padding: 16px;
+  }
+
+  .news-item h4 {
+    font-size: 1.1rem;
+  }
+
+  .news-item p {
+    font-size: 0.94rem;
+  }
 }
