@@ -8,15 +8,18 @@
     width: 100%;
     position: fixed;
     z-index: 100;
-    background-color: rgb(16,25,13);
+    background-color: rgb(102, 13, 217);
     box-shadow: 0 1px 4px rgba(146,161,176,.15);
     top: 0%;
 }
 
 .logo-nav a{
     font-size: 20px;
-    color: rgb(233,83,75);
-    font-weight: 800;
+  color: rgb(233, 83, 75);
+  font-weight: 800;
+  white-space: nowrap;     
+  display: inline-block;  
+  text-decoration: none;  
 }
 
 .logo-nav a:hover{
@@ -47,6 +50,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;    
+    /*display: inline-block;  
+    text-decoration: none;  */
 }
   
 .option{
