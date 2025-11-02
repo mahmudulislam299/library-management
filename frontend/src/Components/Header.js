@@ -1,59 +1,62 @@
-import { React, useState } from 'react'
-import { Link } from 'react-router-dom'
-import './Header.css'
-
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import './Header.css';
 import MenuIcon from '@material-ui/icons/Menu';
-import ClearIcon from '@material-ui/icons/Clear';
+import CloseIcon from '@material-ui/icons/Close';
 
 function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
 
-    const [menutoggle, setMenutoggle] = useState(false)
+  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const closeMenu = () => setMenuOpen(false);
 
-    const Toggle = () => {
-        setMenutoggle(!menutoggle)
-    }
+  return (
+    <header className="header">
+      {/* Logo */}
+      <div className="logo">
+        <Link to="/" onClick={closeMenu}>
+          Stamford Library
+        </Link>
+      </div>
 
-    const closeMenu = () => {
-        setMenutoggle(false)
-    }
+      {/* Desktop Nav + Search */}
+      <div className="nav-center">
+        <input
+          type="text"
+          placeholder="Search books, authors..."
+          className="search-input"
+        />
+        <nav className="nav-options">
+          <Link to="/" className="nav-link" onClick={closeMenu}>
+            Home
+          </Link>
+          <Link to="/books" className="nav-link" onClick={closeMenu}>
+            Books
+          </Link>
+          <Link to="/signin" className="nav-link" onClick={closeMenu}>
+            Sign In
+          </Link>
+        </nav>
+      </div>
 
-    return (
-        <div className="header">
-            <div className="logo-nav">
-            <Link to='/'>
-                <a href="#home">Stamford Library</a>
-            </Link>
-            </div>
-            <div className='nav-right'>
-                <input className='search-input' type='text' placeholder='Search a Book'/>
-                <ul className={menutoggle ? "nav-options active" : "nav-options"}>
-                    <li className="option" onClick={() => { closeMenu() }}>
-                        <Link to='/'>
-                            <a href="#home">Home</a>
-                        </Link>
-                    </li>
-                    <li className="option" onClick={() => { closeMenu() }}>
-                        <Link to='/books'>
-                        <a href="#books">Books</a>
-                        </Link>
-                    </li>
-                    <li className="option" onClick={() => { closeMenu() }}>
-                        <Link to='/signin'>
-                        <a href='signin'>Sign in</a>
-                        </Link>
-                    </li>
-                </ul>
-            </div>
+      {/* Mobile Menu Toggle */}
+      <button className="mobile-toggle" onClick={toggleMenu} aria-label="Toggle menu">
+        {menuOpen ? <CloseIcon /> : <MenuIcon />}
+      </button>
 
-            <div className="mobile-menu" onClick={() => { Toggle() }}>
-                {menutoggle ? (
-                    <ClearIcon className="menu-icon" style={{ fontSize: 40 }} />
-                ) : (
-                    <MenuIcon className="menu-icon" style={{ fontSize: 40 }} />
-                )}
-            </div>
-        </div>
-    )
+      {/* Mobile Menu */}
+      <div className={`mobile-menu ${menuOpen ? 'active' : ''}`}>
+        <Link to="/" onClick={closeMenu}>Home</Link>
+        <Link to="/books" onClick={closeMenu}>Books</Link>
+        <Link to="/signin" onClick={closeMenu}>Sign In</Link>
+        <input
+          type="text"
+          placeholder="Search..."
+          className="mobile-search"
+        />
+      </div>
+    </header>
+  );
 }
 
-export default Header
+export default Header;
