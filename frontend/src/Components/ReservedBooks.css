@@ -1,29 +1,150 @@
-.reservedbooks-container{
-    background-color: rgb(16,25,13);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+/* Elegant Library Theme */
+:root {
+  --bg-main: #0f1a2e;
+  --bg-card: #1a2338;
+  --gold: #d4a017;
+  --accent: #f59e0b;
+  --text: #e2e8f0;
+  --border: #2d3748;
+  --hover-bg: #2d3748;
+  --shadow: 0 8px 25px rgba(15, 26, 46, 0.4);
+  --radius: 16px;
+  --transition: all 0.3s ease;
 }
 
+/* Container */
+.reservedbooks-container {
+  padding: 90px 20px;
+  background: linear-gradient(135deg, #0a1428 0%, var(--bg-main) 100%);
+  font-family: 'Poppins', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* Title */
+.reservedbooks-title {
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: 55px;
+  position: relative;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.reservedbooks-title::after {
+  content: '';
+  position: absolute;
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold), var(--accent));
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+}
+
+/* Table Wrapper */
+.table-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  overflow-x: auto;
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(212, 160, 23, 0.15);
+}
+
+/* Table */
 .reservedbooks-table {
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-    max-width: 1024px;
-    margin: 0px auto;
-    padding: 15px!important;
-}
-  
-.reservedbooks-table td,.reservedbooks-table th {
-    border: 2px solid #696969;
-    text-align: left;
-    padding: 8px;
-    background-color: #dddddd;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 1rem;
+  background: var(--bg-card);
 }
 
-.reservedbooks-title{
-    position: relative;
-    color: rgb(238,129,30);
-    text-align: center;
-    font-size: 32px;
+.reservedbooks-table th {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: var(--gold);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 16px 20px;
+  text-align: left;
+  font-size: 0.95rem;
+  border-bottom: 2px solid var(--accent);
+}
+
+.reservedbooks-table td {
+  padding: 16px 20px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  transition: var(--transition);
+}
+
+/* Row Hover */
+.table-row {
+  transition: var(--transition);
+  cursor: default;
+}
+
+.table-row:hover {
+  background: var(--hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+
+.table-row:hover td {
+  color: #fff;
+}
+
+/* Alternating Row Colors */
+.table-row:nth-child(even) {
+  background: rgba(30, 41, 59, 0.4);
+}
+
+.table-row:nth-child(even):hover {
+  background: var(--hover-bg);
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+  .reservedbooks-title {
+    font-size: 2.1rem;
+    margin-bottom: 40px;
+  }
+
+  .table-wrapper {
+    padding: 15px;
+  }
+
+  .reservedbooks-table {
+    font-size: 0.9rem;
+  }
+
+  .reservedbooks-table th,
+  .reservedbooks-table td {
+    padding: 12px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reservedbooks-container {
+    padding: 70px 15px;
+  }
+
+  .reservedbooks-table {
+    font-size: 0.85rem;
+  }
+
+  .reservedbooks-table th,
+  .reservedbooks-table td {
+    padding: 10px 12px;
+  }
 }
