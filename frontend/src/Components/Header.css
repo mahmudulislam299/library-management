@@ -15,8 +15,8 @@
 
 .logo-nav a{
     font-size: 20px;
-  color: rgb(233, 83, 75);
-  font-weight: 800;
+  color: rgb(238, 228, 227);
+  font-weight: 1000;
   white-space: nowrap;     
   display: inline-block;  
   text-decoration: none;  
@@ -132,7 +132,7 @@ a{
     .menu-icon{
         width: 45px;
         height: 45px;
-        color: rgb(233,83,75);
+        color: rgb(100, 19, 15);
         padding: 2px;
         background-color: rgb(246, 233, 202);
         border-radius: 5px;
