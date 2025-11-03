@@ -107,7 +107,7 @@ function AddBook() {
                 <label className="addbook-form-label" htmlFor="copies">No.of Copies Available<span className="required-field">*</span></label><br />
                 <input className="addbook-form-input" type="text" name="copies" value={bookCountAvailable} onChange={(e) => { setBookCountAvailable(e.target.value) }} required></input><br />
 
-                <label className="addbook-form-label" htmlFor="categories">Categories<span className="required-field">*</span></label><br />
+                {/* <label className="addbook-form-label" htmlFor="categories">Categories<span className="required-field">*</span></label><br />
                 <div className="semanticdropdown">
                     <Dropdown
                         placeholder='Category'
@@ -119,7 +119,7 @@ function AddBook() {
                         value={selectedCategories}
                         onChange={(event, value) => setSelectedCategories(value.value)}
                     />
-                </div>
+                </div> */}
 
                 <input className="addbook-submit" type="submit" value="SUBMIT" disabled={isLoading}></input>
             </form>
