@@ -3,12 +3,12 @@ import "./ReservedBooks.css";
 
 function ReservedBooks() {
   const reservations = [
-    { name: "Anika", book: "Data Structure", date: "12/7/2025" },
-    { name: "Diya", book: "Operating Systems", date: "10/7/2025" },
+    { name: "Anika", book: "Introduction to ALGORITHMS", date: "12/7/2025" },
+    { name: "Diya", book: "Operating System Concepts", date: "10/7/2025" },
     { name: "Aisharjaa", book: "Computer Networks", date: "15/9/2025" },
-    { name: "Daliya", book: "Database Management", date: "02/9/2025" },
+    { name: "Daliya", book: "Teach Yourself C++", date: "02/9/2025" },
     { name: "Nadia", book: "Artificial Intelligence", date: "21/7/2025" },
-    { name: "Farhana", book: "Machine Learning", date: "02/7/2025" },
+    { name: "Farhana", book: "Clean Code", date: "02/7/2025" },
   ];
 
   return (
