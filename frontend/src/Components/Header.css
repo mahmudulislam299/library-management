@@ -47,7 +47,45 @@ body {
   transition: var(--transition);
 }
 
-/* Logo */
+/* Logo Container */
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+/* Logo Link */
+.logo a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-light);
+  font-size: 1.55rem;
+  font-weight: 800;
+  text-decoration: none;
+  letter-spacing: -0.6px;
+  transition: var(--transition);
+}
+
+/* Logo Image */
+.logo-img {
+  height: 75px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 8px; /* Optional */
+}
+
+/* Logo Text */
+.logo-text {
+  white-space: nowrap;
+}
+
+/* Hover Effect */
+.logo a:hover {
+  color: var(--gold);
+}
+
+
+/* Logo
 .logo a {
   color: var(--text-light);
   font-size: 1.55rem;
@@ -59,7 +97,7 @@ body {
 
 .logo a:hover {
   color: var(--gold);
-}
+} */
 
 /* Center: Search + Nav */
 .nav-center {
@@ -74,9 +112,10 @@ body {
 /* Search Input */
 .search-input {
   flex: 1;
-  max-width: 520px;
+  max-width: 420px;
   height: 48px;
   padding: 0 18px;
+  margin-left: 30px;
   font-size: 1.02rem;
   font-weight: 500;
   border: 2px solid transparent;
@@ -240,6 +279,7 @@ body {
   .header {
     padding: 0 18px;
     height: 74px;
+    gap: 40px; /* Adds space between logo and center section */
   }
 
   .nav-center {

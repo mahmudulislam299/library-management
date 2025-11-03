@@ -13,11 +13,19 @@ function Header() {
   return (
     <header className="header">
       {/* Logo */}
-      <div className="logo">
+
+            <div className="logo">
+        <Link to="/" onClick={closeMenu}>
+          <img src="/logo1.png" alt="Library Logo" className="logo-img" />
+          <span className="logo-text">Stamford Library</span>
+        </Link>
+      </div>
+
+      {/* <div className="logo">
         <Link to="/" onClick={closeMenu}>
           Stamford Library
         </Link>
-      </div>
+      </div> */}
 
       {/* Desktop: Search + Nav */}
       <div className="nav-center">
