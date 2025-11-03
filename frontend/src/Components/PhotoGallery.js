@@ -7,17 +7,12 @@ function PhotoGallery() {
 
   const images = [
     "lib.png",
-    "lib.png",
-    "lib.png",
-    "lib.png",
-    "lib.png",
-    "lib.png",
-    "lib.png",
-    "lib.png",
-    "lib.png",
-    "lib.png",
-    "lib.png",
-    "lib.png"
+    "uni1.jpg",
+    "uni2.jpg",
+    "uni3.jpg",
+    "uni4.jpg",
+    "uni5.jpg",
+    "uni6.jpg"
   ];
 
   const openLightbox = (imgSrc) => setSelectedImage(imgSrc);
