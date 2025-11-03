@@ -8,7 +8,7 @@ function Allbooks() {
         {/* Book 1 */}
         <div className="book-card">
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQp16xiXu1ZtTzbLy-eSwEK4Ng6cUpUZnuGbQ&usqp=CAU"
+            src="book1.jpg"
             alt="Wings of Fire"
             loading="lazy"
           />
@@ -22,7 +22,7 @@ function Allbooks() {
         {/* Book 2 */}
         <div className="book-card">
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-Rb2t6jA5ml7n57qdTZbAOWX1qSfsLCbaOA&usqp=CAU"
+            src="book2.webp"
             alt="The Power of Your Subconscious Mind"
             loading="lazy"
           />
@@ -36,7 +36,7 @@ function Allbooks() {
         {/* Book 3 */}
         <div className="book-card">
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRFiDRQ7a-Oo-CnMmnbIMApP1Cq9B5bYx-UA&usqp=CAU"
+            src="book3.jpg"
             alt="Elon Musk"
             loading="lazy"
           />
@@ -50,7 +50,7 @@ function Allbooks() {
         {/* Book 4 */}
         <div className="book-card">
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-Rb2t6jA5ml7n57qdTZbAOWX1qSfsLCbaOA&usqp=CAU"
+            src="book4.jpg"
             alt="The Subtle Art"
             loading="lazy"
           />
