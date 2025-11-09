@@ -61,9 +61,58 @@ router.post("/addbook", async (req, res) => {
         }
     }
     else {
-        return res.status(403).json("You dont have permission to delete a book!");
+        return res.status(403).json("You dont have permission to add a book!");
     }
 })
+
+/* Add multiple books at once (for bulk import via Insomnia) */
+router.post("/addmanybooks", async (req, res) => {
+  if (!req.body.isAdmin) {
+    return res.status(403).json("You dont have permission to add books!");
+  }
+
+  try {
+    const booksData = req.body.books;  // expect an array of book objects
+
+    if (!Array.isArray(booksData) || booksData.length === 0) {
+      return res.status(400).json({ message: "books must be a non-empty array" });
+    }
+
+    const createdBooks = [];
+
+    for (const b of booksData) {
+      const newBook = new Book({
+        bookName: b.bookName,
+        alternateTitle: b.alternateTitle,
+        author: b.author,
+        bookCountAvailable: b.bookCountAvailable,
+        language: b.language,
+        publisher: b.publisher,
+        bookStatus: b.bookStatus || "Available",
+        categories: b.categories || []
+      });
+
+      const saved = await newBook.save();
+      createdBooks.push(saved);
+
+      if (saved.categories && saved.categories.length > 0) {
+        await BookCategory.updateMany(
+          { _id: { $in: saved.categories } },
+          { $push: { books: saved._id } }
+        );
+      }
+    }
+
+    res.status(201).json({
+      message: `✅ Added ${createdBooks.length} books successfully`,
+      books: createdBooks
+    });
+  } catch (err) {
+    console.error("Error in /addmany:", err);
+    res.status(500).json({ message: "Server error", error: err });
+  }
+});
+
 
 /* Addding book */
 router.put("/updatebook/:id", async (req, res) => {
