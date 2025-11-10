@@ -16,7 +16,7 @@ function AddTransaction() {
     const [borrowerId, setBorrowerId] = useState("");
     const [borrowerDetails, setBorrowerDetails] = useState([]);
     const [bookId, setBookId] = useState("");
-    const [bookDetails, setBookDetails] = useState(null); // ✅ new state
+    const [bookDetails, setBookDetails] = useState(null);
     const [recentTransactions, setRecentTransactions] = useState([]);
     const [allMembers, setAllMembers] = useState([]);
     const [allBooks, setAllBooks] = useState([]);
@@ -38,6 +38,7 @@ function AddTransaction() {
     const addTransaction = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+
         if (bookId !== "" && borrowerId !== "" && transactionType !== "" && fromDate !== null && toDate !== null) {
             const borrower_details = await axios.get(API_URL + "api/users/getuser/" + borrowerId);
             const book_details = await axios.get(API_URL + "api/books/getbook/" + bookId);
@@ -54,15 +55,18 @@ function AddTransaction() {
                     borrowerName: borrower_details.data.userFullName,
                     bookName: book_details.data.bookName,
                     transactionType: transactionType,
+                    // ✅ store in DD-MM-YYYY format
                     fromDate: fromDateString,
                     toDate: toDateString,
                     isAdmin: user.isAdmin
                 };
+
                 try {
                     const response = await axios.post(API_URL + "api/transactions/add-transaction", transactionData);
                     if (recentTransactions.length >= 5) {
-                        (recentTransactions.splice(-1));
+                        recentTransactions.splice(-1);
                     }
+
                     await axios.put(API_URL + `api/users/${response.data._id}/move-to-activetransactions`, {
                         userId: borrowerId,
                         isAdmin: user.isAdmin
@@ -139,7 +143,7 @@ function AddTransaction() {
         const getMembers = async () => {
             try {
                 const response = await axios.get(API_URL + "api/users/allmembers");
-                const all_members = await response.data.map(member => (
+                const all_members = response.data.map(member => (
                     {
                         value: `${member?._id}`,
                         text: `${member?.userType === "Student"
@@ -163,7 +167,7 @@ function AddTransaction() {
         const getallBooks = async () => {
             try {
                 const response = await axios.get(API_URL + "api/books/allbooks");
-                const allbooks = await response.data.map(book => (
+                const allbooks = response.data.map(book => (
                     { value: `${book._id}`, text: `${book.bookName}` }
                 ));
                 setAllBooks(allbooks);
@@ -175,7 +179,7 @@ function AddTransaction() {
     }, [API_URL]);
 
 
-    /* ✅ Fetching selected book details */
+    /* Fetching selected book details */
     useEffect(() => {
         const getBookDetails = async () => {
             try {
@@ -251,8 +255,8 @@ function AddTransaction() {
                         <tr>
                             <th>Book-Name</th>
                             <th>Transaction</th>
-                            <th>From Date<br /><span style={{ fontSize: "10px" }}>[MM/DD/YYYY]</span></th>
-                            <th>To Date<br /><span style={{ fontSize: "10px" }}>[MM/DD/YYYY]</span></th>
+                            <th>From Date<br /><span style={{ fontSize: "10px" }}>[DD-MM-YYYY]</span></th>
+                            <th>To Date<br /><span style={{ fontSize: "10px" }}>[DD-MM-YYYY]</span></th>
                             <th>Fine</th>
                         </tr>
                     </thead>
@@ -261,16 +265,18 @@ function AddTransaction() {
                             borrowerDetails.activeTransactions?.filter((data) => {
                                 return data.transactionStatus === "Active";
                             }).map((data, index) => {
-                                const daysLate = Math.floor(
-                                    (Date.parse(moment(new Date()).format("MM/DD/YYYY")) - Date.parse(data.toDate)) / 86400000
-                                );
-                                const fine = daysLate <= 0 ? 0 : daysLate * 10;
+                                // ✅ robust parsing for different possible stored formats
+                                const toMoment = moment(data.toDate, ["DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601]).startOf("day");
+                                const today = moment().startOf("day");
+                                const daysLate = today.diff(toMoment, "days");
+                                const fine = daysLate > 0 ? daysLate * 10 : 0;
+
                                 return (
                                     <tr key={index}>
                                         <td>{data.bookName}</td>
                                         <td>{data.transactionType}</td>
-                                        <td>{data.fromDate}</td>
-                                        <td>{data.toDate}</td>
+                                        <td>{moment(data.fromDate, ["DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601]).format("DD-MM-YYYY")}</td>
+                                        <td>{toMoment.format("DD-MM-YYYY")}</td>
                                         <td>{fine}</td>
                                     </tr>
                                 );
@@ -294,7 +300,7 @@ function AddTransaction() {
                     />
                 </div>
 
-                {/* ✅ Available Copies & Reserved summary for selected book */}
+                {/* Available Copies & Reserved summary for selected book */}
                 <table
                     className="admindashboard-table shortinfo-table"
                     style={bookId === "" ? { display: "none" } : {}}
@@ -343,11 +349,16 @@ function AddTransaction() {
                 </label><br />
                 <DatePicker
                     className="date-picker"
-                    placeholderText="MM/DD/YYYY"
+                    placeholderText="DD-MM-YYYY"
                     selected={fromDate}
-                    onChange={(date) => { setFromDate(date); setFromDateString(moment(date).format("MM/DD/YYYY")); }}
+                    onChange={(date) => {
+                        setFromDate(date);
+                        // ✅ store as DD-MM-YYYY
+                        setFromDateString(moment(date).format("DD-MM-YYYY"));
+                    }}
                     minDate={new Date()}
-                    dateFormat="MM/dd/yyyy"
+                    // ✅ react-datepicker uses date-fns: use lowercase tokens
+                    dateFormat="dd-MM-yyyy"
                 />
 
                 <label className="transaction-form-label" htmlFor="to-date">
@@ -355,11 +366,15 @@ function AddTransaction() {
                 </label><br />
                 <DatePicker
                     className="date-picker"
-                    placeholderText="MM/DD/YYYY"
+                    placeholderText="DD-MM-YYYY"
                     selected={toDate}
-                    onChange={(date) => { setToDate(date); setToDateString(moment(date).format("MM/DD/YYYY")); }}
+                    onChange={(date) => {
+                        setToDate(date);
+                        // ✅ store as DD-MM-YYYY
+                        setToDateString(moment(date).format("DD-MM-YYYY"));
+                    }}
                     minDate={new Date()}
-                    dateFormat="MM/dd/yyyy"
+                    dateFormat="dd-MM-yyyy"
                 />
 
                 <input
@@ -389,7 +404,8 @@ function AddTransaction() {
                                     <td>{index + 1}</td>
                                     <td>{transaction.bookName}</td>
                                     <td>{transaction.borrowerName}</td>
-                                    <td>{transaction.updatedAt.slice(0, 10)}</td>
+                                    {/* ✅ updatedAt shown as DD-MM-YYYY */}
+                                    <td>{moment(transaction.updatedAt).format("DD-MM-YYYY")}</td>
                                 </tr>
                             );
                         })

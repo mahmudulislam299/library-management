@@ -3,6 +3,7 @@ import "../AdminDashboard.css";
 import axios from "axios";
 import { AuthContext } from '../../../../Context/AuthContext';
 import { Dropdown } from 'semantic-ui-react';
+import moment from "moment";
 
 function AddBook() {
 
@@ -82,6 +83,7 @@ function AddBook() {
         setIsLoading(false);
     };
 
+    /* Fetch recently added books */
     useEffect(() => {
         const getallBooks = async () => {
             try {
@@ -163,7 +165,7 @@ function AddBook() {
                     required
                 /><br />
 
-                {/* ✅ Categories Dropdown */}
+                {/* Categories Dropdown */}
                 <label className="addbook-form-label" htmlFor="categories">
                     Categories<span className="required-field">*</span>
                 </label><br />
@@ -205,7 +207,7 @@ function AddBook() {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{book.bookName}</td>
-                                    <td>{book.createdAt?.substring(0, 10)}</td>
+                                    <td>{book.createdAt ? moment(book.createdAt).format("DD-MM-YYYY") : ""}</td>
                                 </tr>
                             ))
                         }

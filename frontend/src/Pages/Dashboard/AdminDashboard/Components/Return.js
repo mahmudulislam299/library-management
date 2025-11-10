@@ -6,7 +6,6 @@ import '../../MemberDashboard/MemberDashboard.css'
 import moment from "moment"
 import { AuthContext } from '../../../../Context/AuthContext'
 
-
 function Return() {
 
     const API_URL = process.env.REACT_APP_API_URL
@@ -18,6 +17,11 @@ function Return() {
     const [allMembersOptions, setAllMembersOptions] = useState(null)
     const [borrowerId, setBorrowerId] = useState(null)
 
+    // Small helper for safe date formatting
+    const formatDate = (dateStr) => {
+        if (!dateStr) return ""
+        return moment(dateStr, ["DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601]).format("DD-MM-YYYY")
+    }
 
     //Fetching all Members
     useEffect(() => {
@@ -25,7 +29,14 @@ function Return() {
             try {
                 const response = await axios.get(API_URL + "api/users/allmembers")
                 setAllMembersOptions(response.data.map((member) => (
-                    { value: `${member?._id}`, text: `${member?.userType === "Student" ? `${member?.userFullName}[${member?.admissionId}]` : `${member?.userFullName}[${member?.employeeId}]`}` }
+                    { 
+                        value: `${member?._id}`,
+                        text: `${
+                            member?.userType === "Student"
+                                ? `${member?.userFullName}[${member?.admissionId}]`
+                                : `${member?.userFullName}[${member?.employeeId}]`
+                        }`
+                    }
                 )))
             }
             catch (err) {
@@ -41,10 +52,14 @@ function Return() {
         const getAllTransactions = async () =>{
             try{
                 const response = await axios.get(API_URL+"api/transactions/all-transactions")
-                setAllTransactions(response.data.sort((a, b) => Date.parse(a.toDate) - Date.parse(b.toDate)).filter((data) => {
-                    return data.transactionStatus === "Active"
-                }))
-                console.log("Okay")
+                const activeSorted = response.data
+                    .filter((data) => data.transactionStatus === "Active")
+                    .sort((a, b) => {
+                        const aTo = moment(a.toDate, ["DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601])
+                        const bTo = moment(b.toDate, ["DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601])
+                        return aTo.valueOf() - bTo.valueOf()
+                    })
+                setAllTransactions(activeSorted)
                 setExecutionStatus(null)
             }
             catch(err){
@@ -61,10 +76,11 @@ function Return() {
             await axios.put(API_URL+"api/transactions/update-transaction/"+transactionId,{
                 isAdmin:user.isAdmin,
                 transactionStatus:"Completed",
-                returnDate:moment(new Date()).format("MM/DD/YYYY")
+                // ✅ store as DD-MM-YYYY now
+                returnDate:moment(new Date()).format("DD-MM-YYYY")
             })
 
-            /* Getting borrower points alreadt existed */
+            /* Getting borrower points already existed */
             const borrowerdata = await axios.get(API_URL+"api/users/getuser/"+borrowerId)
             const points = borrowerdata.data.points
 
@@ -75,7 +91,7 @@ function Return() {
                     isAdmin: user.isAdmin
                 })
             }
-            else if(due<=0){
+            else {
                 await axios.put(API_URL+"api/users/updateuser/"+borrowerId,{
                     points:points+10,
                     isAdmin: user.isAdmin
@@ -130,8 +146,10 @@ function Return() {
                     onChange={(event, data) => setBorrowerId(data.value)}
                 />
             </div>
+
             <p className="dashboard-option-title">Issued</p>
             <table className="admindashboard-table">
+                <thead>
                     <tr>
                         <th>Book Name</th>
                         <th>Borrower Name</th>
@@ -140,6 +158,8 @@ function Return() {
                         <th>Fine</th>
                         <th></th>
                     </tr>
+                </thead>
+                <tbody>
                     {
                         allTransactions?.filter((data)=>{
                             if(borrowerId === null){
@@ -149,21 +169,43 @@ function Return() {
                                 return data.borrowerId === borrowerId && data.transactionType === "Issued"
                             }
                         }).map((data, index) => {
+                            const toMoment = moment(data.toDate, ["DD-MM-YYYY","MM/DD/YYYY",moment.ISO_8601]).startOf("day")
+                            const today = moment().startOf("day")
+                            const daysLate = today.diff(toMoment,"days")
+                            const fine = daysLate > 0 ? daysLate * 10 : 0
+
                             return (
                                 <tr key={index}>
                                     <td>{data.bookName}</td>
                                     <td>{data.borrowerName}</td>
-                                    <td>{data.fromDate}</td>
-                                    <td>{data.toDate}</td>
-                                    <td>{(Math.floor(( Date.parse(moment(new Date()).format("MM/DD/YYYY")) - Date.parse(data.toDate) ) / 86400000)) <= 0 ? 0 : (Math.floor(( Date.parse(moment(new Date()).format("MM/DD/YYYY")) - Date.parse(data.toDate) ) / 86400000))*10}</td>
-                                    <td><button onClick={()=>{returnBook(data._id,data.borrowerId,data.bookId,(Math.floor(( Date.parse(moment(new Date()).format("MM/DD/YYYY")) - Date.parse(data.toDate) ) / 86400000)))}}>Return</button></td>
+                                    {/* show as DD-MM-YYYY */}
+                                    <td>{formatDate(data.fromDate)}</td>
+                                    <td>{formatDate(data.toDate)}</td>
+                                    <td>{fine}</td>
+                                    <td>
+                                        <button
+                                            onClick={()=>{
+                                                returnBook(
+                                                    data._id,
+                                                    data.borrowerId,
+                                                    data.bookId,
+                                                    daysLate
+                                                )
+                                            }}
+                                        >
+                                            Return
+                                        </button>
+                                    </td>
                                 </tr>
                             )
                         })
                     }
-                </table>
-                <p className="dashboard-option-title">Reserved</p>
+                </tbody>
+            </table>
+
+            <p className="dashboard-option-title">Reserved</p>
             <table className="admindashboard-table">
+                <thead>
                     <tr>
                         <th>Book Name</th>
                         <th>Borrower Name</th>
@@ -171,6 +213,8 @@ function Return() {
                         <th>To Date</th>
                         <th></th>
                     </tr>
+                </thead>
+                <tbody>
                     {
                         allTransactions?.filter((data)=>{
                             if(borrowerId === null){
@@ -184,14 +228,20 @@ function Return() {
                                 <tr key={index}>
                                     <td>{data.bookName}</td>
                                     <td>{data.borrowerName}</td>
-                                    <td>{data.fromDate}</td>
-                                    <td>{data.toDate}</td>
-                                    <td><button onClick={()=>{convertToIssue(data._id)}}>Convert</button></td>
+                                    {/* show as DD-MM-YYYY */}
+                                    <td>{formatDate(data.fromDate)}</td>
+                                    <td>{formatDate(data.toDate)}</td>
+                                    <td>
+                                        <button onClick={()=>{convertToIssue(data._id)}}>
+                                            Convert
+                                        </button>
+                                    </td>
                                 </tr>
                             )
                         })
                     }
-                </table>
+                </tbody>
+            </table>
         </div>
     )
 }

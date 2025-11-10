@@ -19,7 +19,14 @@ function GetMember() {
             try {
                 const response = await axios.get(API_URL + "api/users/allmembers")
                 setAllMembersOptions(response.data.map((member) => (
-                    { value: `${member?._id}`, text: `${member?.userType === "Student" ? `${member?.userFullName}[${member?.admissionId}]` : `${member?.userFullName}[${member?.employeeId}]`}` }
+                    {
+                        value: `${member?._id}`,
+                        text: `${
+                            member?.userType === "Student"
+                                ? `${member?.userFullName}[${member?.admissionId}]`
+                                : `${member?.userFullName}[${member?.employeeId}]`
+                        }`
+                    }
                 )))
             }
             catch (err) {
@@ -32,7 +39,7 @@ function GetMember() {
 
     useEffect(() => {
         const getMemberDetails = async () => {
-            if(memberId !== null){
+            if (memberId !== null) {
                 try {
                     const response = await axios.get(API_URL + "api/users/getuser/" + memberId)
                     setMemberDetails(response.data)
@@ -45,6 +52,12 @@ function GetMember() {
         getMemberDetails()
     }, [API_URL, memberId])
 
+
+    // helper to safely format dates coming from DB / old format
+    const formatDate = (dateStr) => {
+        if (!dateStr) return ""
+        return moment(dateStr, ["DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601]).format("DD-MM-YYYY")
+    }
 
     return (
         <div>
@@ -65,7 +78,11 @@ function GetMember() {
                         <img className="user-profileimage" src="./assets/images/Profile.png" alt=""></img>
                         <div className="user-info">
                             <p className="user-name">{memberDetails?.userFullName}</p>
-                            <p className="user-id">{memberDetails?.userType === "Student" ? memberDetails?.admissionId : memberDetails?.employeeId}</p>
+                            <p className="user-id">
+                                {memberDetails?.userType === "Student"
+                                    ? memberDetails?.admissionId
+                                    : memberDetails?.employeeId}
+                            </p>
                             <p className="user-email">{memberDetails?.email}</p>
                             <p className="user-phone">{memberDetails?.mobileNumber}</p>
                         </div>
@@ -78,7 +95,7 @@ function GetMember() {
                                         <b>Age</b>
                                     </span>
                                     <span style={{ fontSize: "16px" }}>
-                                    {memberDetails?.age}
+                                        {memberDetails?.age}
                                     </span>
                                 </p>
                                 <p style={{ display: "flex", flex: "0.5", flexDirection: "column" }}>
@@ -86,7 +103,7 @@ function GetMember() {
                                         <b>Gender</b>
                                     </span>
                                     <span style={{ fontSize: "16px" }}>
-                                    {memberDetails?.gender}
+                                        {memberDetails?.gender}
                                     </span>
                                 </p>
                             </div>
@@ -96,7 +113,8 @@ function GetMember() {
                                         <b>DOB</b>
                                     </span>
                                     <span style={{ fontSize: "16px" }}>
-                                        {memberDetails?.dob}
+                                        {/* DOB formatted as DD-MM-YYYY */}
+                                        {formatDate(memberDetails?.dob)}
                                     </span>
                                 </p>
                                 <p style={{ display: "flex", flex: "0.5", flexDirection: "column" }}>
@@ -137,13 +155,19 @@ function GetMember() {
                             memberDetails?.activeTransactions?.filter((data) => {
                                 return data.transactionType === "Issued"
                             }).map((data, index) => {
+                                const toMoment = moment(data.toDate, ["DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601]).startOf("day")
+                                const today = moment().startOf("day")
+                                const daysLate = today.diff(toMoment, "days")
+                                const fine = daysLate > 0 ? daysLate * 10 : 0
+
                                 return (
                                     <tr key={index}>
                                         <td>{index + 1}</td>
                                         <td>{data.bookName}</td>
-                                        <td>{data.fromDate}</td>
-                                        <td>{data.toDate}</td>
-                                        <td>{(Math.floor((Date.parse(moment(new Date()).format("MM/DD/YYYY")) - Date.parse(data.toDate)) / 86400000)) <= 0 ? 0 : (Math.floor((Date.parse(moment(new Date()).format("MM/DD/YYYY")) - Date.parse(data.toDate)) / 86400000)) * 10}</td>
+                                        {/* From/To in DD-MM-YYYY */}
+                                        <td>{formatDate(data.fromDate)}</td>
+                                        <td>{formatDate(data.toDate)}</td>
+                                        <td>{fine}</td>
                                     </tr>
                                 )
                             })
@@ -166,16 +190,17 @@ function GetMember() {
                             }).map((data, index) => {
                                 return (
                                     <tr key={index}>
-                                        <td>{index+1}</td>
+                                        <td>{index + 1}</td>
                                         <td>{data.bookName}</td>
-                                        <td>{data.fromDate}</td>
-                                        <td>{data.toDate}</td>
+                                        <td>{formatDate(data.fromDate)}</td>
+                                        <td>{formatDate(data.toDate)}</td>
                                     </tr>
                                 )
                             })
                         }
                     </table>
                 </div>
+
                 <div className="member-history-content" id="history@member">
                     <p style={{ fontWeight: "bold", fontSize: "22px", marginTop: "22px", marginBottom: "22px" }}>History</p>
                     <table className="activebooks-table">
@@ -190,11 +215,11 @@ function GetMember() {
                             memberDetails?.prevTransactions?.map((data, index) => {
                                 return (
                                     <tr key={index}>
-                                        <td>{index+1}</td>
+                                        <td>{index + 1}</td>
                                         <td>{data.bookName}</td>
-                                        <td>{data.fromDate}</td>
-                                        <td>{data.toDate}</td>
-                                        <td>{data.returnDate}</td>
+                                        <td>{formatDate(data.fromDate)}</td>
+                                        <td>{formatDate(data.toDate)}</td>
+                                        <td>{formatDate(data.returnDate)}</td>
                                     </tr>
                                 )
                             })
