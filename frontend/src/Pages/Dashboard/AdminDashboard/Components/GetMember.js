@@ -90,14 +90,14 @@ function GetMember() {
                     <div className="user-details-specific">
                         <div className="specific-left">
                             <div style={{ display: "flex", justifyContent: "space-between" }}>
-                                <p style={{ display: "flex", flex: "0.5", flexDirection: "column" }}>
+                                {/* <p style={{ display: "flex", flex: "0.5", flexDirection: "column" }}>
                                     <span style={{ fontSize: "18px" }}>
                                         <b>Age</b>
                                     </span>
                                     <span style={{ fontSize: "16px" }}>
                                         {memberDetails?.age}
                                     </span>
-                                </p>
+                                </p> */}
                                 <p style={{ display: "flex", flex: "0.5", flexDirection: "column" }}>
                                     <span style={{ fontSize: "18px" }}>
                                         <b>Gender</b>
@@ -109,25 +109,29 @@ function GetMember() {
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "30px" }}>
                                 <p style={{ display: "flex", flex: "0.5", flexDirection: "column" }}>
-                                    <span style={{ fontSize: "18px" }}>
-                                        <b>DOB</b>
-                                    </span>
-                                    <span style={{ fontSize: "16px" }}>
-                                        {/* DOB formatted as DD-MM-YYYY */}
-                                        {formatDate(memberDetails?.dob)}
-                                    </span>
-                                </p>
-                                <p style={{ display: "flex", flex: "0.5", flexDirection: "column" }}>
+                                    
                                     <span style={{ fontSize: "18px" }}>
                                         <b>Address</b>
                                     </span>
                                     <span style={{ fontSize: "16px" }}>
                                         {memberDetails?.address}
                                     </span>
+                                
+
                                 </p>
+                                {/* <p style={{ display: "flex", flex: "0.5", flexDirection: "column" }}>
+                                     <span style={{ fontSize: "18px" }}>
+                                        <b>DOB</b>
+                                    </span>
+                                    <span style={{ fontSize: "16px" }}>
+                                        /* DOB formatted as DD-MM-YYYY 
+                                        {formatDate(memberDetails?.dob)}
+                                    </span> 
+
+                                </p> */}
                             </div>
                         </div>
-                        <div className="specific-right">
+                        {/* <div className="specific-right">
                             <div style={{ display: "flex", flexDirection: "column", flex: "0.5" }}>
                                 <p style={{ fontSize: "20px", display: "flex", alignItems: "center", justifyContent: "center" }}><b>Points</b></p>
                                 <p style={{ fontSize: "25px", fontWeight: "500", display: "flex", alignItems: "center", justifyContent: "center", marginTop: "15px" }}>540</p>
@@ -137,7 +141,7 @@ function GetMember() {
                                 <p style={{ fontSize: "20px", display: "flex", alignItems: "center", justifyContent: "center" }}><b>Rank</b></p>
                                 <p style={{ fontSize: "25px", fontWeight: "500", display: "flex", alignItems: "center", justifyContent: "center", marginTop: "15px" }}>{memberDetails?.points}</p>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 
