@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import "../AdminDashboard/AdminDashboard.css"; // Reuses shared styles
+import "../AdminDashboard/AdminDashboard.css";
 import "./MemberDashboard.css";
 import {
   LibraryBooks,
@@ -23,7 +23,7 @@ function MemberDashboard() {
   const { user } = useContext(AuthContext);
   const [memberDetails, setMemberDetails] = useState(null);
 
-  // 🔁 Common date formatter (handles old + new formats)
+  // 🔁 Common date formatter
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
     return moment(dateStr, ["DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601]).format(
@@ -42,9 +42,7 @@ function MemberDashboard() {
         console.log("Error fetching member details", err);
       }
     };
-    if (user?._id) {
-      getMemberDetails();
-    }
+    if (user?._id) getMemberDetails();
   }, [API_URL, user]);
 
   const logout = () => {
@@ -160,51 +158,23 @@ function MemberDashboard() {
 
               <div className="user-details-specific">
                 <div className="specific-left">
-                  <div className="specific-left-top">
-                    <div className="specific-left-topic">
-                      <span>
-                        <b>Age</b>
-                      </span>
-                      <span>{memberDetails?.age}</span>
-                    </div>
-                    <div className="specific-left-topic">
-                      <span>
-                        <b>Gender</b>
-                      </span>
-                      <span>{memberDetails?.gender}</span>
-                    </div>
+                  <div className="specific-left-topic">
+                    <span>
+                      <b>Gender</b>
+                    </span>
+                    <span>{memberDetails?.gender}</span>
                   </div>
-                  <div className="specific-left-bottom">
-                    <div className="specific-left-topic">
-                      <span>
-                        <b>DOB</b>
-                      </span>
-                      <span>{formatDate(memberDetails?.dob)}</span>
-                    </div>
-                    <div className="specific-left-topic">
-                      <span>
-                        <b>Address</b>
-                      </span>
-                      <span>{memberDetails?.address}</span>
-                    </div>
+                  <div className="specific-left-topic">
+                    <span>
+                      <b>Department</b>
+                    </span>
+                    <span>{memberDetails?.department}</span>
                   </div>
-                </div>
-
-                <div className="specific-right">
-                  <div className="specific-right-top">
-                    <p className="specific-right-topic">
-                      <b>Points</b>
-                    </p>
-                    <p className="points-value">540</p>
-                  </div>
-                  <div className="dashboard-title-line"></div>
-                  <div className="specific-right-bottom">
-                    <p className="specific-right-topic">
-                      <b>Rank</b>
-                    </p>
-                    <p className="points-value">
-                      {memberDetails?.points || 0}
-                    </p>
+                  <div className="specific-left-topic">
+                    <span>
+                      <b>Address</b>
+                    </span>
+                    <span>{memberDetails?.address}</span>
                   </div>
                 </div>
               </div>
