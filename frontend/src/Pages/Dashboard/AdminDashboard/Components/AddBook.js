@@ -25,7 +25,7 @@ function AddBook() {
     useEffect(() => {
         const getAllCategories = async () => {
             try {
-                const response = await axios.get(API_URL + "api/categories/allcategories");
+                const response = await axios.get(API_URL + "/api/categories/allcategories");
                 const all_categories = response.data.map(category => ({
                     value: category._id,
                     text: category.categoryName
@@ -62,7 +62,7 @@ function AddBook() {
         };
 
         try {
-            const response = await axios.post(API_URL + "api/books/addbook", BookData);
+            const response = await axios.post(API_URL + "/api/books/addbook", BookData);
             if (recentAddedBooks.length >= 5) {
                 recentAddedBooks.splice(-1);
             }
@@ -87,7 +87,7 @@ function AddBook() {
     useEffect(() => {
         const getallBooks = async () => {
             try {
-                const response = await axios.get(API_URL + "api/books/allbooks");
+                const response = await axios.get(API_URL + "/api/books/allbooks");
                 setRecentAddedBooks(response.data.slice(0, 5));
             } catch (err) {
                 console.log(err);
