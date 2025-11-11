@@ -65,7 +65,7 @@ function Footer() {
           © 2025 Stamford Library. All rights reserved.
         </p>
         <p className="footer-credit">
-          Designed with love by <strong>Mahmudul Islam</strong>
+          Designed by <strong>farhana akter</strong>
         </p>
       </div>
     </footer>
