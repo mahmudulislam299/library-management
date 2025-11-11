@@ -8,17 +8,16 @@ function AddMember() {
     const API_URL = process.env.REACT_APP_API_URL;
     const [isLoading, setIsLoading] = useState(false);
 
-    const [userFullName, setUserFullName] = useState(null);
-    const [admissionId, setAdmissionId] = useState(null);
-    const [employeeId, setEmployeeId] = useState(null);
-    const [address, setAddress] = useState(null);
-    const [email, setEmail] = useState(null);
-    const [password, setPassword] = useState(null);
-    const [mobileNumber, setMobileNumber] = useState(null);
+    const [userFullName, setUserFullName] = useState("");
+    const [memberId, setMemberId] = useState("");
+    const [address, setAddress] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [mobileNumber, setMobileNumber] = useState("");
     const [recentAddedMembers, setRecentAddedMembers] = useState([]);
-    const [userType, setUserType] = useState(null);
-    const [gender, setGender] = useState(null);
-    const [department, setDepartment] = useState(null);
+    const [userType, setUserType] = useState("Student"); // default
+    const [gender, setGender] = useState("");
+    const [department, setDepartment] = useState("");
 
     const genderTypes = [
         { value: "Male", text: "Male" },
@@ -26,8 +25,8 @@ function AddMember() {
     ];
 
     const userTypes = [
-        { value: 'Staff', text: 'Staff' },
-        { value: 'Student', text: 'Student' }
+        { value: 'Student', text: 'Student' },
+        { value: 'Employee', text: 'Employee' }
     ];
 
     // Add a Member
@@ -35,9 +34,7 @@ function AddMember() {
         e.preventDefault();
         setIsLoading(true);
 
-        const hasMemberId =
-            (userType === "Student" && admissionId) ||
-            (userType === "Staff" && employeeId);
+        const hasMemberId = !!memberId;
 
         if (
             userFullName &&
@@ -51,45 +48,46 @@ function AddMember() {
             password
         ) {
             const userData = {
-                userType: userType,
-                userFullName: userFullName,
-                admissionId: admissionId,
-                employeeId: employeeId,
-                gender: gender,
-                department: department,
-                address: address,
-                mobileNumber: mobileNumber,
-                email: email,
-                password: password
+                userType,
+                userFullName,
+                memberId,
+                gender,
+                department,
+                address,
+                mobileNumber,
+                email,
+                password,
             };
 
             try {
-                const response = await axios.post(API_URL + "api/auth/register", userData);
+                const response = await axios.post(
+                    `${API_URL}/api/auth/register`,
+                    userData
+                );
 
-                // backend returns { message, user }
                 const newMember = response.data.user || response.data;
 
-                if (recentAddedMembers.length >= 5) {
-                    recentAddedMembers.splice(-1);
-                }
+                // Keep only last 5
+                setRecentAddedMembers(prev => {
+                    const trimmed = prev.slice(0, 4);
+                    return [newMember, ...trimmed];
+                });
 
-                setRecentAddedMembers([newMember, ...recentAddedMembers]);
-
-                setUserFullName(null);
+                // Reset form
+                setUserFullName("");
                 setUserType("Student");
-                setAdmissionId(null);
-                setEmployeeId(null);
-                setAddress(null);
-                setMobileNumber(null);
-                setEmail(null);
-                setPassword(null);
-                setGender(null);
-                setDepartment(null);
+                setMemberId("");
+                setAddress("");
+                setMobileNumber("");
+                setEmail("");
+                setPassword("");
+                setGender("");
+                setDepartment("");
                 alert("Member Added");
             }
             catch (err) {
                 console.log(err);
-                alert("Error adding member");
+                alert(err.response?.data?.message || "Error adding member");
             }
         } else {
             alert("All the fields must be filled");
@@ -101,8 +99,10 @@ function AddMember() {
     useEffect(() => {
         const getMembers = async () => {
             try {
-                const response = await axios.get(API_URL + "api/users/allmembers");
-                const recentMembers = await response.data.slice(0, 5);
+                const response = await axios.get(
+                    `${API_URL}/api/users/allmembers`
+                );
+                const recentMembers = response.data.slice(0, 5);
                 setRecentAddedMembers(recentMembers);
             }
             catch (err) {
@@ -116,6 +116,7 @@ function AddMember() {
         <div>
             <p className="dashboard-option-title">Add a Member</p>
             <div className="dashboard-title-line"></div>
+
             <form className="addmember-form" onSubmit={addMember}>
                 <div className='semanticdropdown'>
                     <Dropdown
@@ -135,28 +136,25 @@ function AddMember() {
                     className="addmember-form-input"
                     type="text"
                     name="userFullName"
-                    value={userFullName || ""}
+                    value={userFullName}
                     required
                     onChange={(e) => setUserFullName(e.target.value)}
                 /><br />
 
                 <label
                     className="addmember-form-label"
-                    htmlFor={userType === "Student" ? "admissionId" : "employeeId"}
+                    htmlFor="memberId"
                 >
-                    {userType === "Student" ? "Admission Id" : "Employee Id"}
+                    {userType === "Student" ? "Admission ID" : "Employee ID"}
                     <span className="required-field">*</span>
                 </label><br />
                 <input
                     className="addmember-form-input"
                     type="text"
-                    value={userType === "Student" ? (admissionId || "") : (employeeId || "")}
+                    name="memberId"
+                    value={memberId}
                     required
-                    onChange={(e) => {
-                        userType === "Student"
-                            ? setAdmissionId(e.target.value)
-                            : setEmployeeId(e.target.value);
-                    }}
+                    onChange={(e) => setMemberId(e.target.value)}
                 /><br />
 
                 <label className="addmember-form-label" htmlFor="mobileNumber">
@@ -165,7 +163,7 @@ function AddMember() {
                 <input
                     className="addmember-form-input"
                     type="text"
-                    value={mobileNumber || ""}
+                    value={mobileNumber}
                     required
                     onChange={(e) => setMobileNumber(e.target.value)}
                 /><br />
@@ -190,7 +188,7 @@ function AddMember() {
                 <input
                     className="addmember-form-input"
                     type="text"
-                    value={department || ""}
+                    value={department}
                     required
                     onChange={(e) => setDepartment(e.target.value)}
                 /><br />
@@ -200,7 +198,7 @@ function AddMember() {
                 </label><br />
                 <input
                     className="addmember-form-input address-field"
-                    value={address || ""}
+                    value={address}
                     type="text"
                     required
                     onChange={(e) => setAddress(e.target.value)}
@@ -212,7 +210,7 @@ function AddMember() {
                 <input
                     className="addmember-form-input"
                     type="email"
-                    value={email || ""}
+                    value={email}
                     required
                     onChange={(e) => setEmail(e.target.value)}
                 /><br />
@@ -223,7 +221,7 @@ function AddMember() {
                 <input
                     className="addmember-form-input"
                     type="password"
-                    value={password || ""}
+                    value={password}
                     required
                     onChange={(e) => setPassword(e.target.value)}
                 /><br />
@@ -236,7 +234,7 @@ function AddMember() {
                 />
             </form>
 
-            <p className="dashboard-option-title">Add a Member</p>
+            <p className="dashboard-option-title">Recently Added Members</p>
             <div className="dashboard-title-line"></div>
             <table className='admindashboard-table'>
                 <thead>
@@ -248,16 +246,14 @@ function AddMember() {
                     </tr>
                 </thead>
                 <tbody>
-                    {
-                        recentAddedMembers.map((member, index) => (
-                            <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{member.userType}</td>
-                                <td>{member.userType === "Student" ? member.admissionId : member.employeeId}</td>
-                                <td>{member.userFullName}</td>
-                            </tr>
-                        ))
-                    }
+                    {recentAddedMembers.map((member, index) => (
+                        <tr key={member._id || index}>
+                            <td>{index + 1}</td>
+                            <td>{member.userType}</td>
+                            <td>{member.memberId}</td>
+                            <td>{member.userFullName}</td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>

@@ -3,74 +3,74 @@ import mongoose from "mongoose";
 const UserSchema = new mongoose.Schema({
     userType: {
         type: String,
-        require: true
+        required: true, // fixed spelling
+        enum: ["Student", "Employee"], 
     },
     userFullName: {
         type: String,
-        require: true,
-        unique: true
+        required: true,
+        trim: true,
     },
-    admissionId: {
+    memberId: {           
         type: String,
-        min: 3,
-        max: 15,
+        required: true,
+        unique: true,
+        minlength: 3,
+        maxlength: 15,
+        trim: true,
     },
-    employeeId: {
-        type: String,
-        min: 3,
-        max: 15,
-    },
-    age: {
-        type: Number
-    },
-    gender: {
-        type: String
-    },
-    dob: {
-        type: String
-    },
+    age: Number,
+    gender: String,
+    dob: String,
+    department: String,   
     address: {
         type: String,
-        default: ""
+        default: "",
     },
     mobileNumber: {
-        type: Number,
-        require: true
+        type: String,     
+        required: true,
     },
     photo: {
         type: String,
-        default: ""
+        default: "",
     },
     email: {
         type: String,
-        require: true,
-        max: 50,
-        unique: true
+        required: true,
+        unique: true,
+        maxlength: 50,
+        lowercase: true,
+        trim: true,
     },
     password: {
         type: String,
-        require: true,
-        min: 6
+        required: true,
+        minlength: 6,
     },
     points: {
         type: Number,
-        default: 0
+        default: 0,
     },
-    activeTransactions: [{
-        type: mongoose.Types.ObjectId,
-        ref: "BookTransaction"
-    }],
-    prevTransactions: [{
-        type: mongoose.Types.ObjectId,
-        ref: "BookTransaction"
-    }],
+    activeTransactions: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: "BookTransaction",
+        },
+    ],
+    prevTransactions: [
+        {
+            type: mongoose.Types.ObjectId,
+            ref: "BookTransaction",
+        },
+    ],
     isAdmin: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
 },
-    {
-        timestamps: true
-    });
+{
+    timestamps: true,
+});
 
 export default mongoose.model("User", UserSchema);

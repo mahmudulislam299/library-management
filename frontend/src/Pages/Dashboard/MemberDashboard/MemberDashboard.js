@@ -35,14 +35,16 @@ function MemberDashboard() {
     const getMemberDetails = async () => {
       try {
         const response = await axios.get(
-          API_URL + "api/users/getuser/" + user._id
+          `${API_URL}/api/users/getuser/${user._id}`
         );
         setMemberDetails(response.data);
       } catch (err) {
-        console.log("Error fetching member details");
+        console.log("Error fetching member details", err);
       }
     };
-    getMemberDetails();
+    if (user?._id) {
+      getMemberDetails();
+    }
   }, [API_URL, user]);
 
   const logout = () => {
@@ -143,9 +145,13 @@ function MemberDashboard() {
                     {memberDetails?.userFullName || "Loading..."}
                   </p>
                   <p className="user-id">
-                    {memberDetails?.userType === "Student"
-                      ? memberDetails?.admissionId
-                      : memberDetails?.employeeId}
+                    {memberDetails
+                      ? `${
+                          memberDetails.userType === "Student"
+                            ? "Admission ID: "
+                            : "Employee ID: "
+                        }${memberDetails.memberId}`
+                      : ""}
                   </p>
                   <p className="user-email">{memberDetails?.email}</p>
                   <p className="user-phone">{memberDetails?.mobileNumber}</p>
