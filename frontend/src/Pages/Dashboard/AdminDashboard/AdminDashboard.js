@@ -5,17 +5,27 @@ import AddMember from "./Components/AddMember";
 import AddBook from "./Components/AddBook";
 import GetMember from "./Components/GetMember";
 import Return from "./Components/Return";
+import AdminProfile from "./Components/AdminProfile";
 
 import {
-  LibraryBooks, AccountCircle, Book, Receipt, PersonAdd,
-  DoubleArrow, Close, AccountBox, AssignmentReturn, PowerSettingsNew,
+  LibraryBooks,
+  AccountCircle,
+  Book,
+  Receipt,
+  PersonAdd,
+  DoubleArrow,
+  Close,
+  AccountBox,
+  AssignmentReturn,
+  PowerSettingsNew,
 } from "@material-ui/icons";
 import { IconButton } from "@material-ui/core";
 
 // Semantic UI CSS
 const styleLink = document.createElement("link");
 styleLink.rel = "stylesheet";
-styleLink.href = "https://cdn.jsdelivr.net/npm/semantic-ui/dist/semantic.min.css";
+styleLink.href =
+  "https://cdn.jsdelivr.net/npm/semantic-ui/dist/semantic.min.css";
 document.head.appendChild(styleLink);
 
 function AdminDashboard() {
@@ -54,8 +64,13 @@ function AdminDashboard() {
           ].map(({ id, icon: Icon, label }) => (
             <p
               key={id}
-              className={`dashboard-option ${active === id ? "clicked" : ""}`}
-              onClick={() => { setActive(id); setSidebar(false); }}
+              className={`dashboard-option ${
+                active === id ? "clicked" : ""
+              }`}
+              onClick={() => {
+                setActive(id);
+                setSidebar(false);
+              }}
             >
               <Icon className="dashboard-option-icon" /> {label}
             </p>
@@ -68,19 +83,45 @@ function AdminDashboard() {
 
         {/* Content */}
         <div className="dashboard-option-content">
-          <div className="content-wrapper" style={{ display: active === "addbook" ? "block" : "none" }}>
+          <div
+            className="content-wrapper"
+            style={{ display: active === "profile" ? "block" : "none" }}
+          >
+            <AdminProfile />
+          </div>
+
+          <div
+            className="content-wrapper"
+            style={{ display: active === "addbook" ? "block" : "none" }}
+          >
             <AddBook />
           </div>
-          <div className="content-wrapper" style={{ display: active === "addtransaction" ? "block" : "none" }}>
+
+          <div
+            className="content-wrapper"
+            style={{ display: active === "addtransaction" ? "block" : "none" }}
+          >
             <AddTransaction />
           </div>
-          <div className="content-wrapper" style={{ display: active === "addmember" ? "block" : "none" }}>
+
+          <div
+            className="content-wrapper"
+            style={{ display: active === "addmember" ? "block" : "none" }}
+          >
             <AddMember />
           </div>
-          <div className="content-wrapper" style={{ display: active === "getmember" ? "block" : "none" }}>
+
+          <div
+            className="content-wrapper"
+            style={{ display: active === "getmember" ? "block" : "none" }}
+          >
             <GetMember />
           </div>
-          <div className="content-wrapper" style={{ display: active === "returntransaction" ? "block" : "none" }}>
+
+          <div
+            className="content-wrapper"
+            style={{ display: active === "returntransaction" ? "block" : "none" }}
+          >
             <Return />
           </div>
         </div>
