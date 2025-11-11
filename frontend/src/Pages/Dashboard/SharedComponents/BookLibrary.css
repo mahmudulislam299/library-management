@@ -1,0 +1,119 @@
+.booklibrary-container {
+  padding: 20px 30px;
+  background: var(--card);
+  border-radius: 16px;
+  box-shadow: inset 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.library-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.library-title {
+  color: var(--gold);
+  font-weight: 800;
+  font-size: 1.6rem;
+}
+
+.library-search {
+  background: #1a2236;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  width: 280px;
+}
+
+.library-search:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ====== GRID ====== */
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 18px;
+}
+
+/* ====== CARD ====== */
+.book-card-static {
+  background: rgba(15, 26, 46, 0.9);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  color: var(--text);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+}
+
+.book-card-static:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 35px rgba(212, 160, 23, 0.25);
+  border-color: var(--accent);
+}
+
+/* Header */
+.book-card-header {
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+}
+
+.book-title {
+  color: var(--gold);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.book-author {
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+/* Details */
+.book-details p {
+  margin: 6px 0;
+  font-size: 0.92rem;
+  color: #d0d6e2;
+}
+
+.book-details b {
+  color: var(--text);
+}
+
+/* Footer */
+.book-card-footer {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.admin-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.no-books-text {
+  color: #aab0bc;
+  text-align: center;
+  font-style: italic;
+  font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .library-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .book-grid {
+    grid-template-columns: 1fr;
+  }
+}

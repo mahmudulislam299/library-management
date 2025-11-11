@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import "../AdminDashboard/AdminDashboard.css";
 import "./MemberDashboard.css";
+import BookLibrary from "../SharedComponents/BookLibrary";
+
 import {
   LibraryBooks,
   AccountCircle,
@@ -119,6 +121,19 @@ function MemberDashboard() {
             <History className="dashboard-option-icon" /> History
           </p>
 
+          {/* 🔹 New Library tab */}
+          <p
+            className={`dashboard-option ${
+              active === "library" ? "clicked" : ""
+            }`}
+            onClick={() => {
+              setActive("library");
+              setSidebar(false);
+            }}
+          >
+            <LibraryBooks className="dashboard-option-icon" /> Library
+          </p>
+
           <p className="dashboard-option" onClick={logout}>
             <PowerSettingsNew className="dashboard-option-icon" /> Log out
           </p>
@@ -163,7 +178,7 @@ function MemberDashboard() {
                 </div>
               </div>
 
-              {/* New info grid */}
+              {/* Info grid */}
               <div className="profile-info-grid">
                 <div className="profile-info-card">
                   <p className="profile-info-label">Gender</p>
@@ -300,6 +315,19 @@ function MemberDashboard() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          {/* 🔹 Library */}
+          <div
+            className="content-wrapper"
+            style={active !== "library" ? { display: "none" } : {}}
+          >
+            <div className="member-activebooks-content">
+              <p className="member-dashboard-heading">Book Library</p>
+              <div className="dashboard-title-line"></div>
+
+              <BookLibrary />
             </div>
           </div>
         </div>

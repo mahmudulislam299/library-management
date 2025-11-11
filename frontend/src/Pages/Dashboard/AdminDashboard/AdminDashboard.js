@@ -6,6 +6,7 @@ import AddBook from "./Components/AddBook";
 import GetMember from "./Components/GetMember";
 import Return from "./Components/Return";
 import AdminProfile from "./Components/AdminProfile";
+import BookLibrary from "../SharedComponents/BookLibrary";
 
 import {
   LibraryBooks,
@@ -21,7 +22,7 @@ import {
 } from "@material-ui/icons";
 import { IconButton } from "@material-ui/core";
 
-// Semantic UI CSS
+// ✅ Semantic UI CSS
 const styleLink = document.createElement("link");
 styleLink.rel = "stylesheet";
 styleLink.href =
@@ -37,10 +38,21 @@ function AdminDashboard() {
     window.location.reload();
   };
 
+  // 🧭 Sidebar menu items
+  const menuItems = [
+    { id: "profile", icon: AccountCircle, label: "Profile" },
+    { id: "library", icon: LibraryBooks, label: "Library" }, // 🔹 New Tab
+    { id: "addbook", icon: Book, label: "Add Book" },
+    { id: "addtransaction", icon: Receipt, label: "Add Transaction" },
+    { id: "getmember", icon: AccountBox, label: "Get Member" },
+    { id: "addmember", icon: PersonAdd, label: "Add Member" },
+    { id: "returntransaction", icon: AssignmentReturn, label: "Return" },
+  ];
+
   return (
     <div className="dashboard">
       <div className="dashboard-card">
-        {/* Toggler */}
+        {/* Sidebar Toggler */}
         <div className="sidebar-toggler" onClick={() => setSidebar(!sidebar)}>
           <IconButton>
             {sidebar ? <Close /> : <DoubleArrow />}
@@ -54,14 +66,7 @@ function AdminDashboard() {
             <p className="logo-name">LCMS</p>
           </div>
 
-          {[
-            { id: "profile", icon: AccountCircle, label: "Profile" },
-            { id: "addbook", icon: Book, label: "Add Book" },
-            { id: "addtransaction", icon: Receipt, label: "Add Transaction" },
-            { id: "getmember", icon: AccountBox, label: "Get Member" },
-            { id: "addmember", icon: PersonAdd, label: "Add Member" },
-            { id: "returntransaction", icon: AssignmentReturn, label: "Return" },
-          ].map(({ id, icon: Icon, label }) => (
+          {menuItems.map(({ id, icon: Icon, label }) => (
             <p
               key={id}
               className={`dashboard-option ${
@@ -81,7 +86,7 @@ function AdminDashboard() {
           </p>
         </div>
 
-        {/* Content */}
+        {/* Content Area */}
         <div className="dashboard-option-content">
           <div
             className="content-wrapper"
@@ -123,6 +128,14 @@ function AdminDashboard() {
             style={{ display: active === "returntransaction" ? "block" : "none" }}
           >
             <Return />
+          </div>
+
+          {/* 🔹 Library Tab */}
+          <div
+            className="content-wrapper"
+            style={{ display: active === "library" ? "block" : "none" }}
+          >
+            <BookLibrary />
           </div>
         </div>
       </div>
