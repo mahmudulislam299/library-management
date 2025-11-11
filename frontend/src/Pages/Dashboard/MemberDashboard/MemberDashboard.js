@@ -139,16 +139,23 @@ function MemberDashboard() {
                   alt="Profile"
                 />
                 <div className="user-info">
-                  <p className="user-name">
-                    {memberDetails?.userFullName || "Loading..."}
-                  </p>
+                  <div className="user-name-row">
+                    <p className="user-name">
+                      {memberDetails?.userFullName || "Loading..."}
+                    </p>
+                    {memberDetails && (
+                      <span className="user-type-pill">
+                        {memberDetails.userType}
+                      </span>
+                    )}
+                  </div>
                   <p className="user-id">
                     {memberDetails
                       ? `${
                           memberDetails.userType === "Student"
-                            ? "Admission ID: "
-                            : "Employee ID: "
-                        }${memberDetails.memberId}`
+                            ? "Admission ID"
+                            : "Employee ID"
+                        }: ${memberDetails.memberId}`
                       : ""}
                   </p>
                   <p className="user-email">{memberDetails?.email}</p>
@@ -156,26 +163,33 @@ function MemberDashboard() {
                 </div>
               </div>
 
-              <div className="user-details-specific">
-                <div className="specific-left">
-                  <div className="specific-left-topic">
-                    <span>
-                      <b>Gender</b>
-                    </span>
-                    <span>{memberDetails?.gender}</span>
-                  </div>
-                  <div className="specific-left-topic">
-                    <span>
-                      <b>Department</b>
-                    </span>
-                    <span>{memberDetails?.department}</span>
-                  </div>
-                  <div className="specific-left-topic">
-                    <span>
-                      <b>Address</b>
-                    </span>
-                    <span>{memberDetails?.address}</span>
-                  </div>
+              {/* New info grid */}
+              <div className="profile-info-grid">
+                <div className="profile-info-card">
+                  <p className="profile-info-label">Gender</p>
+                  <p className="profile-info-value">
+                    {memberDetails?.gender || "-"}
+                  </p>
+                </div>
+                <div className="profile-info-card">
+                  <p className="profile-info-label">Department</p>
+                  <p className="profile-info-value">
+                    {memberDetails?.department || "-"}
+                  </p>
+                </div>
+                <div className="profile-info-card">
+                  <p className="profile-info-label">Address</p>
+                  <p className="profile-info-value">
+                    {memberDetails?.address || "-"}
+                  </p>
+                </div>
+                <div className="profile-info-card">
+                  <p className="profile-info-label">Member Since</p>
+                  <p className="profile-info-value">
+                    {memberDetails?.createdAt
+                      ? formatDate(memberDetails.createdAt)
+                      : "-"}
+                  </p>
                 </div>
               </div>
             </div>
