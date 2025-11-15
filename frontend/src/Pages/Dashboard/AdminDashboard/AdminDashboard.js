@@ -30,7 +30,7 @@ styleLink.href =
 document.head.appendChild(styleLink);
 
 function AdminDashboard() {
-  const [active, setActive] = useState("addbook");
+  const [active, setActive] = useState("library");
   const [sidebar, setSidebar] = useState(false);
 
   const logout = () => {
@@ -63,7 +63,7 @@ function AdminDashboard() {
         <div className={`dashboard-options ${sidebar ? "active" : ""}`}>
           <div className="dashboard-logo">
             <LibraryBooks />
-            <p className="logo-name">LCMS</p>
+            <p className="logo-name">LMS</p>
           </div>
 
           {menuItems.map(({ id, icon: Icon, label }) => (
