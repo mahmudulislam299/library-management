@@ -43,7 +43,7 @@ function Header() {
             Books
           </Link>
           <Link to="/signin" className="nav-link" onClick={closeMenu}>
-            Sign In
+            Browse Library
           </Link>
         </nav>
       </div>
