@@ -29,10 +29,18 @@ const BookSchema = new mongoose.Schema({
         type:String,
         default:"Available"
     },
+
+    
+    shelfNumber: {
+        type: String,
+        default: ""   // or set: required: true
+    },
+
     categories:[{ 
         type: mongoose.Types.ObjectId, 
         ref: "BookCategory" 
     }],
+    
     transactions:[{
         type:mongoose.Types.ObjectId,
         ref:"BookTransaction"

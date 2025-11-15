@@ -27,12 +27,19 @@ function BookLibrary() {
   useEffect(() => {
     const lower = search.toLowerCase();
     setFiltered(
-      books.filter(
-        (b) =>
-          b.bookName.toLowerCase().includes(lower) ||
-          b.author.toLowerCase().includes(lower) ||
-          b.language.toLowerCase().includes(lower)
-      )
+      books.filter((b) => {
+        const name = (b.bookName || "").toLowerCase();
+        const author = (b.author || "").toLowerCase();
+        const language = (b.language || "").toLowerCase();
+        const shelf = (b.shelfNumber || "").toLowerCase(); // 🔹 search by shelf too
+
+        return (
+          name.includes(lower) ||
+          author.includes(lower) ||
+          language.includes(lower) ||
+          shelf.includes(lower)
+        );
+      })
     );
   }, [search, books]);
 
@@ -47,7 +54,7 @@ function BookLibrary() {
         <h2 className="library-title">📘 Library Collection</h2>
         <input
           type="text"
-          placeholder="Search by book, author, or language..."
+          placeholder="Search by book, author, language, or shelf..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="library-search"
@@ -67,12 +74,28 @@ function BookLibrary() {
               </div>
 
               <div className="book-details">
-                <p><Icon name="language" /> <b>Language:</b> {book.language || "N/A"}</p>
-                <p><Icon name="building" /> <b>Publisher:</b> {book.publisher || "N/A"}</p>
-                <p><Icon name="tag" /> <b>Category:</b> {book.category?.join(", ") || "Uncategorized"}</p>
                 <p>
-                  <Icon name="check circle" color={book.bookCountAvailable > 0 ? "green" : "red"} /> 
-                  <b>Available:</b> {book.bookCountAvailable}
+                  <Icon name="language" /> <b>Language:</b>{" "}
+                  {book.language || "N/A"}
+                </p>
+                <p>
+                  <Icon name="building" /> <b>Publisher:</b>{" "}
+                  {book.publisher || "N/A"}
+                </p>
+                <p>
+                  <Icon name="grid layout" /> <b>Shelf:</b>{" "}
+                  {book.shelfNumber || "Not set"}
+                </p>
+                <p>
+                  <Icon name="tag" /> <b>Category:</b>{" "}
+                  {book.category?.join(", ") || "Uncategorized"}
+                </p>
+                <p>
+                  <Icon
+                    name="check circle"
+                    color={book.bookCountAvailable > 0 ? "green" : "red"}
+                  />
+                  <b> Available:</b> {book.bookCountAvailable}
                 </p>
               </div>
 

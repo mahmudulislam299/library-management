@@ -21,7 +21,7 @@ router.get("/getbook/:id", async (req, res) => {
         const book = await Book.findById(req.params.id).populate("transactions")
         res.status(200).json(book)
     }
-    catch {
+    catch (err) {
         return res.status(500).json(err)
     }
 })
@@ -42,18 +42,24 @@ router.get("/", async (req, res) => {
 router.post("/addbook", async (req, res) => {
     if (req.body.isAdmin) {
         try {
-            const newbook = await new Book({
+            const newbook = new Book({
                 bookName: req.body.bookName,
                 alternateTitle: req.body.alternateTitle,
                 author: req.body.author,
                 bookCountAvailable: req.body.bookCountAvailable,
                 language: req.body.language,
                 publisher: req.body.publisher,
-                bookStatus: req.body.bookSatus,
-                categories: req.body.categories
+                bookStatus: req.body.bookSatus,   // keeping your original field name
+                categories: req.body.categories,
+                // ⭐ NEW: shelf number
+                shelfNumber: req.body.shelfNumber
             })
+
             const book = await newbook.save()
-            await BookCategory.updateMany({ '_id': book.categories }, { $push: { books: book._id } });
+            await BookCategory.updateMany(
+                { _id: book.categories },
+                { $push: { books: book._id } }
+            )
             res.status(200).json(book)
         }
         catch (err) {
@@ -89,7 +95,9 @@ router.post("/addmanybooks", async (req, res) => {
         language: b.language,
         publisher: b.publisher,
         bookStatus: b.bookStatus || "Available",
-        categories: b.categories || []
+        categories: b.categories || [],
+        // ⭐ NEW: shelf number for bulk add
+        shelfNumber: b.shelfNumber
       });
 
       const saved = await newBook.save();
@@ -108,18 +116,18 @@ router.post("/addmanybooks", async (req, res) => {
       books: createdBooks
     });
   } catch (err) {
-    console.error("Error in /addmany:", err);
+    console.error("Error in /addmanybooks:", err);
     res.status(500).json({ message: "Server error", error: err });
   }
 });
 
 
-/* Addding book */
+/* Updating book */
 router.put("/updatebook/:id", async (req, res) => {
     if (req.body.isAdmin) {
         try {
             await Book.findByIdAndUpdate(req.params.id, {
-                $set: req.body,
+                $set: req.body,   // shelfNumber will be updated if present in body
             });
             res.status(200).json("Book details updated successfully");
         }
@@ -139,7 +147,10 @@ router.delete("/removebook/:id", async (req, res) => {
             const _id = req.params.id
             const book = await Book.findOne({ _id })
             await book.remove()
-            await BookCategory.updateMany({ '_id': book.categories }, { $pull: { books: book._id } });
+            await BookCategory.updateMany(
+                { _id: book.categories },
+                { $pull: { books: book._id } }
+            );
             res.status(200).json("Book has been deleted");
         } catch (err) {
             return res.status(504).json(err);
