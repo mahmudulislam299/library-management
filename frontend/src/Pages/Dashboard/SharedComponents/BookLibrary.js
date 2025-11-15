@@ -31,7 +31,7 @@ function BookLibrary() {
         const name = (b.bookName || "").toLowerCase();
         const author = (b.author || "").toLowerCase();
         const language = (b.language || "").toLowerCase();
-        const shelf = (b.shelfNumber || "").toLowerCase(); // 🔹 search by shelf too
+        const shelf = (b.shelfNumber || "").toLowerCase();
 
         return (
           name.includes(lower) ||
@@ -44,12 +44,77 @@ function BookLibrary() {
   }, [search, books]);
 
   const handleReserve = async (bookId) => {
-    alert(`Reserved book ID: ${bookId} (feature in progress)`); 
+    alert(`Reserved book ID: ${bookId} (feature in progress)`);
+  };
+
+  const handleEdit = async (book) => {
+    if (!user?.isAdmin) {
+      alert("You do not have permission to edit books.");
+      return;
+    }
+
+    const currentShelf = book.shelfNumber || "";
+    const newShelf = window.prompt(
+      `Enter new shelf number for "${book.bookName}"`,
+      currentShelf
+    );
+
+    if (newShelf === null) {
+      return;
+    }
+
+    try {
+      await axios.put(`${API_URL}/api/books/updatebook/${book._id}`, {
+        isAdmin: user.isAdmin,
+        shelfNumber: newShelf,
+      });
+
+      setBooks((prev) =>
+        prev.map((b) =>
+          b._id === book._id ? { ...b, shelfNumber: newShelf } : b
+        )
+      );
+      setFiltered((prev) =>
+        prev.map((b) =>
+          b._id === book._id ? { ...b, shelfNumber: newShelf } : b
+        )
+      );
+
+      alert("Book updated successfully ✅");
+    } catch (err) {
+      console.error("Error updating book", err);
+      alert("Failed to update book");
+    }
+  };
+
+  const handleDelete = async (book) => {
+    if (!user?.isAdmin) {
+      alert("You do not have permission to delete books.");
+      return;
+    }
+
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete "${book.bookName}"?`
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`${API_URL}/api/books/removebook/${book._id}`, {
+        data: { isAdmin: user.isAdmin },
+      });
+
+      setBooks((prev) => prev.filter((b) => b._id !== book._id));
+      setFiltered((prev) => prev.filter((b) => b._id !== book._id));
+
+      alert("Book deleted successfully 🗑️");
+    } catch (err) {
+      console.error("Error deleting book", err);
+      alert("Failed to delete book");
+    }
   };
 
   return (
     <div className="booklibrary-container">
-      {/* Header + Search */}
       <div className="library-header">
         <h2 className="library-title">📘 Library Collection</h2>
         <input
@@ -61,7 +126,6 @@ function BookLibrary() {
         />
       </div>
 
-      {/* Cards */}
       <div className="book-grid">
         {filtered.length === 0 ? (
           <p className="no-books-text">No books found</p>
@@ -102,10 +166,18 @@ function BookLibrary() {
               <div className="book-card-footer">
                 {user?.isAdmin ? (
                   <div className="admin-actions">
-                    <Button color="blue" size="small">
+                    <Button
+                      color="blue"
+                      size="small"
+                      onClick={() => handleEdit(book)}
+                    >
                       <Icon name="edit" /> Edit
                     </Button>
-                    <Button color="red" size="small">
+                    <Button
+                      color="red"
+                      size="small"
+                      onClick={() => handleDelete(book)}
+                    >
                       <Icon name="trash" /> Delete
                     </Button>
                   </div>
