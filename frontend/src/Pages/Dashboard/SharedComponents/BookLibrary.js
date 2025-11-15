@@ -70,7 +70,6 @@ function BookLibrary() {
                 <p><Icon name="language" /> <b>Language:</b> {book.language || "N/A"}</p>
                 <p><Icon name="building" /> <b>Publisher:</b> {book.publisher || "N/A"}</p>
                 <p><Icon name="tag" /> <b>Category:</b> {book.category?.join(", ") || "Uncategorized"}</p>
-                <p><Icon name="book" /> <b>Total Books:</b> {book.totalBooks || "N/A"}</p>
                 <p>
                   <Icon name="check circle" color={book.bookCountAvailable > 0 ? "green" : "red"} /> 
                   <b>Available:</b> {book.bookCountAvailable}
