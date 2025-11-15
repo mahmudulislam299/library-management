@@ -33,6 +33,17 @@ function AddTransaction() {
 
   const [transactionType, setTransactionType] = useState("");
 
+  // Configurable periods
+  const ISSUE_PERIOD_DAYS = 10;
+  const RESERVE_PERIOD_DAYS = 3; // change this
+
+  // Helper: add N days to a JS Date
+  const addDays = (date, days) => {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  };
+
   /* Adding a Transaction */
   const addTransaction = async (e) => {
     e.preventDefault();
@@ -372,7 +383,26 @@ function AddTransaction() {
             selection
             value={transactionType}
             options={transactionTypes}
-            onChange={(event, data) => setTransactionType(data.value)}
+            onChange={(event, data) => {
+              setTransactionType(data.value);
+
+              if (fromDate) {
+                // Auto compute To Date based on type
+                if (data.value === "Issued") {
+                  const autoTo = addDays(fromDate, ISSUE_PERIOD_DAYS);
+                  setToDate(autoTo);
+                  setToDateString(moment(autoTo).format("DD-MM-YYYY"));
+                } else if (data.value === "Reserved") {
+                  const autoTo = addDays(fromDate, RESERVE_PERIOD_DAYS);
+                  setToDate(autoTo);
+                  setToDateString(moment(autoTo).format("DD-MM-YYYY"));
+                }
+              } else {
+                // No fromDate yet → clear To Date
+                setToDate(null);
+                setToDateString(null);
+              }
+            }}
           />
         </div>
         <br />
@@ -387,7 +417,19 @@ function AddTransaction() {
           selected={fromDate}
           onChange={(date) => {
             setFromDate(date);
-            setFromDateString(moment(date).format("DD-MM-YYYY"));
+            const fromStr = moment(date).format("DD-MM-YYYY");
+            setFromDateString(fromStr);
+
+            // Auto set To Date depending on transaction type
+            if (transactionType === "Issued") {
+              const autoTo = addDays(date, ISSUE_PERIOD_DAYS);
+              setToDate(autoTo);
+              setToDateString(moment(autoTo).format("DD-MM-YYYY"));
+            } else if (transactionType === "Reserved") {
+              const autoTo = addDays(date, RESERVE_PERIOD_DAYS);
+              setToDate(autoTo);
+              setToDateString(moment(autoTo).format("DD-MM-YYYY"));
+            }
           }}
           minDate={new Date()}
           dateFormat="dd-MM-yyyy"
@@ -402,11 +444,15 @@ function AddTransaction() {
           placeholderText="DD-MM-YYYY"
           selected={toDate}
           onChange={(date) => {
-            setToDate(date);
-            setToDateString(moment(date).format("DD-MM-YYYY"));
+            // Allow manual change only for Reserved
+            if (transactionType === "Reserved") {
+              setToDate(date);
+              setToDateString(moment(date).format("DD-MM-YYYY"));
+            }
           }}
-          minDate={new Date()}
+          minDate={fromDate || new Date()}
           dateFormat="dd-MM-yyyy"
+          disabled={transactionType === "Issued"} // locked for Issued
         />
 
         <input
