@@ -84,21 +84,6 @@ body {
   color: var(--gold);
 }
 
-
-/* Logo
-.logo a {
-  color: var(--text-light);
-  font-size: 1.55rem;
-  font-weight: 800;
-  text-decoration: none;
-  letter-spacing: -0.6px;
-  transition: var(--transition);
-}
-
-.logo a:hover {
-  color: var(--gold);
-} */
-
 /* Center: Search + Nav */
 .nav-center {
   display: flex;
@@ -178,6 +163,11 @@ body {
 
 .nav-link:hover::after {
   width: 100%;
+}
+
+/* Sign-in button on right when no user */
+.nav-login-right {
+  margin-left: 18px;
 }
 
 /* Mobile Toggle */
@@ -265,6 +255,85 @@ body {
   border-color: var(--gold);
 }
 
+/* 🔵 User Box (Right Corner) */
+.user-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 18px;
+  color: var(--text-light);
+}
+
+.user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--gold), var(--primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.05rem;
+  box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.6);
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.user-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.user-id {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* Mobile user info inside menu */
+.mobile-user-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(15, 26, 46, 0.85);
+  border: 1px solid rgba(212, 160, 23, 0.25);
+}
+
+.mobile-user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--gold), var(--primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.mobile-user-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-user-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-light);
+}
+
+.mobile-user-id {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  color: var(--text-light);
+}
+
 /* Responsive */
 @media (max-width: 992px) {
   .nav-center {
@@ -279,7 +348,7 @@ body {
   .header {
     padding: 0 18px;
     height: 74px;
-    gap: 40px; /* Adds space between logo and center section */
+    gap: 12px;
   }
 
   .nav-center {
@@ -288,6 +357,15 @@ body {
 
   .mobile-toggle {
     display: block;
+  }
+
+  /* On small screens: show only circle, hide name/id */
+  .user-meta {
+    display: none;
+  }
+
+  .user-box {
+    margin-left: auto;
   }
 }
 
