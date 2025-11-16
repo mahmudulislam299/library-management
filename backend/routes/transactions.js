@@ -29,6 +29,7 @@ transporter.verify((error, success) => {
   }
 });
 
+
 async function sendTransactionEmail({
   to,
   borrowerName,
@@ -46,9 +47,9 @@ async function sendTransactionEmail({
     return;
   }
 
-  // Format dates nicely (if they are ISO strings)
-  const fromStr = fromDate ? new Date(fromDate).toLocaleDateString("en-GB") : "N/A";
-  const toStr   = toDate   ? new Date(toDate).toLocaleDateString("en-GB")   : "N/A";
+  
+  const fromStr = fromDate || "N/A";
+  const toStr   = toDate   || "N/A";
 
   let titleLine = "";
   let fromLabel = "";
@@ -112,6 +113,7 @@ async function sendTransactionEmail({
     html,
   });
 }
+
 
 /* ===================== TEST EMAIL ROUTE ===================== */
 
