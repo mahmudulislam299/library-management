@@ -10,7 +10,7 @@ router.get("/getuser/:id", async (req, res) => {
     const user = await User.findById(req.params.id)
       .populate("activeTransactions")
       .populate("prevTransactions")
-      .select("-password -updatedAt -__v");  // hide sensitive fields
+      .select("-password -updatedAt -__v"); // hide sensitive fields
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -58,22 +58,28 @@ router.get("/allmembers", async (req, res) => {
   }
 });
 
-/* Update user by id */
+/* 🔒 Update user by id (SAFE: does NOT allow isAdmin to be modified) */
 router.put("/updateuser/:id", async (req, res) => {
-  // only owner or admin can update
+  // only owner or admin can update, based on what frontend sends
   if (req.body.userId === req.params.id || req.body.isAdmin) {
-    if (req.body.password) {
-      try {
-        const salt = await bcrypt.genSalt(10);
-        req.body.password = await bcrypt.hash(req.body.password, salt);
-      } catch (err) {
-        console.error("Error hashing password in /updateuser:", err.message);
-        return res.status(500).json({ message: "Password hashing failed" });
-      }
-    }
-
     try {
-      await User.findByIdAndUpdate(req.params.id, { $set: req.body });
+      const updateData = { ...req.body };
+
+      // ❌ Never allow client to change these via this route
+      delete updateData.isAdmin;
+      delete updateData.userId;
+      delete updateData._id;
+      delete updateData.createdAt;
+      delete updateData.updatedAt;
+      delete updateData.__v;
+
+      // Handle password hashing if password is being updated
+      if (updateData.password) {
+        const salt = await bcrypt.genSalt(10);
+        updateData.password = await bcrypt.hash(updateData.password, salt);
+      }
+
+      await User.findByIdAndUpdate(req.params.id, { $set: updateData });
       res.status(200).json("Account has been updated");
     } catch (err) {
       console.error("Error in /updateuser/:id:", err.message);
@@ -86,6 +92,7 @@ router.put("/updateuser/:id", async (req, res) => {
 
 /* Add transaction to activeTransactions list */
 router.put("/:id/move-to-activetransactions", async (req, res) => {
+  // Frontend passes isAdmin in body – still used for now
   if (req.body.isAdmin) {
     try {
       const user = await User.findById(req.body.userId);
