@@ -193,6 +193,9 @@ async function sendTransactionEmail({
 
   console.log(`📧 Sending transaction email to ${to} for ${bookName} (${transactionType})`);
 
+    // 👉 add small delay to avoid Mailtrap per-second limit
+  await sleep(1000); // 1 seconds
+
   await transporter.sendMail({
     from: `"${libraryName}" <${libraryContactEmail}>`,
     to,

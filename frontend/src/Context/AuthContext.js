@@ -1,34 +1,66 @@
-import { createContext, useEffect, useReducer } from "react"
-import AuthReducer from "./AuthReducer"
+import { createContext, useEffect, useReducer } from "react";
 
 const INITIAL_STATE = {
-    user:JSON.parse(localStorage.getItem("user")) || null,
-    isFetching:false,
-    error:false
-}
+  user: JSON.parse(localStorage.getItem("user")) || null,
+  isFetching: false,
+  error: null,
+};
 
-/* Reads the data from the Provider and changes INITIAL_STATE */
-export const AuthContext = createContext(INITIAL_STATE)
+export const AuthContext = createContext(INITIAL_STATE);
 
-/* Children here are the Components that need to get the data.[In this Application we specified App COmponent as Child in index.js so that we can server every every component exist in the app */
-/* This will provide data to all the children that we are giving here */
-export const AuthContextProvider = ({children}) =>{
-    const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
+const AuthReducer = (state, action) => {
+  switch (action.type) {
+    case "LOGIN_START":
+      return {
+        user: null,
+        isFetching: true,
+        error: null,
+      };
+    case "LOGIN_SUCCESS":
+      // action.payload should be the user object from backend
+      return {
+        user: action.payload,
+        isFetching: false,
+        error: null,
+      };
+    case "LOGIN_FAILURE":
+      return {
+        user: null,
+        isFetching: false,
+        error: action.payload || "Login failed",
+      };
+    case "LOGOUT":
+      return {
+        user: null,
+        isFetching: false,
+        error: null,
+      };
+    default:
+      return state;
+  }
+};
 
-    useEffect(()=>{
-        localStorage.setItem("user", JSON.stringify(state.user))
-      },[state.user])
+export const AuthContextProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(AuthReducer, INITIAL_STATE);
 
-    return (
-        <AuthContext.Provider
-        value={{
-            user:state.user,
-            isFetching:state.isFetching,
-            error:state.error,
-            dispatch
-        }}
-        >
-            {children}
-        </AuthContext.Provider>
-    )
-}
+  useEffect(() => {
+    if (state.user) {
+      localStorage.setItem("user", JSON.stringify(state.user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [state.user]);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user: state.user,
+        isFetching: state.isFetching,
+        error: state.error,
+        dispatch,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};

@@ -7,26 +7,32 @@ function Signin() {
   const [memberId, setMemberId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { dispatch } = useContext(AuthContext);
+  const { dispatch, isFetching } = useContext(AuthContext);
 
   const API_URL = process.env.REACT_APP_API_URL;
 
-  const loginCall = async (userCredential, dispatch) => {
+  const loginCall = async (userCredential) => {
     dispatch({ type: "LOGIN_START" });
     setError("");
+
     try {
-      const res = await axios.post(`${API_URL}/api/auth/signin`, userCredential);
+      const res = await axios.post(
+        `${API_URL}/api/auth/signin`,
+        userCredential
+      );
+      // res.data should contain: _id, memberId, userType, isAdmin, etc.
       dispatch({ type: "LOGIN_SUCCESS", payload: res.data });
     } catch (err) {
       console.error(err);
-      dispatch({ type: "LOGIN_FAILURE", payload: err });
-      setError(err.response?.data?.message || "Wrong ID or password");
+      const msg = err.response?.data?.message || "Wrong ID or password";
+      dispatch({ type: "LOGIN_FAILURE", payload: msg });
+      setError(msg);
     }
   };
 
   const handleForm = (e) => {
     e.preventDefault();
-    loginCall({ memberId, password }, dispatch);
+    loginCall({ memberId, password });
   };
 
   return (
@@ -67,8 +73,12 @@ function Signin() {
             />
           </div>
 
-          <button type="submit" className="signin-button">
-            Log In
+          <button
+            type="submit"
+            className="signin-button"
+            disabled={isFetching}
+          >
+            {isFetching ? "Logging in..." : "Log In"}
           </button>
 
           <a href="#forgot" className="forget-pass">
