@@ -24,7 +24,7 @@
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 /* Header */
@@ -146,7 +146,7 @@ body {
 }
 
 .nav-link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -8px;
   left: 0;
@@ -165,7 +165,7 @@ body {
   width: 100%;
 }
 
-/* Sign-in button on right when no user */
+/* Sign-in button when no user */
 .nav-login-right {
   margin-left: 18px;
 }
@@ -261,69 +261,107 @@ body {
   align-items: center;
   gap: 10px;
   margin-left: 18px;
-  color: var(--text-light);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(212, 160, 23, 0.5);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.user-box:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
+  border-color: rgba(245, 158, 11, 0.9);
+}
+
+/* Avatar wrapper with ring */
+.user-avatar-wrapper {
+  padding: 2px;
+  border-radius: 999px;
+  background: conic-gradient(
+    from 180deg,
+    #fbbf24,
+    #a855f7,
+    #4c1aa3,
+    #f97316,
+    #fbbf24
+  );
 }
 
 .user-avatar {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, var(--gold), var(--primary));
+  background: radial-gradient(circle at 30% 30%, #facc15, #4c1aa3);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 1.05rem;
-  box-shadow: 0 0 0 2px rgba(212, 160, 23, 0.6);
+  font-size: 0.95rem;
+  color: white;
 }
 
+/* User text */
 .user-meta {
   display: flex;
   flex-direction: column;
   line-height: 1.2;
+  color: var(--text-light);
 }
 
 .user-name {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 600;
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .user-id {
-  font-size: 0.8rem;
-  opacity: 0.8;
+  font-size: 0.78rem;
+  opacity: 0.85;
 }
 
 /* Mobile user info inside menu */
 .mobile-user-box {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-top: 24px;
-  padding: 10px 14px;
-  border-radius: 12px;
-  background: rgba(15, 26, 46, 0.85);
-  border: 1px solid rgba(212, 160, 23, 0.25);
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: rgba(15, 26, 46, 0.9);
+  border: 1px solid rgba(212, 160, 23, 0.35);
+  width: 100%;
+  max-width: 420px;
 }
 
 .mobile-user-avatar {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, var(--gold), var(--primary));
+  background: radial-gradient(circle at 30% 30%, #facc15, #4c1aa3);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
   font-size: 1.05rem;
+  color: white;
 }
 
 .mobile-user-meta {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .mobile-user-name {
-  font-size: 0.95rem;
+  font-size: 0.98rem;
   font-weight: 600;
   color: var(--text-light);
 }
@@ -352,6 +390,7 @@ body {
   }
 
   .nav-center {
+    display: false;
     display: none;
   }
 
@@ -359,19 +398,27 @@ body {
     display: block;
   }
 
-  /* On small screens: show only circle, hide name/id */
+  /* On small screens: keep only avatar to save space */
   .user-meta {
     display: none;
   }
 
   .user-box {
     margin-left: auto;
+    padding: 4px;
+    box-shadow: none;
+    background: transparent;
+    border: none;
   }
 }
 
 @media (max-width: 480px) {
   .logo a {
     font-size: 1.35rem;
+  }
+
+  .logo-img {
+    height: 62px;
   }
 
   .mobile-toggle {

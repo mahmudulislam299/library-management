@@ -3,13 +3,13 @@ import { Link } from "react-router-dom";
 import "./Header.css";
 import MenuIcon from "@material-ui/icons/Menu";
 import CloseIcon from "@material-ui/icons/Close";
-import { AuthContext } from "../Context/AuthContext"; // ⬅️ adjust path if needed
+import { AuthContext } from "../Context/AuthContext"; // adjust path if needed
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user } = useContext(AuthContext);
 
-  const toggleMenu = () => setMenuOpen(!menuOpen);
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
   const closeMenu = () => setMenuOpen(false);
 
   const getUserInitial = () => {
@@ -57,17 +57,25 @@ function Header() {
         </nav>
       </div>
 
-      {/* User Info (Right Corner) */}
+      {/* Right side: user info OR Sign In */}
       {user ? (
         <div className="user-box">
-          <div className="user-avatar">{getUserInitial()}</div>
+          <div className="user-avatar-wrapper">
+            <div className="user-avatar">{getUserInitial()}</div>
+          </div>
           <div className="user-meta">
-            <span className="user-name">{user.name}</span>
+            <span className="user-name" title={user.name}>
+              {user.name}
+            </span>
             <span className="user-id">{getIdLabel()}</span>
           </div>
         </div>
       ) : (
-        <Link to="/signin" className="nav-link nav-login nav-login-right">
+        <Link
+          to="/signin"
+          className="nav-link nav-login nav-login-right"
+          onClick={closeMenu}
+        >
           Sign In
         </Link>
       )}
@@ -94,7 +102,7 @@ function Header() {
           Sign In
         </Link>
 
-        {/* Optional: user info inside mobile menu */}
+        {/* User info inside mobile menu (optional but nice) */}
         {user && (
           <div className="mobile-user-box">
             <div className="mobile-user-avatar">{getUserInitial()}</div>
