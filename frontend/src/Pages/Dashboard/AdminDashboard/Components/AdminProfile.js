@@ -32,56 +32,61 @@ function AdminProfile() {
   }, [API_URL, user]);
 
   return (
-    <div className="member-profile-content">
-      <div className="user-details-topbar">
-        <img
-          className="user-profileimage"
-          src="./assets/images/Profile.png"
-          alt="Profile"
-        />
-        <div className="user-info">
-          <div className="user-name-row">
-            <p className="user-name">
-              {adminDetails?.userFullName || "Admin"}
-            </p>
-            {adminDetails?.isAdmin && (
-              <span className="user-type-pill">Admin</span>
-            )}
-          </div>
-          <p className="user-id">
-            {adminDetails ? `Employee ID: ${adminDetails.memberId}` : ""}
-          </p>
-          <p className="user-email">{adminDetails?.email}</p>
-          <p className="user-phone">{adminDetails?.mobileNumber}</p>
-        </div>
-      </div>
+    <div>
+      <p className="dashboard-option-title">Admin Account</p>
+      <div className="dashboard-title-line"></div>
 
-      <div className="profile-info-grid">
-        <div className="profile-info-card">
-          <p className="profile-info-label">Department</p>
-          <p className="profile-info-value">
-            {adminDetails?.department || "Library"}
-          </p>
+      <div className="member-profile-content">
+        <div className="user-details-topbar">
+          <img
+            className="user-profileimage"
+            src="./assets/images/Profile.png"
+            alt="Profile"
+          />
+          <div className="user-info">
+            <div className="user-name-row">
+              <p className="user-name">
+                {adminDetails?.userFullName || "Admin"}
+              </p>
+              {adminDetails?.isAdmin && (
+                <span className="user-type-pill">Admin</span>
+              )}
+            </div>
+            <p className="user-id">
+              {adminDetails ? `Employee ID: ${adminDetails.memberId}` : ""}
+            </p>
+            <p className="user-email">{adminDetails?.email}</p>
+            <p className="user-phone">{adminDetails?.mobileNumber}</p>
+          </div>
         </div>
-        <div className="profile-info-card">
-          <p className="profile-info-label">Gender</p>
-          <p className="profile-info-value">
-            {adminDetails?.gender || "-"}
-          </p>
-        </div>
-        <div className="profile-info-card">
-          <p className="profile-info-label">Address</p>
-          <p className="profile-info-value">
-            {adminDetails?.address || "-"}
-          </p>
-        </div>
-        <div className="profile-info-card">
-          <p className="profile-info-label">Member Since</p>
-          <p className="profile-info-value">
-            {adminDetails?.createdAt
-              ? formatDate(adminDetails.createdAt)
-              : "-"}
-          </p>
+
+        <div className="profile-info-grid">
+          <div className="profile-info-card">
+            <p className="profile-info-label">Department</p>
+            <p className="profile-info-value">
+              {adminDetails?.department || "Library"}
+            </p>
+          </div>
+          <div className="profile-info-card">
+            <p className="profile-info-label">Gender</p>
+            <p className="profile-info-value">
+              {adminDetails?.gender || "-"}
+            </p>
+          </div>
+          <div className="profile-info-card">
+            <p className="profile-info-label">Address</p>
+            <p className="profile-info-value">
+              {adminDetails?.address || "-"}
+            </p>
+          </div>
+          <div className="profile-info-card">
+            <p className="profile-info-label">Member Since</p>
+            <p className="profile-info-value">
+              {adminDetails?.createdAt
+                ? formatDate(adminDetails.createdAt)
+                : "-"}
+            </p>
+          </div>
         </div>
       </div>
     </div>

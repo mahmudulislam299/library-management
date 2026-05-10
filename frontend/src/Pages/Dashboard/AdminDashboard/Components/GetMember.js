@@ -218,7 +218,7 @@ function GetMember() {
 
           <section className="member-insight-section">
             <div className="member-section-heading">
-              <h3>Recently Added Members</h3>
+              <h3>Recent Member Records</h3>
               <span>{isLoadingMembers ? "Loading..." : "Latest records"}</span>
             </div>
             <table className="activebooks-table">

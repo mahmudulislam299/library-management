@@ -29,7 +29,7 @@ function AddMember() {
         { value: 'Employee', text: 'Employee' }
     ];
 
-    // Add a Member
+    // Register a member
     const addMember = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -114,7 +114,7 @@ function AddMember() {
 
     return (
         <div>
-            <p className="dashboard-option-title">Add a Member</p>
+            <p className="dashboard-option-title">Member Registration</p>
             <div className="dashboard-title-line"></div>
 
             <form className="addmember-form" onSubmit={addMember}>
@@ -234,7 +234,7 @@ function AddMember() {
                 />
             </form>
 
-            <p className="dashboard-option-title">Recently Added Members</p>
+            <p className="dashboard-option-title">Recent Member Records</p>
             <div className="dashboard-title-line"></div>
             <table className='admindashboard-table'>
                 <thead>

@@ -219,7 +219,7 @@ function AddTransaction() {
 
   return (
     <div>
-      <p className="dashboard-option-title">Add a Transaction</p>
+      <p className="dashboard-option-title">Issue / Reserve Book</p>
       <div className="dashboard-title-line"></div>
       <form className="transaction-form" onSubmit={addTransaction}>
         <label className="transaction-form-label" htmlFor="borrowerId">
@@ -463,7 +463,7 @@ function AddTransaction() {
         />
       </form>
 
-      <p className="dashboard-option-title">Recent Transactions</p>
+      <p className="dashboard-option-title">Recent Circulation Records</p>
       <div className="dashboard-title-line"></div>
       <table className="admindashboard-table">
         <thead>

@@ -40,13 +40,13 @@ function AdminDashboard() {
 
   // 🧭 Sidebar menu items
   const menuItems = [
-    { id: "profile", icon: AccountCircle, label: "Profile" },
+    { id: "profile", icon: AccountCircle, label: "Admin Account" },
     { id: "library", icon: LibraryBooks, label: "Library" }, // 🔹 New Tab
-    { id: "addbook", icon: Book, label: "Add Book" },
-    { id: "addtransaction", icon: Receipt, label: "Add Transaction" },
+    { id: "addbook", icon: Book, label: "Book Registration" },
+    { id: "addtransaction", icon: Receipt, label: "Issue / Reserve Book" },
     { id: "getmember", icon: AccountBox, label: "Member Full Info" },
-    { id: "addmember", icon: PersonAdd, label: "Add Member" },
-    { id: "returntransaction", icon: AssignmentReturn, label: "Return" },
+    { id: "addmember", icon: PersonAdd, label: "Member Registration" },
+    { id: "returntransaction", icon: AssignmentReturn, label: "Return Desk" },
   ];
 
   return (

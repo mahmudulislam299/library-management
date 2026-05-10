@@ -98,7 +98,7 @@ function AddBook() {
 
     return (
         <div>
-            <p className="dashboard-option-title">Add a Book</p>
+            <p className="dashboard-option-title">Book Registration</p>
             <div className="dashboard-title-line"></div>
             <form className='addbook-form' onSubmit={addBook}>
 
@@ -191,7 +191,7 @@ function AddBook() {
             </form>
 
             <div>
-                <p className="dashboard-option-title">Recently Added Books</p>
+                <p className="dashboard-option-title">Recent Book Records</p>
                 <div className="dashboard-title-line"></div>
                 <table className='admindashboard-table'>
                     <thead>

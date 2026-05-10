@@ -160,7 +160,7 @@ function Return() {
         />
       </div>
 
-      <p className="dashboard-option-title">Issued</p>
+      <p className="dashboard-option-title">Issued Books to Return</p>
       <table className="admindashboard-table">
         <thead>
           <tr>
@@ -212,7 +212,7 @@ function Return() {
                         );
                       }}
                     >
-                      Return
+                      Mark Returned
                     </button>
                   </td>
                 </tr>
@@ -221,7 +221,7 @@ function Return() {
         </tbody>
       </table>
 
-      <p className="dashboard-option-title">Reserved</p>
+      <p className="dashboard-option-title">Active Reservations</p>
       <table className="admindashboard-table">
         <thead>
           <tr>
