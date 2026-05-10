@@ -12,10 +12,23 @@ const router = express.Router();
 
 /* ===================== EMAIL SETUP ===================== */
 
+const smtpPort = Number(process.env.SMTP_PORT || 587);
+const smtpSecure =
+  process.env.SMTP_SECURE === "true" || smtpPort === 465;
+const libraryName = process.env.LIBRARY_NAME || "Stamford Library";
+const libraryContactEmail =
+  process.env.LIBRARY_CONTACT_EMAIL || process.env.SMTP_USER;
+const mailFromEmail =
+  process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || libraryContactEmail;
+const mailFromName = process.env.SMTP_FROM_NAME || libraryName;
+const mailOverrideTo = process.env.MAIL_OVERRIDE_TO || "";
+
+const getMailRecipient = (to) => mailOverrideTo || to;
+
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,                 // e.g. sandbox.smtp.mailtrap.io
-  port: Number(process.env.SMTP_PORT),         // e.g. 2525
-  secure: false,                               // Mailtrap uses STARTTLS
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  port: smtpPort,
+  secure: smtpSecure,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -44,15 +57,14 @@ async function sendTransactionEmail({
   toDate,
   transactionId,
 }) {
-  if (!to) {
+  const recipient = getMailRecipient(to);
+
+  if (!recipient) {
     console.warn("sendTransactionEmail: no recipient email, skipping");
     return;
   }
 
-  const libraryName = process.env.LIBRARY_NAME || "Stamford Library";
   const libraryWebsite = process.env.LIBRARY_WEBSITE || "#";
-  const libraryContactEmail =
-    process.env.LIBRARY_CONTACT_EMAIL || "no-reply@stamford-library.com";
   const libraryAddress = process.env.LIBRARY_ADDRESS || "";
   const libraryLogoUrl = process.env.LIBRARY_LOGO_URL || "";
 
@@ -192,14 +204,14 @@ async function sendTransactionEmail({
   </html>
   `;
 
-  console.log(`📧 Sending transaction email to ${to} for ${bookName} (${transactionType})`);
+  console.log(`📧 Sending transaction email to ${recipient} for ${bookName} (${transactionType})`);
 
     // 👉 add small delay to avoid Mailtrap per-second limit
   await sleep(1000); // 1 seconds
 
   await transporter.sendMail({
-    from: `"${libraryName}" <${libraryContactEmail}>`,
-    to,
+    from: `"${mailFromName}" <${mailFromEmail}>`,
+    to: recipient,
     subject,
     html,
     replyTo: libraryContactEmail,
@@ -220,15 +232,14 @@ async function sendReturnEmail({
   returnDate,
   transactionId,
 }) {
-  if (!to) {
+  const recipient = getMailRecipient(to);
+
+  if (!recipient) {
     console.warn("sendReturnEmail: no recipient email, skipping");
     return;
   }
 
-  const libraryName = process.env.LIBRARY_NAME || "Stamford Library";
   const libraryWebsite = process.env.LIBRARY_WEBSITE || "#";
-  const libraryContactEmail =
-    process.env.LIBRARY_CONTACT_EMAIL || "no-reply@stamford-library.com";
   const libraryAddress = process.env.LIBRARY_ADDRESS || "";
   const libraryLogoUrl = process.env.LIBRARY_LOGO_URL || "";
 
@@ -351,11 +362,11 @@ async function sendReturnEmail({
   </html>
   `;
 
-  console.log(`📧 Sending return email to ${to} for ${bookName}`);
+  console.log(`📧 Sending return email to ${recipient} for ${bookName}`);
 
   await transporter.sendMail({
-    from: `"${libraryName}" <${libraryContactEmail}>`,
-    to,
+    from: `"${mailFromName}" <${mailFromEmail}>`,
+    to: recipient,
     subject,
     html,
     replyTo: libraryContactEmail,
@@ -367,14 +378,19 @@ async function sendReturnEmail({
 // GET http://localhost:5000/api/transactions/test-email
 router.get("/test-email", async (req, res) => {
   try {
+    const testRecipient = getMailRecipient(
+      req.query.to || process.env.TEST_EMAIL_TO || libraryContactEmail
+    );
+
     await transporter.sendMail({
-      from: `"Stamford Library" <no-reply@stamford-library.com>`,
-      to: "mahmudulislam299@gmail.com", // will show in Mailtrap (Email Testing)
-      subject: "Mailtrap Test",
-      text: "This is a test email from the Library system using Mailtrap.",
+      from: `"${mailFromName}" <${mailFromEmail}>`,
+      to: testRecipient,
+      subject: "Stamford Library Email Test",
+      text: `This is a test email from ${libraryName}.`,
+      replyTo: libraryContactEmail,
     });
 
-    res.send("Email sent (check your Mailtrap inbox)");
+    res.send(`Email sent to ${testRecipient}`);
   } catch (err) {
     console.error("SMTP Error:", err);
     res.status(500).send("Error sending email");
