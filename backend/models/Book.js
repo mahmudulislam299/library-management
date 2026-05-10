@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const BookSchema = new mongoose.Schema({
     bookName:{
         type:String,
-        require:true
+        required:true
     },
     alternateTitle:{
         type:String,
@@ -11,7 +11,7 @@ const BookSchema = new mongoose.Schema({
     },
     author:{
         type:String,
-        require:true
+        required:true
     },
     language:{
         type:String,
@@ -23,7 +23,7 @@ const BookSchema = new mongoose.Schema({
     },
     bookCountAvailable:{
         type:Number,
-        require:true
+        required:true
     },
     bookStatus:{
         type:String,

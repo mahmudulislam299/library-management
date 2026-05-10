@@ -3,31 +3,31 @@ import mongoose from "mongoose"
 const BookTransactionSchema = new mongoose.Schema({
     bookId: {
         type: String,
-        require: true
+        required: true
     },
     borrowerId: { //EmployeeId or AdmissionId
         type: String,
-        require: true
+        required: true
     },
     bookName: {
         type: String,
-        require: true
+        required: true
     },
     borrowerName: {
         type: String,
-        require: true
+        required: true
     },
     transactionType: { //Issue or Reservation
         type: String,
-        require: true,
+        required: true,
     },
     fromDate: {
         type: String,
-        require: true,
+        required: true,
     },
     toDate: {
         type: String,
-        require: true,
+        required: true,
     },
     returnDate: {
         type: String

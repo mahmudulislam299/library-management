@@ -63,10 +63,7 @@ function AddBook() {
 
         try {
             const response = await axios.post(API_URL + "/api/books/addbook", BookData);
-            if (recentAddedBooks.length >= 5) {
-                recentAddedBooks.splice(-1);
-            }
-            setRecentAddedBooks([response.data, ...recentAddedBooks]);
+            setRecentAddedBooks((prev) => [response.data, ...prev].slice(0, 5));
             setBookName("");
             setAlternateTitle("");
             setAuthor("");

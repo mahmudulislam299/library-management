@@ -88,10 +88,6 @@ function AddTransaction() {
             transactionData
           );
 
-          if (recentTransactions.length >= 5) {
-            recentTransactions.splice(-1);
-          }
-
           await axios.put(
             `${API_URL}/api/users/${response.data._id}/move-to-activetransactions`,
             {
@@ -100,12 +96,14 @@ function AddTransaction() {
             }
           );
 
-          await axios.put(`${API_URL}/api/books/updatebook/${bookId}`, {
-            isAdmin: user.isAdmin,
-            bookCountAvailable: book_details.data.bookCountAvailable - 1,
-          });
+          if (transactionType === "Issued") {
+            await axios.put(`${API_URL}/api/books/updatebook/${bookId}`, {
+              isAdmin: user.isAdmin,
+              bookCountAvailable: book_details.data.bookCountAvailable - 1,
+            });
+          }
 
-          setRecentTransactions([response.data, ...recentTransactions]);
+          setRecentTransactions((prev) => [response.data, ...prev].slice(0, 5));
           setBorrowerId("");
           setBookId("");
           setTransactionType("");

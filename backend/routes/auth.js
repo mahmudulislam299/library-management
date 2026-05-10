@@ -21,7 +21,6 @@ router.post("/register", async (req, res) => {
       mobileNumber,
       email,
       password,
-      isAdmin,
     } = req.body;
 
     // Basic validation (you can adjust as needed)
@@ -59,7 +58,7 @@ router.post("/register", async (req, res) => {
       mobileNumber,
       email,
       password: hashedPass,
-      isAdmin: !!isAdmin,
+      isAdmin: false,
     });
 
     // Save and return safe user (without password)

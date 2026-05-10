@@ -130,8 +130,15 @@ function Return() {
     }
   };
 
-  const convertToIssue = async (transactionId) => {
+  const convertToIssue = async (transactionId, bookId) => {
     try {
+      const bookDetails = await axios.get(`${API_URL}/api/books/getbook/${bookId}`);
+
+      if (!bookDetails.data || bookDetails.data.bookCountAvailable <= 0) {
+        alert("No available copies to issue this reservation.");
+        return;
+      }
+
       await axios.put(
         `${API_URL}/api/transactions/update-transaction/${transactionId}`,
         {
@@ -139,6 +146,10 @@ function Return() {
           isAdmin: user.isAdmin,
         }
       );
+      await axios.put(`${API_URL}/api/books/updatebook/${bookId}`, {
+        isAdmin: user.isAdmin,
+        bookCountAvailable: bookDetails.data.bookCountAvailable - 1,
+      });
       setExecutionStatus("Completed");
       alert("Book issued succesfully 🎆");
     } catch (err) {
@@ -290,7 +301,7 @@ function Return() {
                   <td>
                     <button
                       className="return-book-btn secondary"
-                      onClick={() => convertToIssue(data._id)}
+                      onClick={() => convertToIssue(data._id, data.bookId)}
                     >
                       Issue Now
                     </button>
