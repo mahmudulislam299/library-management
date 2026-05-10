@@ -105,6 +105,96 @@
   font-size: 1rem;
 }
 
+.edit-book-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(3, 8, 20, 0.72);
+}
+
+.edit-book-modal {
+  width: min(760px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #101a2d;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+  color: var(--text);
+}
+
+.edit-book-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.edit-book-header h3 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 1.2rem;
+}
+
+.edit-book-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 16px;
+  padding: 18px;
+}
+
+.edit-book-form label,
+.edit-book-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: #d0d6e2;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.edit-book-form input,
+.edit-book-form select {
+  width: 100%;
+  min-height: 40px;
+  padding: 10px 12px;
+  background: #1a2236;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.edit-book-form input:focus,
+.edit-book-form select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.edit-book-categories {
+  grid-column: 1 / -1;
+}
+
+.edit-book-categories .ui.dropdown {
+  background: #1a2236;
+  color: var(--text);
+  border-color: var(--border);
+  border-radius: 6px;
+}
+
+.edit-book-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .library-header {
@@ -115,5 +205,17 @@
 
   .book-grid {
     grid-template-columns: 1fr;
+  }
+
+  .edit-book-form {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-book-actions {
+    flex-direction: column-reverse;
+  }
+
+  .edit-book-actions .button {
+    width: 100%;
   }
 }

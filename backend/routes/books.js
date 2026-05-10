@@ -8,6 +8,7 @@ const router = express.Router();
 router.get("/allbooks", async (req, res) => {
   try {
     const books = await Book.find({})
+      .populate("categories")
       .populate("transactions")
       .sort({ _id: -1 });
     res.status(200).json(books);
@@ -19,7 +20,9 @@ router.get("/allbooks", async (req, res) => {
 /* Get Book by book Id */
 router.get("/getbook/:id", async (req, res) => {
   try {
-    const book = await Book.findById(req.params.id).populate("transactions");
+    const book = await Book.findById(req.params.id)
+      .populate("categories")
+      .populate("transactions");
     res.status(200).json(book);
   } catch (err) {
     return res.status(500).json(err);
@@ -165,8 +168,43 @@ router.put("/updatebook/:id", async (req, res) => {
   });
 
   try {
-    await Book.findByIdAndUpdate(req.params.id, { $set: updateData });
-    res.status(200).json("Book details updated successfully");
+    const existingBook = await Book.findById(req.params.id);
+
+    if (!existingBook) {
+      return res.status(404).json("Book not found");
+    }
+
+    const categoriesWereUpdated = Object.prototype.hasOwnProperty.call(
+      updateData,
+      "categories"
+    );
+    const oldCategories = existingBook.categories || [];
+
+    const updatedBook = await Book.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateData },
+      { new: true }
+    ).populate("categories");
+
+    if (categoriesWereUpdated) {
+      await BookCategory.updateMany(
+        { _id: { $in: oldCategories } },
+        { $pull: { books: updatedBook._id } }
+      );
+
+      if (updatedBook.categories && updatedBook.categories.length > 0) {
+        await BookCategory.updateMany(
+          {
+            _id: {
+              $in: updatedBook.categories.map((category) => category._id),
+            },
+          },
+          { $addToSet: { books: updatedBook._id } }
+        );
+      }
+    }
+
+    res.status(200).json(updatedBook);
   } catch (err) {
     res.status(504).json(err);
   }
