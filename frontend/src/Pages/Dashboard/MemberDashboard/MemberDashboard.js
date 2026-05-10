@@ -23,12 +23,24 @@ function MemberDashboard() {
   const [active, setActive] = useState("profile");
   const [sidebar, setSidebar] = useState(false);
   const API_URL = process.env.REACT_APP_API_URL;
-  const { user } = useContext(AuthContext);
+  const { user, dispatch } = useContext(AuthContext);
   const [memberDetails, setMemberDetails] = useState(null);
   const [selectedFine, setSelectedFine] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("bKash");
   const [paymentReference, setPaymentReference] = useState("");
   const [isPayingFine, setIsPayingFine] = useState(false);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({
+    userFullName: "",
+    email: "",
+    mobileNumber: "",
+    gender: "",
+    department: "",
+    address: "",
+    dob: "",
+    age: "",
+  });
 
   const FINE_PER_DAY = 10;
 
@@ -89,6 +101,21 @@ function MemberDashboard() {
     refreshMemberDetails();
   }, [refreshMemberDetails]);
 
+  useEffect(() => {
+    if (!memberDetails) return;
+
+    setProfileForm({
+      userFullName: memberDetails.userFullName || "",
+      email: memberDetails.email || "",
+      mobileNumber: memberDetails.mobileNumber || "",
+      gender: memberDetails.gender || "",
+      department: memberDetails.department || "",
+      address: memberDetails.address || "",
+      dob: memberDetails.dob || "",
+      age: memberDetails.age || "",
+    });
+  }, [memberDetails]);
+
   const fineTransactions = [
     ...(memberDetails?.activeTransactions || []),
     ...(memberDetails?.prevTransactions || []),
@@ -145,6 +172,68 @@ function MemberDashboard() {
       console.log("Error paying fine", err);
       alert(err.response?.data?.message || "Failed to complete demo payment.");
       setIsPayingFine(false);
+    }
+  };
+
+  const handleProfileInput = (e) => {
+    const { name, value } = e.target;
+    setProfileForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const cancelProfileEdit = () => {
+    if (memberDetails) {
+      setProfileForm({
+        userFullName: memberDetails.userFullName || "",
+        email: memberDetails.email || "",
+        mobileNumber: memberDetails.mobileNumber || "",
+        gender: memberDetails.gender || "",
+        department: memberDetails.department || "",
+        address: memberDetails.address || "",
+        dob: memberDetails.dob || "",
+        age: memberDetails.age || "",
+      });
+    }
+    setIsEditingProfile(false);
+  };
+
+  const saveProfile = async (e) => {
+    e.preventDefault();
+
+    if (!profileForm.userFullName || !profileForm.email || !profileForm.mobileNumber) {
+      alert("Name, email, and mobile number are required.");
+      return;
+    }
+
+    setIsSavingProfile(true);
+
+    try {
+      const response = await axios.put(`${API_URL}/api/users/profile/${user._id}`, {
+        ...profileForm,
+        age: profileForm.age === "" ? "" : Number(profileForm.age),
+        userId: user._id,
+      });
+      setMemberDetails(response.data);
+      dispatch({
+        type: "LOGIN_SUCCESS",
+        payload: {
+          ...user,
+          userFullName: response.data.userFullName,
+          email: response.data.email,
+          mobileNumber: response.data.mobileNumber,
+          gender: response.data.gender,
+          department: response.data.department,
+          address: response.data.address,
+          dob: response.data.dob,
+          age: response.data.age,
+        },
+      });
+      setIsEditingProfile(false);
+      alert("Profile information updated.");
+    } catch (err) {
+      console.log("Error updating profile", err);
+      alert(err.response?.data?.message || "Failed to update profile.");
+    } finally {
+      setIsSavingProfile(false);
     }
   };
 
@@ -287,6 +376,15 @@ function MemberDashboard() {
                   <p className="user-email">{memberDetails?.email}</p>
                   <p className="user-phone">{memberDetails?.mobileNumber}</p>
                 </div>
+                <div className="profile-edit-actions">
+                  <button
+                    className="profile-edit-button"
+                    type="button"
+                    onClick={() => setIsEditingProfile((prev) => !prev)}
+                  >
+                    {isEditingProfile ? "Hide Edit" : "Edit Basic Info"}
+                  </button>
+                </div>
               </div>
 
               {/* Info grid */}
@@ -318,6 +416,104 @@ function MemberDashboard() {
                   </p>
                 </div>
               </div>
+
+              {isEditingProfile && (
+                <form className="profile-edit-form" onSubmit={saveProfile}>
+                  <div className="profile-edit-field">
+                    <label>Full Name</label>
+                    <input
+                      type="text"
+                      name="userFullName"
+                      value={profileForm.userFullName}
+                      onChange={handleProfileInput}
+                      required
+                    />
+                  </div>
+                  <div className="profile-edit-field">
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={profileForm.email}
+                      onChange={handleProfileInput}
+                      required
+                    />
+                  </div>
+                  <div className="profile-edit-field">
+                    <label>Mobile Number</label>
+                    <input
+                      type="text"
+                      name="mobileNumber"
+                      value={profileForm.mobileNumber}
+                      onChange={handleProfileInput}
+                      required
+                    />
+                  </div>
+                  <div className="profile-edit-field">
+                    <label>Gender</label>
+                    <select
+                      name="gender"
+                      value={profileForm.gender}
+                      onChange={handleProfileInput}
+                    >
+                      <option value="">Select gender</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div className="profile-edit-field">
+                    <label>Department</label>
+                    <input
+                      type="text"
+                      name="department"
+                      value={profileForm.department}
+                      onChange={handleProfileInput}
+                    />
+                  </div>
+                  <div className="profile-edit-field">
+                    <label>Date of Birth</label>
+                    <input
+                      type="text"
+                      name="dob"
+                      value={profileForm.dob}
+                      onChange={handleProfileInput}
+                      placeholder="DD-MM-YYYY"
+                    />
+                  </div>
+                  <div className="profile-edit-field">
+                    <label>Age</label>
+                    <input
+                      type="number"
+                      name="age"
+                      min="1"
+                      value={profileForm.age}
+                      onChange={handleProfileInput}
+                    />
+                  </div>
+                  <div className="profile-edit-field wide">
+                    <label>Address</label>
+                    <textarea
+                      name="address"
+                      value={profileForm.address}
+                      onChange={handleProfileInput}
+                      rows="3"
+                    />
+                  </div>
+                  <div className="profile-edit-submit-row">
+                    <button
+                      className="profile-edit-button secondary"
+                      type="button"
+                      onClick={cancelProfileEdit}
+                    >
+                      Cancel
+                    </button>
+                    <button className="profile-edit-button" disabled={isSavingProfile}>
+                      {isSavingProfile ? "Saving..." : "Save Changes"}
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
 

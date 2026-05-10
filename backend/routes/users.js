@@ -76,6 +76,67 @@ router.get("/allmembers", async (req, res) => {
   }
 });
 
+/* Update basic profile information for the logged-in account */
+router.put("/profile/:id", async (req, res) => {
+  if (req.body.userId !== req.params.id && !req.body.isAdmin) {
+    return res.status(403).json("You can update only your account!");
+  }
+
+  try {
+    const allowedFields = [
+      "userFullName",
+      "age",
+      "gender",
+      "dob",
+      "department",
+      "address",
+      "mobileNumber",
+      "email",
+    ];
+    const updateData = {};
+
+    allowedFields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field];
+      }
+    });
+
+    if (updateData.age === "") {
+      updateData.age = undefined;
+    }
+
+    if (!updateData.userFullName || !updateData.mobileNumber || !updateData.email) {
+      return res.status(400).json({
+        message: "Name, email, and mobile number are required",
+      });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    )
+      .populate("activeTransactions")
+      .populate("prevTransactions")
+      .select("-password -updatedAt -__v");
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({
+        message: "Email already belongs to another account",
+      });
+    }
+
+    console.error("Error in /profile/:id:", err.message);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
 /* 🔒 Update user by id (SAFE: does NOT allow isAdmin to be modified) */
 router.put("/updateuser/:id", async (req, res) => {
   // only owner or admin can update, based on what frontend sends
