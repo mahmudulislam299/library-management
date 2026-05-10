@@ -151,6 +151,12 @@ Open:
 http://45.33.73.218
 ```
 
+The home page also works at:
+
+```text
+http://45.33.73.218/lms
+```
+
 Check backend:
 
 ```bash

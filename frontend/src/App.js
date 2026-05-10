@@ -27,6 +27,10 @@ function App() {
             <Home />
           </Route>
 
+          <Route exact path="/lms">
+            <Home />
+          </Route>
+
           {/* Signin */}
           <Route exact path="/signin">
             {user
