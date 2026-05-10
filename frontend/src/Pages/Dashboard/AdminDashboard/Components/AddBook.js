@@ -97,10 +97,18 @@ function AddBook() {
     }, [API_URL]);
 
     return (
-        <div>
-            <p className="dashboard-option-title">Book Registration</p>
+        <div className="admin-workflow-page">
+            <div className="admin-page-header">
+                <div>
+                    <p className="dashboard-option-title">Book Registration</p>
+                    <p className="admin-page-subtitle">Add a title to the catalogue and keep category, copy and publisher details ready for circulation.</p>
+                </div>
+                <span className="admin-page-badge">Catalogue</span>
+            </div>
             <div className="dashboard-title-line"></div>
-            <form className='addbook-form' onSubmit={addBook}>
+
+            <section className="admin-panel">
+            <form className='addbook-form admin-form' onSubmit={addBook}>
 
                 <label className="addbook-form-label" htmlFor="bookName">
                     Book Name<span className="required-field">*</span>
@@ -185,14 +193,18 @@ function AddBook() {
                 <input
                     className="addbook-submit"
                     type="submit"
-                    value="SUBMIT"
+                    value={isLoading ? "SAVING..." : "SAVE BOOK"}
                     disabled={isLoading}
                 />
             </form>
+            </section>
 
-            <div>
-                <p className="dashboard-option-title">Recent Book Records</p>
-                <div className="dashboard-title-line"></div>
+            <section className="admin-panel admin-table-panel">
+                <div className="admin-section-heading">
+                    <p className="dashboard-option-title">Recent Book Records</p>
+                    <span>{recentAddedBooks.length} latest</span>
+                </div>
+                <div className="admin-table-scroll">
                 <table className='admindashboard-table'>
                     <thead>
                         <tr>
@@ -213,7 +225,8 @@ function AddBook() {
                         }
                     </tbody>
                 </table>
-            </div>
+                </div>
+            </section>
         </div>
     );
 }

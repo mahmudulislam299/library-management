@@ -321,6 +321,170 @@
   box-shadow: 0 8px 18px rgba(245,158,11,.25);
 }
 
+.return-book-btn.secondary {
+  background: rgba(226,232,240,.08);
+  color: var(--text);
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+.return-book-btn.secondary:hover {
+  background: rgba(212,160,23,.16);
+  box-shadow: 0 10px 24px rgba(0,0,0,.25);
+}
+
+.admin-workflow-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.admin-page-header .dashboard-option-title {
+  margin-bottom: 6px;
+}
+
+.admin-page-subtitle {
+  max-width: 760px;
+  margin: 0;
+  color: #b0b7c2;
+  font-size: .98rem;
+  line-height: 1.55;
+}
+
+.admin-page-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 7px 13px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(212,160,23,.12);
+  color: var(--gold);
+  font-size: .82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.admin-panel {
+  position: relative;
+  z-index: 1;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(15,26,46,.72);
+  box-shadow: 0 12px 32px rgba(0,0,0,.26);
+}
+
+.admin-panel.member-profile-content {
+  margin: 0;
+}
+
+.admin-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  max-width: 720px;
+}
+
+.admin-form br {
+  display: none;
+}
+
+.admin-form .addbook-form-label,
+.admin-form .addmember-form-label,
+.admin-form .transaction-form-label {
+  margin: 4px 0 0;
+}
+
+.admin-form .addbook-form-input,
+.admin-form .addmember-form-input,
+.admin-form .transaction-form-input,
+.admin-form .semanticdropdown,
+.admin-form .date-picker,
+.return-filter-panel .semanticdropdown {
+  max-width: none;
+}
+
+.admin-form .semanticdropdown,
+.return-filter-panel .semanticdropdown,
+.getmember-dropdown {
+  position: relative;
+  z-index: 30;
+}
+
+.admin-form .ui.dropdown .menu,
+.return-filter-panel .ui.dropdown .menu {
+  z-index: 9999 !important;
+}
+
+.admin-form .react-datepicker-popper {
+  z-index: 9999;
+}
+
+.admin-form .addbook-submit,
+.admin-form .addmember-submit,
+.admin-form .transaction-form-submit {
+  justify-self: flex-start;
+  min-width: 180px;
+  margin-top: 8px;
+}
+
+.admin-form .addbook-submit:disabled,
+.admin-form .addmember-submit:disabled,
+.admin-form .transaction-form-submit:disabled {
+  cursor: not-allowed;
+  opacity: .68;
+  transform: none;
+}
+
+.admin-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-section-heading .dashboard-option-title {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.admin-section-heading span {
+  color: #b0b7c2;
+  font-size: .9rem;
+  font-weight: 700;
+}
+
+.admin-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.admin-table-panel .admindashboard-table,
+.admin-form .admindashboard-table {
+  margin: 0;
+}
+
+.insight-table {
+  margin: 8px 0 14px !important;
+  border: 1px solid rgba(148,163,184,.22);
+}
+
+.return-filter-panel {
+  max-width: 620px;
+  z-index: 40;
+}
+
 .member-insights-page {
   display: flex;
   flex-direction: column;
@@ -574,6 +738,22 @@
     min-height: 38px;
     padding: 9px 14px;
     font-size: .85rem;
+  }
+
+  .admin-page-header,
+  .admin-section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-panel {
+    padding: 16px;
+  }
+
+  .admin-form .addbook-submit,
+  .admin-form .addmember-submit,
+  .admin-form .transaction-form-submit {
+    width: 100%;
   }
 
   .member-insights-header,

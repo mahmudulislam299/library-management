@@ -217,11 +217,28 @@ function AddTransaction() {
     getBookDetails();
   }, [API_URL, bookId]);
 
+  const activeBorrowerTransactions =
+    borrowerDetails.activeTransactions?.filter((data) => {
+      return data.transactionStatus === "Active";
+    }) || [];
+
   return (
-    <div>
-      <p className="dashboard-option-title">Issue / Reserve Book</p>
+    <div className="admin-workflow-page">
+      <div className="admin-page-header">
+        <div>
+          <p className="dashboard-option-title">Issue / Reserve Book</p>
+          <p className="admin-page-subtitle">
+            Select a member, choose a book, and let the system calculate return or reservation dates.
+          </p>
+        </div>
+        <span className="admin-page-badge">
+          {transactionType || "Circulation"}
+        </span>
+      </div>
       <div className="dashboard-title-line"></div>
-      <form className="transaction-form" onSubmit={addTransaction}>
+
+      <section className="admin-panel">
+      <form className="transaction-form admin-form" onSubmit={addTransaction}>
         <label className="transaction-form-label" htmlFor="borrowerId">
           Borrower<span className="required-field">*</span>
         </label>
@@ -239,7 +256,7 @@ function AddTransaction() {
         </div>
 
         <table
-          className="admindashboard-table shortinfo-table"
+          className="admindashboard-table shortinfo-table insight-table"
           style={borrowerId === "" ? { display: "none" } : {}}
         >
           <thead>
@@ -274,10 +291,11 @@ function AddTransaction() {
           </tbody>
         </table>
 
-        <table
-          className="admindashboard-table shortinfo-table"
+        <div
+          className="admin-table-scroll"
           style={borrowerId === "" ? { display: "none" } : {}}
         >
+        <table className="admindashboard-table shortinfo-table insight-table">
           <thead>
             <tr>
               <th>Book-Name</th>
@@ -296,11 +314,14 @@ function AddTransaction() {
             </tr>
           </thead>
           <tbody>
-            {borrowerDetails.activeTransactions
-              ?.filter((data) => {
-                return data.transactionStatus === "Active";
-              })
-              .map((data, index) => {
+            {activeBorrowerTransactions.length === 0 ? (
+              <tr>
+                <td colSpan="5" className="member-empty-row">
+                  No active records for this member.
+                </td>
+              </tr>
+            ) : (
+              activeBorrowerTransactions.map((data, index) => {
                 const toMoment = moment(
                   data.toDate,
                   ["DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601]
@@ -323,9 +344,11 @@ function AddTransaction() {
                     <td>{fine}</td>
                   </tr>
                 );
-              })}
+              })
+            )}
           </tbody>
         </table>
+        </div>
 
         <label className="transaction-form-label" htmlFor="bookName">
           Book Name<span className="required-field">*</span>
@@ -345,7 +368,7 @@ function AddTransaction() {
 
         {/* Available Copies & Reserved summary for selected book */}
         <table
-          className="admindashboard-table shortinfo-table"
+          className="admindashboard-table shortinfo-table insight-table"
           style={bookId === "" ? { display: "none" } : {}}
         >
           <thead>
@@ -458,13 +481,18 @@ function AddTransaction() {
         <input
           className="transaction-form-submit"
           type="submit"
-          value="SUBMIT"
+          value={isLoading ? "SAVING..." : "SAVE CIRCULATION"}
           disabled={isLoading}
         />
       </form>
+      </section>
 
-      <p className="dashboard-option-title">Recent Circulation Records</p>
-      <div className="dashboard-title-line"></div>
+      <section className="admin-panel admin-table-panel">
+      <div className="admin-section-heading">
+        <p className="dashboard-option-title">Recent Circulation Records</p>
+        <span>{recentTransactions.length} latest</span>
+      </div>
+      <div className="admin-table-scroll">
       <table className="admindashboard-table">
         <thead>
           <tr>
@@ -487,6 +515,8 @@ function AddTransaction() {
           })}
         </tbody>
       </table>
+      </div>
+      </section>
     </div>
   );
 }

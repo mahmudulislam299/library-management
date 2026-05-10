@@ -113,11 +113,18 @@ function AddMember() {
     }, [API_URL]);
 
     return (
-        <div>
-            <p className="dashboard-option-title">Member Registration</p>
+        <div className="admin-workflow-page">
+            <div className="admin-page-header">
+                <div>
+                    <p className="dashboard-option-title">Member Registration</p>
+                    <p className="admin-page-subtitle">Create a student or employee account with contact details and a library-ready login.</p>
+                </div>
+                <span className="admin-page-badge">{userType}</span>
+            </div>
             <div className="dashboard-title-line"></div>
 
-            <form className="addmember-form" onSubmit={addMember}>
+            <section className="admin-panel">
+            <form className="addmember-form admin-form" onSubmit={addMember}>
                 <div className='semanticdropdown'>
                     <Dropdown
                         placeholder='User Type'
@@ -229,13 +236,18 @@ function AddMember() {
                 <input
                     className="addmember-submit"
                     type="submit"
-                    value="SUBMIT"
+                    value={isLoading ? "SAVING..." : "SAVE MEMBER"}
                     disabled={isLoading}
                 />
             </form>
+            </section>
 
-            <p className="dashboard-option-title">Recent Member Records</p>
-            <div className="dashboard-title-line"></div>
+            <section className="admin-panel admin-table-panel">
+            <div className="admin-section-heading">
+                <p className="dashboard-option-title">Recent Member Records</p>
+                <span>{recentAddedMembers.length} latest</span>
+            </div>
+            <div className="admin-table-scroll">
             <table className='admindashboard-table'>
                 <thead>
                     <tr>
@@ -256,6 +268,8 @@ function AddMember() {
                     ))}
                 </tbody>
             </table>
+            </div>
+            </section>
         </div>
     );
 }

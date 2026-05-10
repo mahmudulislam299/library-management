@@ -146,21 +146,57 @@ function Return() {
     }
   };
 
+  const issuedTransactions =
+    allTransactions?.filter((data) => {
+      if (!borrowerId) {
+        return data.transactionType === "Issued";
+      }
+
+      return data.borrowerId === borrowerId && data.transactionType === "Issued";
+    }) || [];
+  const reservedTransactions =
+    allTransactions?.filter((data) => {
+      if (!borrowerId) {
+        return data.transactionType === "Reserved";
+      }
+
+      return data.borrowerId === borrowerId && data.transactionType === "Reserved";
+    }) || [];
+
   return (
-    <div>
+    <div className="admin-workflow-page">
+      <div className="admin-page-header">
+        <div>
+          <p className="dashboard-option-title">Return Desk</p>
+          <p className="admin-page-subtitle">
+            Review active loans and reservations, then complete returns or convert reservations into issued books.
+          </p>
+        </div>
+        <span className="admin-page-badge">{allTransactions.length} active</span>
+      </div>
+      <div className="dashboard-title-line"></div>
+
+      <section className="admin-panel return-filter-panel">
       <div className="semanticdropdown returnbook-dropdown">
         <Dropdown
-          placeholder="Select Member"
+          placeholder="Filter by member"
           fluid
           search
+          clearable
           selection
           value={borrowerId}
           options={allMembersOptions}
-          onChange={(event, data) => setBorrowerId(data.value)}
+          onChange={(event, data) => setBorrowerId(data.value || "")}
         />
       </div>
+      </section>
 
-      <p className="dashboard-option-title">Issued Books to Return</p>
+      <section className="admin-panel admin-table-panel">
+      <div className="admin-section-heading">
+        <p className="dashboard-option-title">Issued Books to Return</p>
+        <span>{issuedTransactions.length} active</span>
+      </div>
+      <div className="admin-table-scroll">
       <table className="admindashboard-table">
         <thead>
           <tr>
@@ -173,18 +209,14 @@ function Return() {
           </tr>
         </thead>
         <tbody>
-          {allTransactions
-            ?.filter((data) => {
-              if (!borrowerId) {
-                return data.transactionType === "Issued";
-              } else {
-                return (
-                  data.borrowerId === borrowerId &&
-                  data.transactionType === "Issued"
-                );
-              }
-            })
-            .map((data, index) => {
+          {issuedTransactions.length === 0 ? (
+            <tr>
+              <td colSpan="6" className="member-empty-row">
+                No issued books found.
+              </td>
+            </tr>
+          ) : (
+            issuedTransactions.map((data, index) => {
               const toMoment = moment(
                 data.toDate,
                 ["DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601]
@@ -217,11 +249,19 @@ function Return() {
                   </td>
                 </tr>
               );
-            })}
+            })
+          )}
         </tbody>
       </table>
+      </div>
+      </section>
 
-      <p className="dashboard-option-title">Active Reservations</p>
+      <section className="admin-panel admin-table-panel">
+      <div className="admin-section-heading">
+        <p className="dashboard-option-title">Active Reservations</p>
+        <span>{reservedTransactions.length} active</span>
+      </div>
+      <div className="admin-table-scroll">
       <table className="admindashboard-table">
         <thead>
           <tr>
@@ -233,18 +273,14 @@ function Return() {
           </tr>
         </thead>
         <tbody>
-          {allTransactions
-            ?.filter((data) => {
-              if (!borrowerId) {
-                return data.transactionType === "Reserved";
-              } else {
-                return (
-                  data.borrowerId === borrowerId &&
-                  data.transactionType === "Reserved"
-                );
-              }
-            })
-            .map((data, index) => {
+          {reservedTransactions.length === 0 ? (
+            <tr>
+              <td colSpan="5" className="member-empty-row">
+                No active reservations found.
+              </td>
+            </tr>
+          ) : (
+            reservedTransactions.map((data, index) => {
               return (
                 <tr key={index}>
                   <td>{data.bookName}</td>
@@ -252,15 +288,21 @@ function Return() {
                   <td>{formatDate(data.fromDate)}</td>
                   <td>{formatDate(data.toDate)}</td>
                   <td>
-                    <button onClick={() => convertToIssue(data._id)}>
-                      Convert
+                    <button
+                      className="return-book-btn secondary"
+                      onClick={() => convertToIssue(data._id)}
+                    >
+                      Issue Now
                     </button>
                   </td>
                 </tr>
               );
-            })}
+            })
+          )}
         </tbody>
       </table>
+      </div>
+      </section>
     </div>
   );
 }

@@ -32,11 +32,17 @@ function AdminProfile() {
   }, [API_URL, user]);
 
   return (
-    <div>
+    <div className="admin-workflow-page">
+      <div className="admin-page-header">
+        <div>
       <p className="dashboard-option-title">Admin Account</p>
+      <p className="admin-page-subtitle">Review your library staff profile and account details.</p>
+        </div>
+        <span className="admin-page-badge">Staff</span>
+      </div>
       <div className="dashboard-title-line"></div>
 
-      <div className="member-profile-content">
+      <section className="admin-panel member-profile-content">
         <div className="user-details-topbar">
           <img
             className="user-profileimage"
@@ -88,7 +94,7 @@ function AdminProfile() {
             </p>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 }
