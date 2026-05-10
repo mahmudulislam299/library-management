@@ -39,7 +39,11 @@ function Header() {
       {/* Logo */}
       <div className="logo">
         <Link to="/" onClick={closeMenu}>
-          <img src="/logo1.png" alt="Library Logo" className="logo-img" />
+          <img
+            src={`${process.env.PUBLIC_URL}/logo1.png`}
+            alt="Library Logo"
+            className="logo-img"
+          />
           <span className="logo-text">Stamford Library</span>
         </Link>
       </div>

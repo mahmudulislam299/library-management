@@ -18,16 +18,12 @@ function App() {
   const isAdmin = user?.isAdmin === true;
 
   return (
-    <Router>
+    <Router basename="/lms">
       <Header />
       <div className="App">
         <Switch>
           {/* Home */}
           <Route exact path="/">
-            <Home />
-          </Route>
-
-          <Route exact path="/lms">
             <Home />
           </Route>
 

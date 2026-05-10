@@ -2,7 +2,7 @@
 
 Server: `root@45.33.73.218`
 
-This setup serves the React app with Nginx on port `80` and proxies `/api` requests to the Node backend on port `5000`.
+This setup serves the React app from `/lms` with Nginx on port `80` and proxies `/api` requests to the Node backend on port `5000`.
 
 ## 1. Prepare Server
 
@@ -67,7 +67,7 @@ DUE_REMINDER_DAYS_BEFORE=1
 ENABLE_DUE_REMINDER_JOB=true
 
 LIBRARY_NAME=Stamford Library
-LIBRARY_WEBSITE=http://45.33.73.218
+LIBRARY_WEBSITE=http://45.33.73.218/lms
 LIBRARY_CONTACT_EMAIL=stamford.university.bd.library@gmail.com
 LIBRARY_ADDRESS=Stamford University Bangladesh, Dhaka
 LIBRARY_LOGO_URL=
@@ -93,7 +93,7 @@ npm install
 npm run build
 ```
 
-The production build uses:
+The production build uses `/lms` as the React base path. API calls use:
 
 ```env
 REACT_APP_API_URL=http://45.33.73.218
@@ -116,11 +116,19 @@ server {
     listen 80;
     server_name 45.33.73.218;
 
-    root /var/www/library-management/frontend/build;
     index index.html;
 
     location / {
-        try_files $uri /index.html;
+        return 404;
+    }
+
+    location = /lms {
+        return 301 /lms/;
+    }
+
+    location /lms/ {
+        alias /var/www/library-management/frontend/build/;
+        try_files $uri $uri/ /lms/index.html;
     }
 
     location /api/ {
@@ -146,12 +154,6 @@ systemctl restart nginx
 ## 7. Check Deployment
 
 Open:
-
-```text
-http://45.33.73.218
-```
-
-The home page also works at:
 
 ```text
 http://45.33.73.218/lms
