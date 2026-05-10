@@ -1,47 +1,21 @@
 // routes/transactionRoutes.js
 import express from "express";
-import nodemailer from "nodemailer";
 import Book from "../models/Book.js";
 import BookTransaction from "../models/BookTransaction.js";
 import User from "../models/User.js";
 import { syncTransactionFine, syncTransactionFines } from "../utils/fines.js";
-import dotenv from "dotenv";
+import {
+  getMailRecipient,
+  libraryAddress,
+  libraryContactEmail,
+  libraryLogoUrl,
+  libraryName,
+  libraryWebsite,
+  sendLibraryEmail,
+  sleep,
+} from "../utils/mail.js";
 
-dotenv.config();
 const router = express.Router();
-
-/* ===================== EMAIL SETUP ===================== */
-
-const smtpPort = Number(process.env.SMTP_PORT || 587);
-const smtpSecure =
-  process.env.SMTP_SECURE === "true" || smtpPort === 465;
-const libraryName = process.env.LIBRARY_NAME || "Stamford Library";
-const libraryContactEmail =
-  process.env.LIBRARY_CONTACT_EMAIL || process.env.SMTP_USER;
-const mailFromEmail =
-  process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || libraryContactEmail;
-const mailFromName = process.env.SMTP_FROM_NAME || libraryName;
-const mailOverrideTo = process.env.MAIL_OVERRIDE_TO || "";
-
-const getMailRecipient = (to) => mailOverrideTo || to;
-
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: smtpPort,
-  secure: smtpSecure,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
-
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("SMTP Verify Error:", error);
-  } else {
-    console.log("✅ SMTP server is ready to take messages");
-  }
-});
 
 /* ===================== ISSUE / RESERVE EMAIL ===================== */
 
@@ -63,10 +37,6 @@ async function sendTransactionEmail({
     console.warn("sendTransactionEmail: no recipient email, skipping");
     return;
   }
-
-  const libraryWebsite = process.env.LIBRARY_WEBSITE || "#";
-  const libraryAddress = process.env.LIBRARY_ADDRESS || "";
-  const libraryLogoUrl = process.env.LIBRARY_LOGO_URL || "";
 
   const fromStr = fromDate || "N/A";
   const toStr = toDate || "N/A";
@@ -209,12 +179,10 @@ async function sendTransactionEmail({
     // 👉 add small delay to avoid Mailtrap per-second limit
   await sleep(1000); // 1 seconds
 
-  await transporter.sendMail({
-    from: `"${mailFromName}" <${mailFromEmail}>`,
-    to: recipient,
+  await sendLibraryEmail({
+    to,
     subject,
     html,
-    replyTo: libraryContactEmail,
   });
 }
 
@@ -238,10 +206,6 @@ async function sendReturnEmail({
     console.warn("sendReturnEmail: no recipient email, skipping");
     return;
   }
-
-  const libraryWebsite = process.env.LIBRARY_WEBSITE || "#";
-  const libraryAddress = process.env.LIBRARY_ADDRESS || "";
-  const libraryLogoUrl = process.env.LIBRARY_LOGO_URL || "";
 
   const fromStr = fromDate || "N/A";
   const toStr = toDate || "N/A";
@@ -364,13 +328,123 @@ async function sendReturnEmail({
 
   console.log(`📧 Sending return email to ${recipient} for ${bookName}`);
 
-  await transporter.sendMail({
-    from: `"${mailFromName}" <${mailFromEmail}>`,
-    to: recipient,
+  await sendLibraryEmail({
+    to,
     subject,
     html,
-    replyTo: libraryContactEmail,
   });
+}
+
+async function sendFinePaymentEmail({
+  to,
+  borrowerName,
+  userType,
+  memberId,
+  bookName,
+  paidAmount,
+  totalPaid,
+  dueAmount,
+  totalFine,
+  paymentMethod,
+  paymentReference,
+  paidAt,
+  transactionId,
+}) {
+  const recipient = getMailRecipient(to);
+
+  if (!recipient) {
+    console.warn("sendFinePaymentEmail: no recipient email, skipping");
+    return;
+  }
+
+  const subject = `Fine Payment Received: ${bookName}`;
+  const paymentDate = paidAt ? new Date(paidAt).toLocaleDateString("en-GB") : "N/A";
+
+  const html = `
+  <div style="font-family:Arial,Helvetica,sans-serif;background:#f4f4f4;padding:20px;">
+    <div style="max-width:620px;margin:auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+      <div style="background:#0f766e;color:#ffffff;padding:18px 24px;">
+        <h2 style="margin:0;">${libraryName}</h2>
+        <p style="margin:6px 0 0;">Fine Payment Confirmation</p>
+      </div>
+      <div style="padding:24px;color:#374151;">
+        <p>Dear ${borrowerName || "Member"},</p>
+        <p>Your library fine payment has been recorded successfully.</p>
+        <table width="100%" cellpadding="8" cellspacing="0" style="border-collapse:collapse;font-size:14px;">
+          <tr><td><strong>Name</strong></td><td>${borrowerName || "N/A"}</td></tr>
+          <tr><td><strong>User Type</strong></td><td>${userType || "N/A"}</td></tr>
+          <tr><td><strong>Member ID</strong></td><td>${memberId || "N/A"}</td></tr>
+          <tr><td><strong>Book</strong></td><td>${bookName || "N/A"}</td></tr>
+          <tr><td><strong>Paid Amount</strong></td><td>${paidAmount || 0} BDT</td></tr>
+          <tr><td><strong>Total Fine</strong></td><td>${totalFine || 0} BDT</td></tr>
+          <tr><td><strong>Total Paid</strong></td><td>${totalPaid || 0} BDT</td></tr>
+          <tr><td><strong>Remaining Due</strong></td><td>${dueAmount || 0} BDT</td></tr>
+          <tr><td><strong>Payment Method</strong></td><td>${paymentMethod || "N/A"}</td></tr>
+          <tr><td><strong>Reference</strong></td><td>${paymentReference || "No reference"}</td></tr>
+          <tr><td><strong>Payment Date</strong></td><td>${paymentDate}</td></tr>
+          <tr><td><strong>Transaction ID</strong></td><td>${transactionId || "N/A"}</td></tr>
+        </table>
+        <p style="margin-top:18px;">If any information looks incorrect, contact <a href="mailto:${libraryContactEmail}">${libraryContactEmail}</a>.</p>
+      </div>
+      <div style="background:#f9fafb;padding:14px 24px;color:#6b7280;font-size:12px;text-align:center;">
+        ${libraryName}${libraryAddress ? " · " + libraryAddress : ""}
+      </div>
+    </div>
+  </div>`;
+
+  console.log(`📧 Sending fine payment email to ${recipient} for ${bookName}`);
+  await sendLibraryEmail({ to, subject, html });
+}
+
+async function sendDueReminderEmail({
+  to,
+  borrowerName,
+  userType,
+  memberId,
+  bookName,
+  fromDate,
+  toDate,
+  daysRemaining,
+  transactionId,
+}) {
+  const recipient = getMailRecipient(to);
+
+  if (!recipient) {
+    console.warn("sendDueReminderEmail: no recipient email, skipping");
+    return;
+  }
+
+  const dayText = daysRemaining === 0 ? "today" : `in ${daysRemaining} day(s)`;
+  const subject = `Book Due Reminder: ${bookName}`;
+  const html = `
+  <div style="font-family:Arial,Helvetica,sans-serif;background:#f4f4f4;padding:20px;">
+    <div style="max-width:620px;margin:auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+      <div style="background:#b45309;color:#ffffff;padding:18px 24px;">
+        <h2 style="margin:0;">${libraryName}</h2>
+        <p style="margin:6px 0 0;">Book Due Reminder</p>
+      </div>
+      <div style="padding:24px;color:#374151;">
+        <p>Dear ${borrowerName || "Member"},</p>
+        <p>This is a reminder that your issued book is due <strong>${dayText}</strong>.</p>
+        <table width="100%" cellpadding="8" cellspacing="0" style="border-collapse:collapse;font-size:14px;">
+          <tr><td><strong>Name</strong></td><td>${borrowerName || "N/A"}</td></tr>
+          <tr><td><strong>User Type</strong></td><td>${userType || "N/A"}</td></tr>
+          <tr><td><strong>Member ID</strong></td><td>${memberId || "N/A"}</td></tr>
+          <tr><td><strong>Book</strong></td><td>${bookName || "N/A"}</td></tr>
+          <tr><td><strong>Issue Date</strong></td><td>${fromDate || "N/A"}</td></tr>
+          <tr><td><strong>Due Date</strong></td><td>${toDate || "N/A"}</td></tr>
+          <tr><td><strong>Transaction ID</strong></td><td>${transactionId || "N/A"}</td></tr>
+        </table>
+        <p style="margin-top:18px;">Please return the book on time to avoid fines. For help, contact <a href="mailto:${libraryContactEmail}">${libraryContactEmail}</a>.</p>
+      </div>
+      <div style="background:#f9fafb;padding:14px 24px;color:#6b7280;font-size:12px;text-align:center;">
+        ${libraryName}${libraryAddress ? " · " + libraryAddress : ""}
+      </div>
+    </div>
+  </div>`;
+
+  console.log(`📧 Sending due reminder email to ${recipient} for ${bookName}`);
+  await sendLibraryEmail({ to, subject, html });
 }
 
 /* ===================== TEST EMAIL ROUTE ===================== */
@@ -382,12 +456,10 @@ router.get("/test-email", async (req, res) => {
       req.query.to || process.env.TEST_EMAIL_TO || libraryContactEmail
     );
 
-    await transporter.sendMail({
-      from: `"${mailFromName}" <${mailFromEmail}>`,
+    await sendLibraryEmail({
       to: testRecipient,
       subject: "Stamford Library Email Test",
       text: `This is a test email from ${libraryName}.`,
-      replyTo: libraryContactEmail,
     });
 
     res.send(`Email sent to ${testRecipient}`);
@@ -396,6 +468,117 @@ router.get("/test-email", async (req, res) => {
     res.status(500).send("Error sending email");
   }
 });
+
+const parseLibraryDate = (dateValue) => {
+  if (!dateValue) return null;
+
+  if (dateValue instanceof Date) return dateValue;
+
+  const raw = String(dateValue).trim();
+  const ddmmyyyy = raw.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  if (ddmmyyyy) {
+    return new Date(
+      Number(ddmmyyyy[3]),
+      Number(ddmmyyyy[2]) - 1,
+      Number(ddmmyyyy[1])
+    );
+  }
+
+  const parsed = new Date(raw);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
+const getStartOfDay = (date) => {
+  const result = new Date(date);
+  result.setHours(0, 0, 0, 0);
+  return result;
+};
+
+const getDaysUntilDue = (dateValue) => {
+  const dueDate = parseLibraryDate(dateValue);
+  if (!dueDate) return null;
+
+  const today = getStartOfDay(new Date());
+  const due = getStartOfDay(dueDate);
+  return Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+};
+
+const findBorrowerForTransaction = async (transaction) => {
+  let borrower = await User.findOne({ memberId: transaction.borrowerId });
+
+  if (!borrower) {
+    try {
+      borrower = await User.findById(transaction.borrowerId);
+    } catch (e) {
+      // ignore invalid ObjectId
+    }
+  }
+
+  return borrower;
+};
+
+const processDueReminders = async (daysBefore) => {
+  const transactions = await BookTransaction.find({
+    transactionType: "Issued",
+    transactionStatus: "Active",
+  });
+
+  const dueSoon = transactions.filter((transaction) => {
+    const daysRemaining = getDaysUntilDue(transaction.toDate);
+    return daysRemaining !== null && daysRemaining >= 0 && daysRemaining <= daysBefore;
+  });
+
+  let sent = 0;
+
+  for (const transaction of dueSoon) {
+    const borrower = await findBorrowerForTransaction(transaction);
+
+    if (!borrower?.email) {
+      console.warn(`Due reminder skipped: no borrower email for ${transaction._id}`);
+      continue;
+    }
+
+    await sendDueReminderEmail({
+      to: borrower.email,
+      borrowerName: borrower.userFullName || transaction.borrowerName,
+      userType: borrower.userType,
+      memberId: borrower.memberId,
+      bookName: transaction.bookName,
+      fromDate: transaction.fromDate,
+      toDate: transaction.toDate,
+      daysRemaining: getDaysUntilDue(transaction.toDate),
+      transactionId: transaction._id.toString(),
+    });
+    sent += 1;
+    await sleep(500);
+  }
+
+  return { matched: dueSoon.length, sent };
+};
+
+let lastDueReminderRunDate = "";
+const runAutomaticDueReminders = async () => {
+  const today = new Date().toISOString().slice(0, 10);
+
+  if (lastDueReminderRunDate === today) return;
+
+  lastDueReminderRunDate = today;
+
+  try {
+    const daysBefore = Number(process.env.DUE_REMINDER_DAYS_BEFORE || 1);
+    const result = await processDueReminders(daysBefore);
+    console.log(
+      `📧 Automatic due reminders processed: ${result.sent}/${result.matched} sent`
+    );
+  } catch (err) {
+    console.error("Automatic due reminder job failed:", err);
+  }
+};
+
+if (process.env.ENABLE_DUE_REMINDER_JOB === "true") {
+  setTimeout(runAutomaticDueReminders, 60 * 1000);
+  setInterval(runAutomaticDueReminders, 60 * 60 * 1000);
+}
 
 /* ===================== TRANSACTION ROUTES ===================== */
 
@@ -603,7 +786,7 @@ router.put("/pay-fine/:id", async (req, res) => {
       return res.status(404).json({ message: "Transaction not found" });
     }
 
-    const payer = await User.findById(userId).select("memberId");
+    const payer = await User.findById(userId);
     const ownsTransaction =
       transaction.borrowerId === userId || transaction.borrowerId === payer?.memberId;
 
@@ -637,6 +820,23 @@ router.put("/pay-fine/:id", async (req, res) => {
 
     await syncTransactionFine(transaction);
     const updated = await transaction.save();
+    sendFinePaymentEmail({
+      to: payer?.email,
+      borrowerName: payer?.userFullName || transaction.borrowerName,
+      userType: payer?.userType,
+      memberId: payer?.memberId,
+      bookName: transaction.bookName,
+      paidAmount,
+      totalPaid: updated.fineAmountPaid,
+      dueAmount: updated.fineAmountDue,
+      totalFine: updated.fineTotalAccrued,
+      paymentMethod,
+      paymentReference,
+      paidAt: transaction.finePaidAt,
+      transactionId: updated._id.toString(),
+    }).catch((err) => {
+      console.error("Failed to send fine payment email:", err);
+    });
     return res.status(200).json(updated);
   } catch (err) {
     console.error("Error in /pay-fine/:id:", err);
@@ -695,9 +895,53 @@ router.put("/admin-record-fine-payment/:id", async (req, res) => {
 
     await syncTransactionFine(transaction);
     const updated = await transaction.save();
+    const borrower = await findBorrowerForTransaction(updated);
+    sendFinePaymentEmail({
+      to: borrower?.email,
+      borrowerName: borrower?.userFullName || updated.borrowerName,
+      userType: borrower?.userType,
+      memberId: borrower?.memberId,
+      bookName: updated.bookName,
+      paidAmount,
+      totalPaid: updated.fineAmountPaid,
+      dueAmount: updated.fineAmountDue,
+      totalFine: updated.fineTotalAccrued,
+      paymentMethod,
+      paymentReference,
+      paidAt: updated.finePaidAt,
+      transactionId: updated._id.toString(),
+    }).catch((err) => {
+      console.error("Failed to send admin fine payment email:", err);
+    });
     return res.status(200).json(updated);
   } catch (err) {
     console.error("Error in /admin-record-fine-payment/:id:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+// SEND DUE REMINDERS FOR ISSUED BOOKS DUE SOON
+router.post("/send-due-reminders", async (req, res) => {
+  try {
+    const daysBefore = Number(req.body.daysBefore ?? process.env.DUE_REMINDER_DAYS_BEFORE ?? 1);
+
+    if (!req.body.isAdmin) {
+      return res.status(403).json({ message: "Only admin can send due reminders" });
+    }
+
+    if (!Number.isFinite(daysBefore) || daysBefore < 0) {
+      return res.status(400).json({ message: "daysBefore must be zero or more" });
+    }
+
+    const result = await processDueReminders(daysBefore);
+
+    return res.status(200).json({
+      message: "Due reminder emails processed",
+      matched: result.matched,
+      sent: result.sent,
+    });
+  } catch (err) {
+    console.error("Error in /send-due-reminders:", err);
     return res.status(500).json({ message: "Server error" });
   }
 });
