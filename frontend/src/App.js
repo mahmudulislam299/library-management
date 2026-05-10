@@ -24,11 +24,7 @@ function App() {
         <Switch>
           {/* Home */}
           <Route exact path="/">
-            {user
-              ? isAdmin
-                ? <Redirect to="/dashboard@admin" />
-                : <Redirect to="/dashboard@member" />
-              : <Home />}
+            <Home />
           </Route>
 
           {/* Signin */}

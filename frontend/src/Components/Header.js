@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import "./Header.css";
 import MenuIcon from "@material-ui/icons/Menu";
 import CloseIcon from "@material-ui/icons/Close";
@@ -7,10 +7,18 @@ import { AuthContext } from "../Context/AuthContext"; // adjust path if needed
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user } = useContext(AuthContext);
+  const { user, dispatch } = useContext(AuthContext);
+  const history = useHistory();
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
   const closeMenu = () => setMenuOpen(false);
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    dispatch({ type: "LOGOUT" });
+    closeMenu();
+    history.push("/");
+  };
 
   const getUserInitial = () => {
     if (!user) return "";
@@ -64,11 +72,17 @@ function Header() {
             <div className="user-avatar">{getUserInitial()}</div>
           </div>
           <div className="user-meta">
-            <span className="user-name" title={user.name}>
-              {user.name}
+            <span
+              className="user-name"
+              title={user.userFullName || user.name || "Member"}
+            >
+              {user.userFullName || user.name || "Member"}
             </span>
             <span className="user-id">{getIdLabel()}</span>
           </div>
+          <button className="header-logout-btn" type="button" onClick={logout}>
+            Logout
+          </button>
         </div>
       ) : (
         <Link
@@ -98,16 +112,24 @@ function Header() {
         <Link to="/books" onClick={closeMenu}>
           Books
         </Link>
-        <Link to="/signin" onClick={closeMenu}>
-          Sign In
-        </Link>
+        {user ? (
+          <button className="mobile-logout-btn" type="button" onClick={logout}>
+            Logout
+          </button>
+        ) : (
+          <Link to="/signin" onClick={closeMenu}>
+            Sign In
+          </Link>
+        )}
 
         {/* User info inside mobile menu (optional but nice) */}
         {user && (
           <div className="mobile-user-box">
             <div className="mobile-user-avatar">{getUserInitial()}</div>
             <div className="mobile-user-meta">
-              <span className="mobile-user-name">{user.name}</span>
+              <span className="mobile-user-name">
+                {user.userFullName || user.name || "Member"}
+              </span>
               <span className="mobile-user-id">{getIdLabel()}</span>
             </div>
           </div>
