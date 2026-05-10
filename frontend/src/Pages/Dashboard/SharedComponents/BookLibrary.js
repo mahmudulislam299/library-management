@@ -195,6 +195,7 @@ function BookLibrary() {
 
     try {
       await axios.delete(`${API_URL}/api/books/removebook/${book._id}`, {
+        params: { isAdmin: user.isAdmin },
         data: { isAdmin: user.isAdmin },
       });
 

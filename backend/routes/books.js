@@ -231,8 +231,6 @@ router.delete("/removebook/:id", async (req, res) => {
       return res.status(404).json("Book not found");
     }
 
-    await book.remove();
-
     if (book.categories && book.categories.length > 0) {
       await BookCategory.updateMany(
         { _id: { $in: book.categories } },
@@ -240,8 +238,11 @@ router.delete("/removebook/:id", async (req, res) => {
       );
     }
 
+    await Book.deleteOne({ _id });
+
     res.status(200).json("Book has been deleted");
   } catch (err) {
+    console.error("Error in /removebook/:id:", err);
     return res.status(504).json(err);
   }
 });

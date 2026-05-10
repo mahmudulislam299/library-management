@@ -44,7 +44,7 @@ function AdminDashboard() {
     { id: "library", icon: LibraryBooks, label: "Library" }, // 🔹 New Tab
     { id: "addbook", icon: Book, label: "Add Book" },
     { id: "addtransaction", icon: Receipt, label: "Add Transaction" },
-    { id: "getmember", icon: AccountBox, label: "Get Member" },
+    { id: "getmember", icon: AccountBox, label: "Member Full Info" },
     { id: "addmember", icon: PersonAdd, label: "Add Member" },
     { id: "returntransaction", icon: AssignmentReturn, label: "Return" },
   ];
