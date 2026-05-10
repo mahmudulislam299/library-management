@@ -6,6 +6,7 @@ import AddBook from "./Components/AddBook";
 import GetMember from "./Components/GetMember";
 import Return from "./Components/Return";
 import AdminProfile from "./Components/AdminProfile";
+import FineManagement from "./Components/FineManagement";
 import BookLibrary from "../SharedComponents/BookLibrary";
 
 import {
@@ -19,6 +20,7 @@ import {
   AccountBox,
   AssignmentReturn,
   PowerSettingsNew,
+  Payment,
 } from "@material-ui/icons";
 import { IconButton } from "@material-ui/core";
 
@@ -45,6 +47,7 @@ function AdminDashboard() {
     { id: "addbook", icon: Book, label: "Book Registration" },
     { id: "addtransaction", icon: Receipt, label: "Issue / Reserve Book" },
     { id: "getmember", icon: AccountBox, label: "Member Full Info" },
+    { id: "finemanagement", icon: Payment, label: "Fine Tracking" },
     { id: "addmember", icon: PersonAdd, label: "Member Registration" },
     { id: "returntransaction", icon: AssignmentReturn, label: "Return Desk" },
   ];
@@ -128,6 +131,13 @@ function AdminDashboard() {
             style={{ display: active === "returntransaction" ? "block" : "none" }}
           >
             <Return />
+          </div>
+
+          <div
+            className="content-wrapper"
+            style={{ display: active === "finemanagement" ? "block" : "none" }}
+          >
+            <FineManagement />
           </div>
 
           {/* 🔹 Library Tab */}

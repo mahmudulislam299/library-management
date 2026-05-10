@@ -485,6 +485,211 @@
   z-index: 40;
 }
 
+.fine-admin-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.fine-admin-card {
+  min-height: 112px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(15,26,46,.72);
+  box-shadow: 0 10px 28px rgba(0,0,0,.25);
+}
+
+.fine-admin-card span {
+  color: #b0b7c2;
+  font-size: .86rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.fine-admin-card strong {
+  color: var(--gold);
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.fine-admin-card.danger strong {
+  color: #f87171;
+}
+
+.fine-admin-card.paid strong {
+  color: #86efac;
+}
+
+.fine-admin-controls {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) minmax(180px, 240px);
+  gap: 14px;
+  z-index: 20;
+}
+
+.fine-admin-controls input,
+.fine-admin-controls select,
+.fine-admin-modal input,
+.fine-admin-modal select {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #1a2236;
+  color: var(--text);
+  font-family: inherit;
+}
+
+.fine-admin-table td:first-child {
+  min-width: 170px;
+}
+
+.fine-admin-muted,
+.fine-admin-payment-info span {
+  display: block;
+  margin-top: 4px;
+  color: #b0b7c2;
+  font-size: .8rem;
+}
+
+.fine-admin-payment-info strong {
+  color: var(--gold);
+}
+
+.fine-admin-status {
+  display: inline-flex;
+  justify-content: center;
+  min-width: 74px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: .78rem;
+  font-weight: 800;
+}
+
+.fine-admin-status.due {
+  color: #fecaca;
+  background: rgba(220,38,38,.2);
+  border: 1px solid rgba(248,113,113,.42);
+}
+
+.fine-admin-status.partial {
+  color: #fde68a;
+  background: rgba(245,158,11,.18);
+  border: 1px solid rgba(245,158,11,.38);
+}
+
+.fine-admin-status.paid,
+.fine-admin-status.clear {
+  color: #bbf7d0;
+  background: rgba(22,163,74,.18);
+  border: 1px solid rgba(34,197,94,.35);
+}
+
+.fine-admin-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(3,8,20,.72);
+}
+
+.fine-admin-modal {
+  width: min(480px, 100%);
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #101a2d;
+  color: var(--text);
+  box-shadow: 0 24px 70px rgba(0,0,0,.45);
+}
+
+.fine-admin-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.fine-admin-modal-header h3,
+.fine-admin-modal-header p {
+  margin: 0;
+}
+
+.fine-admin-modal-header h3 {
+  color: var(--gold);
+}
+
+.fine-admin-modal-header p {
+  margin-top: 4px;
+  color: #b0b7c2;
+}
+
+.fine-admin-modal-header button {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255,255,255,.08);
+  color: var(--text);
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.fine-admin-amount-box {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background: rgba(245,158,11,.12);
+  border: 1px solid var(--border);
+}
+
+.fine-admin-amount-box span {
+  color: #b0b7c2;
+  font-weight: 700;
+}
+
+.fine-admin-amount-box strong {
+  color: var(--gold);
+}
+
+.fine-admin-modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 12px;
+  color: #d0d6e2;
+  font-weight: 700;
+}
+
+.fine-admin-submit {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 16px;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--gold), var(--accent));
+  color: #101828;
+  font-family: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.fine-admin-submit:disabled {
+  cursor: not-allowed;
+  opacity: .7;
+}
+
 .member-insights-page {
   display: flex;
   flex-direction: column;
@@ -763,7 +968,9 @@
   }
 
   .member-summary-grid,
-  .member-alert-grid {
+  .member-alert-grid,
+  .fine-admin-summary-grid,
+  .fine-admin-controls {
     grid-template-columns: 1fr;
   }
 

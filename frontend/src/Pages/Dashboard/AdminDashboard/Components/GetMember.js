@@ -28,6 +28,10 @@ function GetMember() {
   };
 
   const getDaysLate = (transaction) => {
+    if (typeof transaction?.fineDaysLate === "number") {
+      return transaction.fineDaysLate;
+    }
+
     const dueDate = parseDate(transaction?.toDate);
     if (!dueDate) return 0;
 
@@ -35,7 +39,10 @@ function GetMember() {
     return daysLate > 0 ? daysLate : 0;
   };
 
-  const getFine = (transaction) => getDaysLate(transaction) * 10;
+  const getFine = (transaction) =>
+    typeof transaction?.fineAmountDue === "number"
+      ? transaction.fineAmountDue
+      : getDaysLate(transaction) * 10;
 
   const getDaysLeft = (transaction) => {
     const dueDate = parseDate(transaction?.toDate);

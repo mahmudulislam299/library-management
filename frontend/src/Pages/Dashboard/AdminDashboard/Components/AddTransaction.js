@@ -36,6 +36,7 @@ function AddTransaction() {
   // Configurable periods
   const ISSUE_PERIOD_DAYS = 10;
   const RESERVE_PERIOD_DAYS = 3; // change this
+  const RECENT_TRANSACTION_LIMIT = 30;
 
   // Helper: add N days to a JS Date
   const addDays = (date, days) => {
@@ -103,7 +104,9 @@ function AddTransaction() {
             });
           }
 
-          setRecentTransactions((prev) => [response.data, ...prev].slice(0, 5));
+          setRecentTransactions((prev) =>
+            [response.data, ...prev].slice(0, RECENT_TRANSACTION_LIMIT)
+          );
           setBorrowerId("");
           setBookId("");
           setTransactionType("");
@@ -132,7 +135,7 @@ function AddTransaction() {
         const response = await axios.get(
           `${API_URL}/api/transactions/all-transactions`
         );
-        setRecentTransactions(response.data.slice(0, 5));
+        setRecentTransactions(response.data.slice(0, RECENT_TRANSACTION_LIMIT));
       } catch (err) {
         console.log("Error in fetching transactions");
       }
@@ -497,7 +500,11 @@ function AddTransaction() {
             <th>S.No</th>
             <th>Book Name</th>
             <th>Borrower Name</th>
-            <th>Date</th>
+            <th>Type</th>
+            <th>Issue Date</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Record Date</th>
           </tr>
         </thead>
         <tbody>
@@ -507,7 +514,21 @@ function AddTransaction() {
                 <td>{index + 1}</td>
                 <td>{transaction.bookName}</td>
                 <td>{transaction.borrowerName}</td>
-                <td>{moment(transaction.updatedAt).format("DD-MM-YYYY")}</td>
+                <td>{transaction.transactionType}</td>
+                <td>
+                  {moment(
+                    transaction.fromDate,
+                    ["DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601]
+                  ).format("DD-MM-YYYY")}
+                </td>
+                <td>
+                  {moment(
+                    transaction.toDate,
+                    ["DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601]
+                  ).format("DD-MM-YYYY")}
+                </td>
+                <td>{transaction.transactionStatus}</td>
+                <td>{moment(transaction.createdAt || transaction.updatedAt).format("DD-MM-YYYY")}</td>
               </tr>
             );
           })}

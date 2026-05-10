@@ -32,6 +32,75 @@ const BookTransactionSchema = new mongoose.Schema({
     returnDate: {
         type: String
     },
+    finePaid: {
+        type: Boolean,
+        default: false
+    },
+    fineAmountDue: {
+        type: Number,
+        default: 0
+    },
+    fineAmountPaid: {
+        type: Number,
+        default: 0
+    },
+    fineTotalAccrued: {
+        type: Number,
+        default: 0
+    },
+    fineDaysLate: {
+        type: Number,
+        default: 0
+    },
+    fineRatePerDay: {
+        type: Number,
+        default: 10
+    },
+    fineLastCalculatedAt: {
+        type: Date
+    },
+    finePaymentMethod: {
+        type: String,
+        enum: ["bKash", "Mobile Banking", "Regular Banking", ""],
+        default: ""
+    },
+    finePaymentReference: {
+        type: String,
+        default: ""
+    },
+    finePaidAt: {
+        type: Date
+    },
+    finePayments: [
+        {
+            amount: {
+                type: Number,
+                required: true
+            },
+            method: {
+                type: String,
+                enum: ["bKash", "Mobile Banking", "Regular Banking"],
+                required: true
+            },
+            reference: {
+                type: String,
+                default: ""
+            },
+            paidAt: {
+                type: Date,
+                default: Date.now
+            },
+            recordedBy: {
+                type: String,
+                default: ""
+            },
+            recordedByRole: {
+                type: String,
+                enum: ["Member", "Admin"],
+                default: "Member"
+            }
+        }
+    ],
     transactionStatus: {
         type: String,
         default: "Active"

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import "../AdminDashboard/AdminDashboard.css";
 import "./MemberDashboard.css";
 import BookLibrary from "../SharedComponents/BookLibrary";
@@ -12,6 +12,7 @@ import {
   PowerSettingsNew,
   Close,
   DoubleArrow,
+  Payment,
 } from "@material-ui/icons";
 import { IconButton } from "@material-ui/core";
 import { AuthContext } from "../../../Context/AuthContext";
@@ -24,6 +25,12 @@ function MemberDashboard() {
   const API_URL = process.env.REACT_APP_API_URL;
   const { user } = useContext(AuthContext);
   const [memberDetails, setMemberDetails] = useState(null);
+  const [selectedFine, setSelectedFine] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState("bKash");
+  const [paymentReference, setPaymentReference] = useState("");
+  const [isPayingFine, setIsPayingFine] = useState(false);
+
+  const FINE_PER_DAY = 10;
 
   // 🔁 Common date formatter
   const formatDate = (dateStr) => {
@@ -33,8 +40,41 @@ function MemberDashboard() {
     );
   };
 
-  useEffect(() => {
-    const getMemberDetails = async () => {
+  const getDaysLate = (transaction) => {
+    if (typeof transaction?.fineDaysLate === "number") {
+      return transaction.fineDaysLate;
+    }
+
+    const dueDate = moment(
+      transaction?.toDate,
+      ["DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601]
+    ).startOf("day");
+
+    if (!dueDate.isValid()) return 0;
+
+    const daysLate = moment().startOf("day").diff(dueDate, "days");
+    return daysLate > 0 ? daysLate : 0;
+  };
+
+  const getFineAmount = (transaction) => {
+    if (typeof transaction?.fineAmountDue === "number") {
+      return transaction.fineAmountDue;
+    }
+
+    return getDaysLate(transaction) * FINE_PER_DAY;
+  };
+
+  const getRawFineAmount = (transaction) => {
+    if (typeof transaction?.fineTotalAccrued === "number") {
+      return transaction.fineTotalAccrued;
+    }
+
+    return getDaysLate(transaction) * FINE_PER_DAY;
+  };
+
+  const refreshMemberDetails = useCallback(async () => {
+    if (!user?._id) return;
+
       try {
         const response = await axios.get(
           `${API_URL}/api/users/getuser/${user._id}`
@@ -43,9 +83,70 @@ function MemberDashboard() {
       } catch (err) {
         console.log("Error fetching member details", err);
       }
-    };
-    if (user?._id) getMemberDetails();
   }, [API_URL, user]);
+
+  useEffect(() => {
+    refreshMemberDetails();
+  }, [refreshMemberDetails]);
+
+  const fineTransactions = [
+    ...(memberDetails?.activeTransactions || []),
+    ...(memberDetails?.prevTransactions || []),
+  ].filter((transaction) => getRawFineAmount(transaction) > 0);
+  const unpaidFineTransactions = fineTransactions.filter(
+    (transaction) => !transaction.finePaid
+  );
+  const totalDue = unpaidFineTransactions.reduce(
+    (sum, transaction) => sum + getFineAmount(transaction),
+    0
+  );
+  const totalPaid = fineTransactions.reduce(
+    (sum, transaction) => sum + (transaction.fineAmountPaid || 0),
+    0
+  );
+
+  const openFinePayment = (transaction) => {
+    setSelectedFine(transaction);
+    setPaymentMethod("bKash");
+    setPaymentReference("");
+  };
+
+  const closeFinePayment = () => {
+    setSelectedFine(null);
+    setPaymentReference("");
+    setIsPayingFine(false);
+  };
+
+  const payFine = async (e) => {
+    e.preventDefault();
+
+    if (!selectedFine) return;
+
+    const amount = getFineAmount(selectedFine);
+    if (amount <= 0) {
+      alert("There is no unpaid fine for this transaction.");
+      closeFinePayment();
+      return;
+    }
+
+    setIsPayingFine(true);
+
+    try {
+      await axios.put(`${API_URL}/api/transactions/pay-fine/${selectedFine._id}`, {
+        userId: user._id,
+        amount,
+        paymentMethod,
+        paymentReference,
+      });
+      await refreshMemberDetails();
+      alert("Demo payment completed. Fine cleared.");
+      closeFinePayment();
+    } catch (err) {
+      console.log("Error paying fine", err);
+      alert(err.response?.data?.message || "Failed to complete demo payment.");
+      setIsPayingFine(false);
+    }
+  };
 
   const logout = () => {
     localStorage.removeItem("user");
@@ -119,6 +220,16 @@ function MemberDashboard() {
             }}
           >
             <History className="dashboard-option-icon" /> History
+          </p>
+
+          <p
+            className={`dashboard-option ${active === "fines" ? "clicked" : ""}`}
+            onClick={() => {
+              setActive("fines");
+              setSidebar(false);
+            }}
+          >
+            <Payment className="dashboard-option-icon" /> Fine Payment
           </p>
 
           {/* 🔹 New Library tab */}
@@ -225,19 +336,16 @@ function MemberDashboard() {
                     <th>From</th>
                     <th>To</th>
                     <th>Fine (BDT)</th>
+                    <th>Status</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
                   {memberDetails?.activeTransactions
                     ?.filter((t) => t.transactionType === "Issued")
                     .map((t, i) => {
-                      const toMoment = moment(
-                        t.toDate,
-                        ["DD-MM-YYYY", "MM/DD/YYYY", moment.ISO_8601]
-                      ).startOf("day");
-                      const today = moment().startOf("day");
-                      const daysLate = today.diff(toMoment, "days");
-                      const fine = daysLate > 0 ? daysLate * 10 : 0;
+                      const fineDue = getFineAmount(t);
+                      const rawFine = getRawFineAmount(t);
 
                       return (
                         <tr key={i}>
@@ -245,7 +353,26 @@ function MemberDashboard() {
                           <td>{t.bookName}</td>
                           <td>{formatDate(t.fromDate)}</td>
                           <td>{formatDate(t.toDate)}</td>
-                          <td>{fine}</td>
+                          <td>{rawFine}</td>
+                          <td>
+                            {t.finePaid ? (
+                              <span className="fine-status paid">Paid</span>
+                            ) : fineDue > 0 ? (
+                              <span className="fine-status due">Due</span>
+                            ) : (
+                              <span className="fine-status clear">Clear</span>
+                            )}
+                          </td>
+                          <td>
+                            {fineDue > 0 && !t.finePaid && (
+                              <button
+                                className="fine-pay-button"
+                                onClick={() => openFinePayment(t)}
+                              >
+                                Pay Fine
+                              </button>
+                            )}
+                          </td>
                         </tr>
                       );
                     })}
@@ -301,18 +428,129 @@ function MemberDashboard() {
                     <th>From</th>
                     <th>To</th>
                     <th>Returned</th>
+                    <th>Fine</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {memberDetails?.prevTransactions?.map((t, i) => (
-                    <tr key={i}>
-                      <td>{i + 1}</td>
-                      <td>{t.bookName}</td>
-                      <td>{formatDate(t.fromDate)}</td>
-                      <td>{formatDate(t.toDate)}</td>
-                      <td>{formatDate(t.returnDate)}</td>
+                  {memberDetails?.prevTransactions?.map((t, i) => {
+                    const rawFine = getRawFineAmount(t);
+
+                    return (
+                      <tr key={i}>
+                        <td>{i + 1}</td>
+                        <td>{t.bookName}</td>
+                        <td>{formatDate(t.fromDate)}</td>
+                        <td>{formatDate(t.toDate)}</td>
+                        <td>{formatDate(t.returnDate)}</td>
+                        <td>
+                          {rawFine > 0 ? (
+                            t.finePaid ? (
+                              <span className="fine-status paid">
+                                Paid {t.fineAmountPaid || rawFine} BDT
+                              </span>
+                            ) : (
+                              <button
+                                className="fine-pay-button"
+                                onClick={() => openFinePayment(t)}
+                              >
+                                Pay {rawFine} BDT
+                              </button>
+                            )
+                          ) : (
+                            <span className="fine-status clear">Clear</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Fine Payment */}
+          <div
+            className="content-wrapper"
+            style={active !== "fines" ? { display: "none" } : {}}
+          >
+            <div className="member-fine-content">
+              <div className="fine-header">
+                <div>
+                  <p className="member-dashboard-heading">Fine Payment</p>
+                  <p className="fine-subtitle">
+                    Demo payments clear overdue fines in this library account.
+                  </p>
+                </div>
+              </div>
+
+              <div className="fine-summary-grid">
+                <div className="fine-summary-card due">
+                  <span>Total Due</span>
+                  <strong>{totalDue} BDT</strong>
+                </div>
+                <div className="fine-summary-card paid">
+                  <span>Total Paid</span>
+                  <strong>{totalPaid} BDT</strong>
+                </div>
+                <div className="fine-summary-card">
+                  <span>Unpaid Items</span>
+                  <strong>{unpaidFineTransactions.length}</strong>
+                </div>
+              </div>
+
+              <table className="activebooks-table fine-table">
+                <thead>
+                  <tr>
+                    <th>Book Name</th>
+                    <th>Due Date</th>
+                    <th>Days Late</th>
+                    <th>Fine</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {fineTransactions.length === 0 ? (
+                    <tr>
+                      <td colSpan="6" className="fine-empty-row">
+                        No fines found.
+                      </td>
                     </tr>
-                  ))}
+                  ) : (
+                    fineTransactions.map((transaction) => {
+                      const fine = getFineAmount(transaction);
+                      const rawFine = getRawFineAmount(transaction);
+
+                      return (
+                        <tr key={transaction._id}>
+                          <td>{transaction.bookName}</td>
+                          <td>{formatDate(transaction.toDate)}</td>
+                          <td>{getDaysLate(transaction)}</td>
+                          <td>{rawFine} BDT</td>
+                          <td>
+                            {transaction.finePaid ? (
+                              <span className="fine-status paid">
+                                Paid {transaction.fineAmountPaid || rawFine} BDT via{" "}
+                                {transaction.finePaymentMethod}
+                              </span>
+                            ) : (
+                              <span className="fine-status due">Due</span>
+                            )}
+                          </td>
+                          <td>
+                            {fine > 0 && !transaction.finePaid && (
+                              <button
+                                className="fine-pay-button"
+                                onClick={() => openFinePayment(transaction)}
+                              >
+                                Pay Now
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
@@ -330,6 +568,53 @@ function MemberDashboard() {
               <BookLibrary />
             </div>
           </div>
+
+          {selectedFine && (
+            <div className="fine-payment-overlay" role="dialog" aria-modal="true">
+              <form className="fine-payment-modal" onSubmit={payFine}>
+                <div className="fine-payment-header">
+                  <div>
+                    <h3>Demo Fine Payment</h3>
+                    <p>{selectedFine.bookName}</p>
+                  </div>
+                  <button type="button" onClick={closeFinePayment}>
+                    Close
+                  </button>
+                </div>
+
+                <div className="fine-payment-amount">
+                  <span>Amount to pay</span>
+                  <strong>{getFineAmount(selectedFine)} BDT</strong>
+                </div>
+
+                <label>
+                  Payment Method
+                  <select
+                    value={paymentMethod}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                  >
+                    <option value="bKash">bKash</option>
+                    <option value="Mobile Banking">Mobile Banking</option>
+                    <option value="Regular Banking">Regular Banking</option>
+                  </select>
+                </label>
+
+                <label>
+                  Demo Reference
+                  <input
+                    type="text"
+                    value={paymentReference}
+                    onChange={(e) => setPaymentReference(e.target.value)}
+                    placeholder="Transaction ID / account note"
+                  />
+                </label>
+
+                <button className="fine-payment-submit" disabled={isPayingFine}>
+                  {isPayingFine ? "Processing..." : "Complete Demo Payment"}
+                </button>
+              </form>
+            </div>
+          )}
         </div>
       </div>
     </div>

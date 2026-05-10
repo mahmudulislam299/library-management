@@ -1,6 +1,7 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
+import { syncTransactionFines } from "../utils/fines.js";
 
 const router = express.Router();
 
@@ -15,6 +16,11 @@ router.get("/getuser/:id", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    await syncTransactionFines([
+      ...(user.activeTransactions || []),
+      ...(user.prevTransactions || []),
+    ]);
 
     res.status(200).json(user);
   } catch (err) {
@@ -35,6 +41,11 @@ router.get("/by-memberid/:memberId", async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    await syncTransactionFines([
+      ...(user.activeTransactions || []),
+      ...(user.prevTransactions || []),
+    ]);
+
     res.status(200).json(user);
   } catch (err) {
     console.error("Error in /by-memberid/:memberId:", err.message);
@@ -50,6 +61,13 @@ router.get("/allmembers", async (req, res) => {
       .populate("prevTransactions")
       .sort({ _id: -1 })
       .select("-password -updatedAt -__v");
+
+    await syncTransactionFines(
+      users.flatMap((user) => [
+        ...(user.activeTransactions || []),
+        ...(user.prevTransactions || []),
+      ])
+    );
 
     res.status(200).json(users);
   } catch (err) {

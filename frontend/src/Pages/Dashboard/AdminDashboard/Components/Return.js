@@ -234,7 +234,12 @@ function Return() {
               ).startOf("day");
               const today = moment().startOf("day");
               const daysLate = today.diff(toMoment, "days");
-              const fine = daysLate > 0 ? daysLate * 10 : 0;
+              const fine =
+                typeof data.fineAmountDue === "number"
+                  ? data.fineAmountDue
+                  : daysLate > 0
+                  ? daysLate * 10
+                  : 0;
 
               return (
                 <tr key={index}>
@@ -242,7 +247,7 @@ function Return() {
                   <td>{data.borrowerName}</td>
                   <td>{formatDate(data.fromDate)}</td>
                   <td>{formatDate(data.toDate)}</td>
-                  <td>{fine}</td>
+                  <td>{data.finePaid ? "Paid" : fine}</td>
                   <td>
                     <button
                       className="return-book-btn"

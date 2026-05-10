@@ -4,6 +4,7 @@ import nodemailer from "nodemailer";
 import Book from "../models/Book.js";
 import BookTransaction from "../models/BookTransaction.js";
 import User from "../models/User.js";
+import { syncTransactionFine, syncTransactionFines } from "../utils/fines.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -464,6 +465,7 @@ router.post("/add-transaction", async (req, res) => {
 router.get("/all-transactions", async (req, res) => {
   try {
     const transactions = await BookTransaction.find({}).sort({ _id: -1 });
+    await syncTransactionFines(transactions);
     res.status(200).json(transactions);
   } catch (err) {
     return res.status(504).json(err);
@@ -493,6 +495,7 @@ router.put("/update-transaction/:id", async (req, res) => {
       { $set: req.body },
       { new: true }
     );
+    await syncTransactionFine(updated);
 
     res.status(200).json("Transaction details updated successfully");
 
@@ -562,6 +565,124 @@ router.put("/update-transaction/:id", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(504).json(err);
+  }
+});
+
+// DEMO FINE PAYMENT
+router.put("/pay-fine/:id", async (req, res) => {
+  try {
+    const { userId, amount, paymentMethod, paymentReference } = req.body;
+    const allowedMethods = ["bKash", "Mobile Banking", "Regular Banking"];
+
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
+    }
+
+    if (!allowedMethods.includes(paymentMethod)) {
+      return res.status(400).json({ message: "Invalid payment method" });
+    }
+
+    const transaction = await BookTransaction.findById(req.params.id);
+    if (!transaction) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+
+    const payer = await User.findById(userId).select("memberId");
+    const ownsTransaction =
+      transaction.borrowerId === userId || transaction.borrowerId === payer?.memberId;
+
+    if (!ownsTransaction) {
+      return res.status(403).json({ message: "You can only pay your own fine" });
+    }
+
+    await syncTransactionFine(transaction);
+
+    const paidAmount = Number(amount);
+    if (!Number.isFinite(paidAmount) || paidAmount <= 0) {
+      return res.status(400).json({ message: "A valid fine amount is required" });
+    }
+
+    if (transaction.fineAmountDue <= 0) {
+      return res.status(400).json({ message: "No unpaid fine is available" });
+    }
+
+    transaction.fineAmountPaid = (transaction.fineAmountPaid || 0) + paidAmount;
+    transaction.finePaymentMethod = paymentMethod;
+    transaction.finePaymentReference = paymentReference || "";
+    transaction.finePaidAt = new Date();
+    transaction.finePayments.push({
+      amount: paidAmount,
+      method: paymentMethod,
+      reference: paymentReference || "",
+      paidAt: new Date(),
+      recordedBy: userId,
+      recordedByRole: "Member",
+    });
+
+    await syncTransactionFine(transaction);
+    const updated = await transaction.save();
+    return res.status(200).json(updated);
+  } catch (err) {
+    console.error("Error in /pay-fine/:id:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ADMIN DEMO FINE PAYMENT / MANUAL PAYMENT RECORD
+router.put("/admin-record-fine-payment/:id", async (req, res) => {
+  try {
+    const {
+      isAdmin,
+      adminId,
+      amount,
+      paymentMethod,
+      paymentReference,
+    } = req.body;
+    const allowedMethods = ["bKash", "Mobile Banking", "Regular Banking"];
+
+    if (!isAdmin) {
+      return res.status(403).json({ message: "Only admin can record payments" });
+    }
+
+    if (!allowedMethods.includes(paymentMethod)) {
+      return res.status(400).json({ message: "Invalid payment method" });
+    }
+
+    const transaction = await BookTransaction.findById(req.params.id);
+    if (!transaction) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+
+    await syncTransactionFine(transaction);
+
+    const paidAmount = Number(amount);
+    if (!Number.isFinite(paidAmount) || paidAmount <= 0) {
+      return res.status(400).json({ message: "A valid fine amount is required" });
+    }
+
+    if (transaction.fineAmountDue <= 0) {
+      return res.status(400).json({ message: "No unpaid fine is available" });
+    }
+
+    transaction.fineAmountPaid = (transaction.fineAmountPaid || 0) + paidAmount;
+    transaction.finePaymentMethod = paymentMethod;
+    transaction.finePaymentReference = paymentReference || "";
+    transaction.finePaidAt = new Date();
+    transaction.finePayments.push({
+      amount: paidAmount,
+      method: paymentMethod,
+      reference: paymentReference || "",
+      paidAt: new Date(),
+      recordedBy: adminId || "",
+      recordedByRole: "Admin",
+    });
+
+    await syncTransactionFine(transaction);
+    const updated = await transaction.save();
+    return res.status(200).json(updated);
+  } catch (err) {
+    console.error("Error in /admin-record-fine-payment/:id:", err);
+    return res.status(500).json({ message: "Server error" });
   }
 });
 
