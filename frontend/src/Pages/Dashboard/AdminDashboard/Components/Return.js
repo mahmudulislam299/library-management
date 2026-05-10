@@ -202,6 +202,7 @@ function Return() {
                   <td>{fine}</td>
                   <td>
                     <button
+                      className="return-book-btn"
                       onClick={() => {
                         returnBook(
                           data._id,
