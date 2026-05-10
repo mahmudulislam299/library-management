@@ -26,16 +26,8 @@ function AddTransaction() {
   const [toDate, setToDate] = useState(null);
   const [toDateString, setToDateString] = useState(null);
 
-  const transactionTypes = [
-    { value: "Reserved", text: "Reserve" },
-    { value: "Issued", text: "Issue" },
-  ];
-
-  const [transactionType, setTransactionType] = useState("");
-
   // Configurable periods
   const ISSUE_PERIOD_DAYS = 10;
-  const RESERVE_PERIOD_DAYS = 3; // change this
   const RECENT_TRANSACTION_LIMIT = 30;
 
   // Helper: add N days to a JS Date
@@ -53,7 +45,6 @@ function AddTransaction() {
     if (
       bookId !== "" &&
       borrowerId !== "" &&
-      transactionType !== "" &&
       fromDate !== null &&
       toDate !== null
     ) {
@@ -65,18 +56,13 @@ function AddTransaction() {
       );
 
       /* Checking whether the book is available or not */
-      if (
-        (book_details.data.bookCountAvailable > 0 &&
-          (transactionType === "Issued" || transactionType === "Reserved")) ||
-        (book_details.data.bookCountAvailable === 0 &&
-          transactionType === "Reserved")
-      ) {
+      if (book_details.data.bookCountAvailable > 0) {
         const transactionData = {
           bookId: bookId,
           borrowerId: borrowerId,
           borrowerName: borrower_details.data.userFullName,
           bookName: book_details.data.bookName,
-          transactionType: transactionType,
+          transactionType: "Issued",
           // store as DD-MM-YYYY
           fromDate: fromDateString,
           toDate: toDateString,
@@ -97,19 +83,16 @@ function AddTransaction() {
             }
           );
 
-          if (transactionType === "Issued") {
-            await axios.put(`${API_URL}/api/books/updatebook/${bookId}`, {
-              isAdmin: user.isAdmin,
-              bookCountAvailable: book_details.data.bookCountAvailable - 1,
-            });
-          }
+          await axios.put(`${API_URL}/api/books/updatebook/${bookId}`, {
+            isAdmin: user.isAdmin,
+            bookCountAvailable: book_details.data.bookCountAvailable - 1,
+          });
 
           setRecentTransactions((prev) =>
             [response.data, ...prev].slice(0, RECENT_TRANSACTION_LIMIT)
           );
           setBorrowerId("");
           setBookId("");
-          setTransactionType("");
           setFromDate(null);
           setToDate(null);
           setFromDateString(null);
@@ -135,7 +118,11 @@ function AddTransaction() {
         const response = await axios.get(
           `${API_URL}/api/transactions/all-transactions`
         );
-        setRecentTransactions(response.data.slice(0, RECENT_TRANSACTION_LIMIT));
+        setRecentTransactions(
+          response.data
+            .filter((transaction) => transaction.transactionType === "Issued")
+            .slice(0, RECENT_TRANSACTION_LIMIT)
+        );
       } catch (err) {
         console.log("Error in fetching transactions");
       }
@@ -220,21 +207,22 @@ function AddTransaction() {
 
   const activeBorrowerTransactions =
     borrowerDetails.activeTransactions?.filter((data) => {
-      return data.transactionStatus === "Active";
+      return (
+        data.transactionStatus === "Active" &&
+        data.transactionType === "Issued"
+      );
     }) || [];
 
   return (
     <div className="admin-workflow-page">
       <div className="admin-page-header">
         <div>
-          <p className="dashboard-option-title">Issue / Reserve Book</p>
+          <p className="dashboard-option-title">Issue Book</p>
           <p className="admin-page-subtitle">
-            Select a member, choose a book, and let the system calculate return or reservation dates.
+            Select a member, choose an available book, and let the system calculate the return date.
           </p>
         </div>
-        <span className="admin-page-badge">
-          {transactionType || "Circulation"}
-        </span>
+        <span className="admin-page-badge">Issue</span>
       </div>
       <div className="dashboard-title-line"></div>
 
@@ -264,8 +252,6 @@ function AddTransaction() {
             <tr>
               <th>Name</th>
               <th>Issued</th>
-              <th>Reserved</th>
-              <th>Points</th>
             </tr>
           </thead>
           <tbody>
@@ -279,15 +265,6 @@ function AddTransaction() {
                   );
                 }).length}
               </td>
-              <td>
-                {borrowerDetails.activeTransactions?.filter((data) => {
-                  return (
-                    data.transactionType === "Reserved" &&
-                    data.transactionStatus === "Active"
-                  );
-                }).length}
-              </td>
-              <td>{borrowerDetails.points}</td>
             </tr>
           </tbody>
         </table>
@@ -367,7 +344,7 @@ function AddTransaction() {
           />
         </div>
 
-        {/* Available Copies & Reserved summary for selected book */}
+        {/* Available copies for selected book */}
         <table
           className="admindashboard-table shortinfo-table insight-table"
           style={bookId === "" ? { display: "none" } : {}}
@@ -375,61 +352,16 @@ function AddTransaction() {
           <thead>
             <tr>
               <th>Available Copies</th>
-              <th>Reserved</th>
             </tr>
           </thead>
           <tbody>
             {bookDetails && (
               <tr>
                 <td>{bookDetails.bookCountAvailable}</td>
-                <td>
-                  {bookDetails.transactions
-                    ? bookDetails.transactions.filter(
-                        (t) =>
-                          t.transactionType === "Reserved" &&
-                          t.transactionStatus === "Active"
-                      ).length
-                    : 0}
-                </td>
               </tr>
             )}
           </tbody>
         </table>
-
-        <label className="transaction-form-label" htmlFor="transactionType">
-          Transaction Type<span className="required-field">*</span>
-        </label>
-        <br />
-        <div className="semanticdropdown">
-          <Dropdown
-            placeholder="Select Transaction"
-            fluid
-            selection
-            value={transactionType}
-            options={transactionTypes}
-            onChange={(event, data) => {
-              setTransactionType(data.value);
-
-              if (fromDate) {
-                // Auto compute To Date based on type
-                if (data.value === "Issued") {
-                  const autoTo = addDays(fromDate, ISSUE_PERIOD_DAYS);
-                  setToDate(autoTo);
-                  setToDateString(moment(autoTo).format("DD-MM-YYYY"));
-                } else if (data.value === "Reserved") {
-                  const autoTo = addDays(fromDate, RESERVE_PERIOD_DAYS);
-                  setToDate(autoTo);
-                  setToDateString(moment(autoTo).format("DD-MM-YYYY"));
-                }
-              } else {
-                // No fromDate yet → clear To Date
-                setToDate(null);
-                setToDateString(null);
-              }
-            }}
-          />
-        </div>
-        <br />
 
         <label className="transaction-form-label" htmlFor="from-date">
           From Date<span className="required-field">*</span>
@@ -444,16 +376,9 @@ function AddTransaction() {
             const fromStr = moment(date).format("DD-MM-YYYY");
             setFromDateString(fromStr);
 
-            // Auto set To Date depending on transaction type
-            if (transactionType === "Issued") {
-              const autoTo = addDays(date, ISSUE_PERIOD_DAYS);
-              setToDate(autoTo);
-              setToDateString(moment(autoTo).format("DD-MM-YYYY"));
-            } else if (transactionType === "Reserved") {
-              const autoTo = addDays(date, RESERVE_PERIOD_DAYS);
-              setToDate(autoTo);
-              setToDateString(moment(autoTo).format("DD-MM-YYYY"));
-            }
+            const autoTo = addDays(date, ISSUE_PERIOD_DAYS);
+            setToDate(autoTo);
+            setToDateString(moment(autoTo).format("DD-MM-YYYY"));
           }}
           minDate={new Date()}
           dateFormat="dd-MM-yyyy"
@@ -467,22 +392,16 @@ function AddTransaction() {
           className="date-picker"
           placeholderText="DD-MM-YYYY"
           selected={toDate}
-          onChange={(date) => {
-            // Allow manual change only for Reserved
-            if (transactionType === "Reserved") {
-              setToDate(date);
-              setToDateString(moment(date).format("DD-MM-YYYY"));
-            }
-          }}
+          onChange={() => {}}
           minDate={fromDate || new Date()}
           dateFormat="dd-MM-yyyy"
-          disabled={transactionType === "Issued"} // locked for Issued
+          disabled
         />
 
         <input
           className="transaction-form-submit"
           type="submit"
-          value={isLoading ? "SAVING..." : "SAVE CIRCULATION"}
+          value={isLoading ? "SAVING..." : "ISSUE BOOK"}
           disabled={isLoading}
         />
       </form>

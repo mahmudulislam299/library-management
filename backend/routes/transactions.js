@@ -49,10 +49,6 @@ async function sendTransactionEmail({
     titleLine = "Book Issued";
     fromLabel = "Issue Date";
     toLabel = "Return Date";
-  } else if (transactionType === "Reservation" || transactionType === "Reserved") {
-    titleLine = "Book Reserved";
-    fromLabel = "Reservation Start";
-    toLabel = "Reservation End / Expected Return";
   } else {
     titleLine = "Book Transaction";
     fromLabel = "From Date";
@@ -582,7 +578,7 @@ if (process.env.ENABLE_DUE_REMINDER_JOB === "true") {
 
 /* ===================== TRANSACTION ROUTES ===================== */
 
-// ADD TRANSACTION (Issue / Reservation)
+// ADD TRANSACTION (Issue only)
 router.post("/add-transaction", async (req, res) => {
   try {
     if (req.body.isAdmin === true) {
@@ -591,10 +587,16 @@ router.post("/add-transaction", async (req, res) => {
         borrowerId,     // MemberId or Mongo _id
         bookName,
         borrowerName,
-        transactionType, // "Issue" / "Issued" / "Reservation" / "Reserved"
+        transactionType,
         fromDate,
         toDate,
       } = req.body;
+
+      if (transactionType !== "Issued" && transactionType !== "Issue") {
+        return res.status(400).json({
+          message: "Reservation is no longer supported. Please issue the book directly.",
+        });
+      }
 
       // 1) Create transaction
       const newTransaction = new BookTransaction({

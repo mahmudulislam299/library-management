@@ -17,7 +17,6 @@
 /* Containers */
 .member-profile-content,
 .member-activebooks-content,
-.member-reservedbooks-content,
 .member-history-content {
   padding: 30px;
   background: var(--card);
@@ -499,7 +498,6 @@
 @media (max-width: 768px) {
   .member-profile-content,
   .member-activebooks-content,
-  .member-reservedbooks-content,
   .member-history-content,
   .member-fine-content {
     margin: 16px;

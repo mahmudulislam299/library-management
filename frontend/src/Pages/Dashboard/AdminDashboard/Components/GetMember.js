@@ -107,7 +107,10 @@ function GetMember() {
   const students = allMembers.filter((member) => member.userType === "Student");
   const employees = allMembers.filter((member) => member.userType === "Employee");
   const allActiveTransactions = allMembers.flatMap(
-    (member) => member.activeTransactions || []
+    (member) =>
+      (member.activeTransactions || []).filter(
+        (transaction) => transaction.transactionType === "Issued"
+      )
   );
   const memberStats = {
     total: allMembers.length,
@@ -117,12 +120,11 @@ function GetMember() {
   };
 
   const activeTransactions = memberDetails?.activeTransactions || [];
-  const previousTransactions = memberDetails?.prevTransactions || [];
+  const previousTransactions = (memberDetails?.prevTransactions || []).filter(
+    (transaction) => transaction.transactionType === "Issued"
+  );
   const issuedBooks = activeTransactions.filter(
     (item) => item.transactionType === "Issued"
-  );
-  const reservedBooks = activeTransactions.filter(
-    (item) => item.transactionType === "Reserved"
   );
   const overdueBooks = issuedBooks.filter((item) => getDaysLate(item) > 0);
   const dueSoonBooks = issuedBooks.filter((item) => {
@@ -140,7 +142,6 @@ function GetMember() {
 
   const insight = {
     issuedBooks,
-    reservedBooks,
     previousTransactions,
     overdueBooks,
     dueSoonBooks,
@@ -295,8 +296,8 @@ function GetMember() {
                 <strong>{insight.issuedBooks.length}</strong>
               </div>
               <div className="member-summary-card">
-                <span>Reserved</span>
-                <strong>{insight.reservedBooks.length}</strong>
+                <span>Due Soon</span>
+                <strong>{insight.dueSoonBooks.length}</strong>
               </div>
               <div className="member-summary-card danger">
                 <span>Overdue</span>
@@ -326,10 +327,6 @@ function GetMember() {
                 <p className="profile-info-value">
                   {memberDetails.age || "N/A"} / {memberDetails.dob || "N/A"}
                 </p>
-              </div>
-              <div className="profile-info-card">
-                <p className="profile-info-label">Library Points</p>
-                <p className="profile-info-value">{memberDetails.points || 0}</p>
               </div>
               <div className="profile-info-card">
                 <p className="profile-info-label">Joined</p>
@@ -412,37 +409,6 @@ function GetMember() {
                         <td>{formatDate(data.toDate)}</td>
                         <td>{renderTransactionStatus(data)}</td>
                         <td>{getFine(data)} BDT</td>
-                      </tr>
-                    ))}
-              </tbody>
-            </table>
-          </section>
-
-          <section className="member-insight-section">
-            <div className="member-section-heading">
-              <h3>Reserved Books</h3>
-              <span>{insight.reservedBooks.length} active</span>
-            </div>
-            <table className="activebooks-table">
-              <thead>
-                <tr>
-                  <th>S.No</th>
-                  <th>Book Name</th>
-                  <th>Reserved From</th>
-                  <th>Reserved Until</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {insight.reservedBooks.length === 0
-                  ? renderEmptyRow(5, "No reserved books.")
-                  : insight.reservedBooks.map((data, index) => (
-                      <tr key={data._id || index}>
-                        <td>{index + 1}</td>
-                        <td>{data.bookName}</td>
-                        <td>{formatDate(data.fromDate)}</td>
-                        <td>{formatDate(data.toDate)}</td>
-                        <td>{data.transactionStatus || "Active"}</td>
                       </tr>
                     ))}
               </tbody>

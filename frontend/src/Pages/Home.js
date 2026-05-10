@@ -7,7 +7,6 @@ import News from '../Components/News'
 import PhotoGallery from '../Components/PhotoGallery'
 import PopularBooks from '../Components/PopularBooks'
 import RecentAddedBooks from '../Components/RecentAddedBooks'
-import ReservedBooks from '../Components/ReservedBooks'
 import Stats from '../Components/Stats'
 import WelcomeBox from '../Components/WelcomeBox'
 
@@ -20,7 +19,6 @@ function Home() {
             <Stats/>
             <RecentAddedBooks/>
             <PopularBooks/>
-            <ReservedBooks/>
             <News/>
             <PhotoGallery/>
             <Footer/>

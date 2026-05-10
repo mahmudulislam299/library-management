@@ -53,7 +53,11 @@ function Return() {
           `${API_URL}/api/transactions/all-transactions`
         );
         const activeSorted = response.data
-          .filter((data) => data.transactionStatus === "Active")
+          .filter(
+            (data) =>
+              data.transactionStatus === "Active" &&
+              data.transactionType === "Issued"
+          )
           .sort((a, b) => {
             const aTo = moment(
               a.toDate,
@@ -74,7 +78,7 @@ function Return() {
     getAllTransactions();
   }, [API_URL, ExecutionStatus]);
 
-  const returnBook = async (transactionId, borrowerId, bookId, due) => {
+  const returnBook = async (transactionId, borrowerId, bookId) => {
     try {
       /* Setting return date and transactionStatus to completed */
       await axios.put(
@@ -86,25 +90,6 @@ function Return() {
           returnDate: moment(new Date()).format("DD-MM-YYYY"),
         }
       );
-
-      /* Getting borrower points already existed */
-      const borrowerdata = await axios.get(
-        `${API_URL}/api/users/getuser/${borrowerId}`
-      );
-      const points = borrowerdata.data.points || 0;
-
-      /* If the number of days after dueDate is greater than zero then decreasing points by 10 else increase by 10*/
-      if (due > 0) {
-        await axios.put(`${API_URL}/api/users/updateuser/${borrowerId}`, {
-          points: points - 10,
-          isAdmin: user.isAdmin,
-        });
-      } else {
-        await axios.put(`${API_URL}/api/users/updateuser/${borrowerId}`, {
-          points: points + 10,
-          isAdmin: user.isAdmin,
-        });
-      }
 
       const book_details = await axios.get(
         `${API_URL}/api/books/getbook/${bookId}`
@@ -130,33 +115,6 @@ function Return() {
     }
   };
 
-  const convertToIssue = async (transactionId, bookId) => {
-    try {
-      const bookDetails = await axios.get(`${API_URL}/api/books/getbook/${bookId}`);
-
-      if (!bookDetails.data || bookDetails.data.bookCountAvailable <= 0) {
-        alert("No available copies to issue this reservation.");
-        return;
-      }
-
-      await axios.put(
-        `${API_URL}/api/transactions/update-transaction/${transactionId}`,
-        {
-          transactionType: "Issued",
-          isAdmin: user.isAdmin,
-        }
-      );
-      await axios.put(`${API_URL}/api/books/updatebook/${bookId}`, {
-        isAdmin: user.isAdmin,
-        bookCountAvailable: bookDetails.data.bookCountAvailable - 1,
-      });
-      setExecutionStatus("Completed");
-      alert("Book issued succesfully 🎆");
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const issuedTransactions =
     allTransactions?.filter((data) => {
       if (!borrowerId) {
@@ -165,14 +123,6 @@ function Return() {
 
       return data.borrowerId === borrowerId && data.transactionType === "Issued";
     }) || [];
-  const reservedTransactions =
-    allTransactions?.filter((data) => {
-      if (!borrowerId) {
-        return data.transactionType === "Reserved";
-      }
-
-      return data.borrowerId === borrowerId && data.transactionType === "Reserved";
-    }) || [];
 
   return (
     <div className="admin-workflow-page">
@@ -180,7 +130,7 @@ function Return() {
         <div>
           <p className="dashboard-option-title">Return Desk</p>
           <p className="admin-page-subtitle">
-            Review active loans and reservations, then complete returns or convert reservations into issued books.
+            Review active loans and complete returns.
           </p>
         </div>
         <span className="admin-page-badge">{allTransactions.length} active</span>
@@ -255,8 +205,7 @@ function Return() {
                         returnBook(
                           data._id,
                           data.borrowerId,
-                          data.bookId,
-                          daysLate
+                          data.bookId
                         );
                       }}
                     >
@@ -272,53 +221,6 @@ function Return() {
       </div>
       </section>
 
-      <section className="admin-panel admin-table-panel">
-      <div className="admin-section-heading">
-        <p className="dashboard-option-title">Active Reservations</p>
-        <span>{reservedTransactions.length} active</span>
-      </div>
-      <div className="admin-table-scroll">
-      <table className="admindashboard-table">
-        <thead>
-          <tr>
-            <th>Book Name</th>
-            <th>Borrower Name</th>
-            <th>From Date</th>
-            <th>To Date</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {reservedTransactions.length === 0 ? (
-            <tr>
-              <td colSpan="5" className="member-empty-row">
-                No active reservations found.
-              </td>
-            </tr>
-          ) : (
-            reservedTransactions.map((data, index) => {
-              return (
-                <tr key={index}>
-                  <td>{data.bookName}</td>
-                  <td>{data.borrowerName}</td>
-                  <td>{formatDate(data.fromDate)}</td>
-                  <td>{formatDate(data.toDate)}</td>
-                  <td>
-                    <button
-                      className="return-book-btn secondary"
-                      onClick={() => convertToIssue(data._id, data.bookId)}
-                    >
-                      Issue Now
-                    </button>
-                  </td>
-                </tr>
-              );
-            })
-          )}
-        </tbody>
-      </table>
-      </div>
-      </section>
     </div>
   );
 }

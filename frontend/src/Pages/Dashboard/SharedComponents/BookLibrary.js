@@ -77,10 +77,6 @@ function BookLibrary() {
     );
   }, [search, books]);
 
-  const handleReserve = async (bookId) => {
-    alert(`Reserved book ID: ${bookId} (feature in progress)`);
-  };
-
   const getCategoryIds = (book) =>
     (book.categories || []).map((category) =>
       typeof category === "string" ? category : category._id
@@ -278,15 +274,14 @@ function BookLibrary() {
                     </Button>
                   </div>
                 ) : (
-                  <Button
-                    color={book.bookCountAvailable > 0 ? "green" : "grey"}
-                    size="small"
-                    disabled={book.bookCountAvailable <= 0}
-                    onClick={() => handleReserve(book._id)}
+                  <span
+                    className={`availability-pill ${
+                      book.bookCountAvailable > 0 ? "available" : "unavailable"
+                    }`}
                   >
-                    <Icon name="bookmark" />
-                    {book.bookCountAvailable > 0 ? "Reserve" : "Unavailable"}
-                  </Button>
+                    <Icon name={book.bookCountAvailable > 0 ? "check" : "ban"} />
+                    {book.bookCountAvailable > 0 ? "Available" : "Unavailable"}
+                  </span>
                 )}
               </div>
             </div>

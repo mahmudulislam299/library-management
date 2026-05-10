@@ -6,7 +6,6 @@ import BookLibrary from "../SharedComponents/BookLibrary";
 import {
   LibraryBooks,
   AccountCircle,
-  Book,
   History,
   LocalLibrary,
   PowerSettingsNew,
@@ -289,18 +288,6 @@ function MemberDashboard() {
 
           <p
             className={`dashboard-option ${
-              active === "reserved" ? "clicked" : ""
-            }`}
-            onClick={() => {
-              setActive("reserved");
-              setSidebar(false);
-            }}
-          >
-            <Book className="dashboard-option-icon" /> Reserved
-          </p>
-
-          <p
-            className={`dashboard-option ${
               active === "history" ? "clicked" : ""
             }`}
             onClick={() => {
@@ -577,38 +564,6 @@ function MemberDashboard() {
             </div>
           </div>
 
-          {/* Reserved Books */}
-          <div
-            className="content-wrapper"
-            style={active !== "reserved" ? { display: "none" } : {}}
-          >
-            <div className="member-reservedbooks-content">
-              <p className="member-dashboard-heading">Reserved Books</p>
-              <table className="activebooks-table">
-                <thead>
-                  <tr>
-                    <th>S.No</th>
-                    <th>Book Name</th>
-                    <th>From</th>
-                    <th>To</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {memberDetails?.activeTransactions
-                    ?.filter((t) => t.transactionType === "Reserved")
-                    .map((t, i) => (
-                      <tr key={i}>
-                        <td>{i + 1}</td>
-                        <td>{t.bookName}</td>
-                        <td>{formatDate(t.fromDate)}</td>
-                        <td>{formatDate(t.toDate)}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
           {/* History */}
           <div
             className="content-wrapper"
@@ -628,7 +583,9 @@ function MemberDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {memberDetails?.prevTransactions?.map((t, i) => {
+                  {memberDetails?.prevTransactions
+                    ?.filter((t) => t.transactionType === "Issued")
+                    .map((t, i) => {
                     const rawFine = getRawFineAmount(t);
 
                     return (

@@ -45,7 +45,7 @@ function AdminDashboard() {
     { id: "profile", icon: AccountCircle, label: "Admin Account" },
     { id: "library", icon: LibraryBooks, label: "Library" }, // 🔹 New Tab
     { id: "addbook", icon: Book, label: "Book Registration" },
-    { id: "addtransaction", icon: Receipt, label: "Issue / Reserve Book" },
+    { id: "addtransaction", icon: Receipt, label: "Issue Book" },
     { id: "getmember", icon: AccountBox, label: "Member Full Info" },
     { id: "finemanagement", icon: Payment, label: "Fine Tracking" },
     { id: "addmember", icon: PersonAdd, label: "Member Registration" },
