@@ -85,7 +85,6 @@ router.put("/profile/:id", async (req, res) => {
   try {
     const allowedFields = [
       "userFullName",
-      "age",
       "gender",
       "dob",
       "department",
@@ -100,10 +99,6 @@ router.put("/profile/:id", async (req, res) => {
         updateData[field] = req.body[field];
       }
     });
-
-    if (updateData.age === "") {
-      updateData.age = undefined;
-    }
 
     if (!updateData.userFullName || !updateData.mobileNumber || !updateData.email) {
       return res.status(400).json({

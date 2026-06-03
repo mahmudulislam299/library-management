@@ -1,20 +1,13 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "../AdminDashboard.css";
 import axios from "axios";
 import moment from "moment";
-import { AuthContext } from "../../../../Context/AuthContext";
 
 function FineManagement() {
   const API_URL = process.env.REACT_APP_API_URL;
-  const { user } = useContext(AuthContext);
   const [transactions, setTransactions] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("due");
-  const [selectedFine, setSelectedFine] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState("bKash");
-  const [paymentReference, setPaymentReference] = useState("");
-  const [paymentAmount, setPaymentAmount] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
 
   const fetchTransactions = useCallback(async () => {
     try {
@@ -90,47 +83,6 @@ function FineManagement() {
     return "Clear";
   };
 
-  const openPaymentModal = (transaction) => {
-    setSelectedFine(transaction);
-    setPaymentMethod("bKash");
-    setPaymentReference("");
-    setPaymentAmount(String(transaction.fineAmountDue || ""));
-  };
-
-  const closePaymentModal = () => {
-    setSelectedFine(null);
-    setPaymentReference("");
-    setPaymentAmount("");
-    setIsRecording(false);
-  };
-
-  const recordPayment = async (e) => {
-    e.preventDefault();
-    if (!selectedFine) return;
-
-    setIsRecording(true);
-
-    try {
-      await axios.put(
-        `${API_URL}/api/transactions/admin-record-fine-payment/${selectedFine._id}`,
-        {
-          isAdmin: user?.isAdmin,
-          adminId: user?._id,
-          amount: Number(paymentAmount),
-          paymentMethod,
-          paymentReference,
-        }
-      );
-      await fetchTransactions();
-      alert("Fine payment recorded.");
-      closePaymentModal();
-    } catch (err) {
-      console.log("Error recording fine payment", err);
-      alert(err.response?.data?.message || "Failed to record fine payment.");
-      setIsRecording(false);
-    }
-  };
-
   return (
     <div className="admin-workflow-page">
       <div className="admin-page-header">
@@ -196,13 +148,12 @@ function FineManagement() {
                 <th>Due</th>
                 <th>Status</th>
                 <th>Payment Info</th>
-                <th></th>
               </tr>
             </thead>
             <tbody>
               {filteredRecords.length === 0 ? (
                 <tr>
-                  <td colSpan="10" className="member-empty-row">
+                  <td colSpan="9" className="member-empty-row">
                     No fine records found.
                   </td>
                 </tr>
@@ -235,16 +186,6 @@ function FineManagement() {
                         <span className="fine-admin-muted">No payment</span>
                       )}
                     </td>
-                    <td>
-                      {(transaction.fineAmountDue || 0) > 0 && (
-                        <button
-                          className="return-book-btn"
-                          onClick={() => openPaymentModal(transaction)}
-                        >
-                          Record Fine Payment
-                        </button>
-                      )}
-                    </td>
                   </tr>
                 ))
               )}
@@ -252,62 +193,6 @@ function FineManagement() {
           </table>
         </div>
       </section>
-
-      {selectedFine && (
-        <div className="fine-admin-overlay" role="dialog" aria-modal="true">
-          <form className="fine-admin-modal" onSubmit={recordPayment}>
-            <div className="fine-admin-modal-header">
-              <div>
-                <h3>Record Fine Payment</h3>
-                <p>{selectedFine.borrowerName} - {selectedFine.bookName}</p>
-              </div>
-              <button type="button" onClick={closePaymentModal}>
-                Close
-              </button>
-            </div>
-
-            <div className="fine-admin-amount-box">
-              <span>Current due</span>
-              <strong>{selectedFine.fineAmountDue || 0} BDT</strong>
-            </div>
-
-            <label>
-              Amount
-              <input
-                type="number"
-                min="1"
-                max={selectedFine.fineAmountDue || undefined}
-                value={paymentAmount}
-                onChange={(e) => setPaymentAmount(e.target.value)}
-                required
-              />
-            </label>
-
-            <label>
-              Payment Method
-              <select value={paymentMethod} onChange={(e) => setPaymentMethod(e.target.value)}>
-                <option value="bKash">bKash</option>
-                <option value="Mobile Banking">Mobile Banking</option>
-                <option value="Regular Banking">Regular Banking</option>
-              </select>
-            </label>
-
-            <label>
-              Reference / Note
-              <input
-                type="text"
-                value={paymentReference}
-                onChange={(e) => setPaymentReference(e.target.value)}
-                placeholder="Transaction ID, account number, or note"
-              />
-            </label>
-
-            <button className="fine-admin-submit" disabled={isRecording}>
-              {isRecording ? "Recording..." : "Save Payment Record"}
-            </button>
-          </form>
-        </div>
-      )}
     </div>
   );
 }

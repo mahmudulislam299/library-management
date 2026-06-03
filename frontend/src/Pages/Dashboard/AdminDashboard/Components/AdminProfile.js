@@ -19,7 +19,6 @@ function AdminProfile() {
     department: "",
     address: "",
     dob: "",
-    age: "",
   });
 
   const formatDate = (dateStr) => {
@@ -55,7 +54,6 @@ function AdminProfile() {
       department: adminDetails.department || "",
       address: adminDetails.address || "",
       dob: adminDetails.dob || "",
-      age: adminDetails.age || "",
     });
   }, [adminDetails]);
 
@@ -74,7 +72,6 @@ function AdminProfile() {
         department: adminDetails.department || "",
         address: adminDetails.address || "",
         dob: adminDetails.dob || "",
-        age: adminDetails.age || "",
       });
     }
     setIsEditingProfile(false);
@@ -93,7 +90,6 @@ function AdminProfile() {
     try {
       const response = await axios.put(`${API_URL}/api/users/profile/${user._id}`, {
         ...profileForm,
-        age: profileForm.age === "" ? "" : Number(profileForm.age),
         userId: user._id,
       });
       setAdminDetails(response.data);
@@ -108,7 +104,6 @@ function AdminProfile() {
           department: response.data.department,
           address: response.data.address,
           dob: response.data.dob,
-          age: response.data.age,
         },
       });
       setIsEditingProfile(false);
@@ -259,16 +254,6 @@ function AdminProfile() {
               />
             </div>
             <div className="profile-edit-field">
-              <label>Age</label>
-              <input
-                type="number"
-                name="age"
-                min="1"
-                value={profileForm.age}
-                onChange={handleProfileInput}
-              />
-            </div>
-            <div className="profile-edit-field wide">
               <label>Address</label>
               <textarea
                 name="address"

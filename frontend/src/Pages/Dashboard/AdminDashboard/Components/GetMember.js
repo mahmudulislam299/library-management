@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "../AdminDashboard.css";
 import axios from "axios";
 import { Dropdown, Icon } from "semantic-ui-react";
 import "../../MemberDashboard/MemberDashboard.css";
 import moment from "moment";
+import { AuthContext } from "../../../../Context/AuthContext";
 
 function GetMember() {
   const API_URL = process.env.REACT_APP_API_URL;
+  const { user } = useContext(AuthContext);
 
   const [allMembers, setAllMembers] = useState([]);
   const [allMembersOptions, setAllMembersOptions] = useState([]);
@@ -14,7 +16,18 @@ function GetMember() {
   const [memberDetails, setMemberDetails] = useState(null);
   const [isLoadingMembers, setIsLoadingMembers] = useState(false);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+  const [isEditingMember, setIsEditingMember] = useState(false);
+  const [isSavingMember, setIsSavingMember] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [memberForm, setMemberForm] = useState({
+    userFullName: "",
+    email: "",
+    mobileNumber: "",
+    gender: "",
+    department: "",
+    address: "",
+    dob: "",
+  });
 
   const parseDate = (dateStr) => {
     if (!dateStr) return null;
@@ -26,6 +39,24 @@ function GetMember() {
     const parsed = parseDate(dateStr);
     return parsed ? parsed.format("DD-MM-YYYY") : "Not set";
   };
+
+  const getMemberOption = (member) => ({
+    value: member?._id,
+    text:
+      member?.userType === "Student"
+        ? `${member?.userFullName} [Admission ID: ${member?.memberId}]`
+        : `${member?.userFullName} [Employee ID: ${member?.memberId}]`,
+  });
+
+  const getMemberFormValues = (member) => ({
+    userFullName: member?.userFullName || "",
+    email: member?.email || "",
+    mobileNumber: member?.mobileNumber || "",
+    gender: member?.gender || "",
+    department: member?.department || "",
+    address: member?.address || "",
+    dob: member?.dob || "",
+  });
 
   const getDaysLate = (transaction) => {
     if (typeof transaction?.fineDaysLate === "number") {
@@ -59,13 +90,7 @@ function GetMember() {
       try {
         const response = await axios.get(`${API_URL}/api/users/allmembers`);
         const members = response.data || [];
-        const options = members.map((member) => ({
-          value: member?._id,
-          text:
-            member?.userType === "Student"
-              ? `${member?.userFullName} [Admission ID: ${member?.memberId}]`
-              : `${member?.userFullName} [Employee ID: ${member?.memberId}]`,
-        }));
+        const options = members.map(getMemberOption);
 
         setAllMembers(members);
         setAllMembersOptions(options);
@@ -84,11 +109,13 @@ function GetMember() {
     const getMemberDetails = async () => {
       if (!memberId) {
         setMemberDetails(null);
+        setIsEditingMember(false);
         return;
       }
 
       setIsLoadingDetails(true);
       setErrorMessage("");
+      setIsEditingMember(false);
 
       try {
         const response = await axios.get(`${API_URL}/api/users/getuser/${memberId}`);
@@ -103,6 +130,71 @@ function GetMember() {
 
     getMemberDetails();
   }, [API_URL, memberId]);
+
+  useEffect(() => {
+    setMemberForm(getMemberFormValues(memberDetails));
+  }, [memberDetails]);
+
+  const handleMemberInput = (e) => {
+    const { name, value } = e.target;
+    setMemberForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const cancelMemberEdit = () => {
+    setMemberForm(getMemberFormValues(memberDetails));
+    setIsEditingMember(false);
+  };
+
+  const updateCachedMember = (updatedMember) => {
+    setAllMembers((prev) =>
+      prev.map((member) =>
+        member._id === updatedMember._id ? { ...member, ...updatedMember } : member
+      )
+    );
+    setAllMembersOptions((prev) =>
+      prev.map((option) =>
+        option.value === updatedMember._id ? getMemberOption(updatedMember) : option
+      )
+    );
+  };
+
+  const saveMemberInfo = async (e) => {
+    e.preventDefault();
+
+    if (!memberDetails?._id) return;
+
+    if (!memberForm.userFullName || !memberForm.email || !memberForm.mobileNumber) {
+      alert("Name, email, and mobile number are required.");
+      return;
+    }
+
+    setIsSavingMember(true);
+    setErrorMessage("");
+
+    try {
+      const response = await axios.put(
+        `${API_URL}/api/users/profile/${memberDetails._id}`,
+        {
+          ...memberForm,
+          userId: user?._id,
+          isAdmin: user?.isAdmin,
+        }
+      );
+
+      setMemberDetails(response.data);
+      updateCachedMember(response.data);
+      setIsEditingMember(false);
+      alert("Member information updated.");
+    } catch (err) {
+      console.log("Error updating member information", err);
+      const message =
+        err.response?.data?.message || "Failed to update member information.";
+      setErrorMessage(message);
+      alert(message);
+    } finally {
+      setIsSavingMember(false);
+    }
+  };
 
   const students = allMembers.filter((member) => member.userType === "Student");
   const employees = allMembers.filter((member) => member.userType === "Employee");
@@ -288,6 +380,15 @@ function GetMember() {
                   <Icon name="phone" /> {memberDetails.mobileNumber}
                 </p>
               </div>
+              <div className="profile-edit-actions">
+                <button
+                  className="profile-edit-button"
+                  type="button"
+                  onClick={() => setIsEditingMember((prev) => !prev)}
+                >
+                  {isEditingMember ? "Hide Edit" : "Edit Member Info"}
+                </button>
+              </div>
             </div>
 
             <div className="member-summary-grid compact">
@@ -323,9 +424,9 @@ function GetMember() {
                 </p>
               </div>
               <div className="profile-info-card">
-                <p className="profile-info-label">Age / Date of Birth</p>
+                <p className="profile-info-label">Date of Birth</p>
                 <p className="profile-info-value">
-                  {memberDetails.age || "N/A"} / {memberDetails.dob || "N/A"}
+                  {memberDetails.dob || "N/A"}
                 </p>
               </div>
               <div className="profile-info-card">
@@ -351,6 +452,95 @@ function GetMember() {
                 </p>
               </div>
             </div>
+
+            {isEditingMember && (
+              <form className="profile-edit-form" onSubmit={saveMemberInfo}>
+                <div className="profile-edit-field">
+                  <label>Full Name</label>
+                  <input
+                    type="text"
+                    name="userFullName"
+                    value={memberForm.userFullName}
+                    onChange={handleMemberInput}
+                    required
+                  />
+                </div>
+                <div className="profile-edit-field">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={memberForm.email}
+                    onChange={handleMemberInput}
+                    required
+                  />
+                </div>
+                <div className="profile-edit-field">
+                  <label>Mobile Number</label>
+                  <input
+                    type="text"
+                    name="mobileNumber"
+                    value={memberForm.mobileNumber}
+                    onChange={handleMemberInput}
+                    required
+                  />
+                </div>
+                <div className="profile-edit-field">
+                  <label>Gender</label>
+                  <select
+                    name="gender"
+                    value={memberForm.gender}
+                    onChange={handleMemberInput}
+                  >
+                    <option value="">Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className="profile-edit-field">
+                  <label>Department</label>
+                  <input
+                    type="text"
+                    name="department"
+                    value={memberForm.department}
+                    onChange={handleMemberInput}
+                  />
+                </div>
+                <div className="profile-edit-field">
+                  <label>Date of Birth</label>
+                  <input
+                    type="text"
+                    name="dob"
+                    value={memberForm.dob}
+                    onChange={handleMemberInput}
+                    placeholder="DD-MM-YYYY"
+                  />
+                </div>
+                <div className="profile-edit-field">
+                  <label>Address</label>
+                  <textarea
+                    name="address"
+                    value={memberForm.address}
+                    onChange={handleMemberInput}
+                    rows="3"
+                  />
+                </div>
+                <div className="profile-edit-submit-row">
+                  <button
+                    className="profile-edit-button secondary"
+                    type="button"
+                    onClick={cancelMemberEdit}
+                    disabled={isSavingMember}
+                  >
+                    Cancel
+                  </button>
+                  <button className="profile-edit-button" disabled={isSavingMember}>
+                    {isSavingMember ? "Saving..." : "Save Changes"}
+                  </button>
+                </div>
+              </form>
+            )}
           </section>
 
           <section className="member-insight-section">

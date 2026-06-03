@@ -19,7 +19,6 @@ const UserSchema = new mongoose.Schema({
         maxlength: 15,
         trim: true,
     },
-    age: Number,
     gender: String,
     dob: String,
     department: String,   
