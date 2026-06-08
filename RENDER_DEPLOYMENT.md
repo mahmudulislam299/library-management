@@ -33,6 +33,7 @@ Set these secret values when Render asks for them:
 - `SMTP_FROM_EMAIL`
 - `MAIL_FROM_EMAIL`
 - `BREVO_API_KEY` if you use Brevo
+- `RESEND_API_KEY` if you use Resend
 - `LIBRARY_WEBSITE`
 - `LIBRARY_CONTACT_EMAIL`
 - `REACT_APP_API_URL`
@@ -55,7 +56,7 @@ https://library-management-frontend.onrender.com
 - Client-side routing is handled by a rewrite rule in `render.yaml`.
 - `ENABLE_DUE_REMINDER_JOB` is set to `false` by default in Render because free web services can sleep when idle.
 - Render free web services also block outbound SMTP ports `25`, `465`, and `587`, so the current Nodemailer SMTP setup is not suitable for free production use.
-- If you need reliable automatic reminder emails, use a paid always-on backend plan and SMTP, or update the app to send email through an HTTP API provider instead of SMTP.
+- If you need reliable automatic reminder emails, use a paid always-on backend plan and SMTP, or use an HTTP API provider such as Resend or Brevo instead of SMTP.
 
 ## Manual Render Setup
 
