@@ -461,7 +461,10 @@ router.get("/test-email", async (req, res) => {
     res.send(`Email sent to ${testRecipient}`);
   } catch (err) {
     console.error("SMTP Error:", err);
-    res.status(500).send("Error sending email");
+    res.status(500).json({
+      message: "Error sending email",
+      error: err.message,
+    });
   }
 });
 

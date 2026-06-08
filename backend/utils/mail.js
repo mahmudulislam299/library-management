@@ -51,6 +51,9 @@ const getCopyRecipients = (recipient) => {
 
 const shouldUseBrevoApi = mailProvider === "brevo" && Boolean(brevoApiKey);
 const shouldUseResendApi = mailProvider === "resend" && Boolean(resendApiKey);
+const requestedApiProviderWithoutKey =
+  (mailProvider === "brevo" && !brevoApiKey) ||
+  (mailProvider === "resend" && !resendApiKey);
 
 export const transporter = shouldUseBrevoApi || shouldUseResendApi
   ? null
@@ -174,6 +177,12 @@ export async function sendLibraryEmail({ to, subject, html, text }) {
   if (!recipient) {
     console.warn(`sendLibraryEmail: no recipient for "${subject}", skipping`);
     return;
+  }
+
+  if (requestedApiProviderWithoutKey) {
+    throw new Error(
+      `Mail provider "${mailProvider}" is selected but its API key is missing`
+    );
   }
 
   if (shouldUseBrevoApi) {
