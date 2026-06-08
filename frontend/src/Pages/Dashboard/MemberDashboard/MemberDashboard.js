@@ -254,7 +254,7 @@ function MemberDashboard() {
         <div className={`dashboard-options ${sidebar ? "active" : ""}`}>
           <div className="dashboard-logo">
             <LibraryBooks style={{ fontSize: 50, color: "var(--gold)" }} />
-            <p className="logo-name">LCMS</p>
+            <p className="logo-name">LMS</p>
           </div>
 
           <p
