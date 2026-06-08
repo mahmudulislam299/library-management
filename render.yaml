@@ -1,0 +1,74 @@
+services:
+  - type: web
+    name: library-management-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: MONGO_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_SECURE
+        value: "false"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM_NAME
+        value: Stamford Library
+      - key: SMTP_FROM_EMAIL
+        sync: false
+      - key: MAIL_PROVIDER
+        value: brevo
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_API_URL
+        value: https://api.brevo.com/v3/smtp/email
+      - key: MAIL_FROM_NAME
+        value: Stamford Library
+      - key: MAIL_FROM_EMAIL
+        sync: false
+      - key: MAIL_OVERRIDE_TO
+        value: ""
+      - key: MAIL_COPY_TO
+        value: ""
+      - key: TEST_EMAIL_TO
+        value: ""
+      - key: DUE_REMINDER_DAYS_BEFORE
+        value: "1"
+      - key: ENABLE_DUE_REMINDER_JOB
+        value: "false"
+      - key: LIBRARY_NAME
+        value: Stamford Library
+      - key: LIBRARY_WEBSITE
+        sync: false
+      - key: LIBRARY_CONTACT_EMAIL
+        sync: false
+      - key: LIBRARY_ADDRESS
+        value: Stamford University Bangladesh, Dhaka
+      - key: LIBRARY_LOGO_URL
+        value: ""
+
+  - type: web
+    name: library-management-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: REACT_APP_API_URL
+        sync: false
+      - key: REACT_APP_BASENAME
+        value: ""

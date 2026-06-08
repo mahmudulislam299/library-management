@@ -16,9 +16,10 @@ import { AuthContext } from "./Context/AuthContext.js";
 function App() {
   const { user } = useContext(AuthContext);
   const isAdmin = user?.isAdmin === true;
+  const routerBaseName = process.env.REACT_APP_BASENAME || "";
 
   return (
-    <Router basename="/lms">
+    <Router basename={routerBaseName}>
       <Header />
       <div className="App">
         <Switch>
