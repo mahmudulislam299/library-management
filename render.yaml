@@ -69,6 +69,6 @@ services:
         destination: /index.html
     envVars:
       - key: REACT_APP_API_URL
-        sync: false
+        value: https://library-management-api-sbve.onrender.com
       - key: REACT_APP_BASENAME
         value: ""

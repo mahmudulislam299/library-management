@@ -40,7 +40,7 @@ Set these secret values when Render asks for them:
 Use the backend public URL for `REACT_APP_API_URL`, for example:
 
 ```text
-https://library-management-api.onrender.com
+https://library-management-api-sbve.onrender.com
 ```
 
 Use the frontend public URL for `LIBRARY_WEBSITE`, for example:
