@@ -33,7 +33,7 @@ Set these secret values when Render asks for them:
 - `SMTP_FROM_EMAIL`
 - `MAIL_FROM_EMAIL`
 - `BREVO_API_KEY` if you use Brevo
-- `RESEND_API_KEY` if you use Resend
+- `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET`, and `GMAIL_REFRESH_TOKEN` if you use the Gmail API
 - `LIBRARY_WEBSITE`
 - `LIBRARY_CONTACT_EMAIL`
 - `REACT_APP_API_URL`
@@ -55,8 +55,9 @@ https://library-management-frontend.onrender.com
 - The frontend now supports root-path hosting on Render. It no longer assumes `/lms`.
 - Client-side routing is handled by a rewrite rule in `render.yaml`.
 - `ENABLE_DUE_REMINDER_JOB` is set to `false` by default in Render because free web services can sleep when idle.
-- Render free web services also block outbound SMTP ports `25`, `465`, and `587`, so the current Nodemailer SMTP setup is not suitable for free production use.
-- If you need reliable automatic reminder emails, use a paid always-on backend plan and SMTP, or use an HTTP API provider such as Resend or Brevo instead of SMTP.
+- Render free web services also block outbound SMTP ports `25`, `465`, and `587`, so the Nodemailer SMTP fallback is not suitable for free production use.
+- If you need reliable automatic reminder emails, use a paid always-on backend plan and SMTP, or use an HTTP API provider such as Gmail API or Brevo instead of SMTP.
+- For Gmail API sending, set `MAIL_PROVIDER=gmail` and provide OAuth credentials with the `https://www.googleapis.com/auth/gmail.send` scope. The backend can also use `GMAIL_ACCESS_TOKEN` for short-lived local testing, but the refresh-token variables are better for deployment.
 
 ## Manual Render Setup
 

@@ -27,15 +27,19 @@ services:
       - key: SMTP_FROM_EMAIL
         sync: false
       - key: MAIL_PROVIDER
-        value: brevo
+        value: gmail
       - key: BREVO_API_KEY
         sync: false
       - key: BREVO_API_URL
         value: https://api.brevo.com/v3/smtp/email
-      - key: RESEND_API_KEY
+      - key: GMAIL_CLIENT_ID
         sync: false
-      - key: RESEND_API_URL
-        value: https://api.resend.com/emails
+      - key: GMAIL_CLIENT_SECRET
+        sync: false
+      - key: GMAIL_REFRESH_TOKEN
+        sync: false
+      - key: GMAIL_USER_ID
+        value: me
       - key: MAIL_FROM_NAME
         value: Stamford Library
       - key: MAIL_FROM_EMAIL
