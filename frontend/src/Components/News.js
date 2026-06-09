@@ -12,7 +12,7 @@ function News() {
           <h3 className="news-subtitle">Competitions</h3>
           <div className="news-list">
             <div className="news-item">
-              <h4>Essay Writing Contest</h4>
+              <h4>Essay Writing Fair</h4>
               <p>Theme: "The Future of Digital Libraries" — Win a Kindle!</p>
             </div>
             <div className="news-item">
