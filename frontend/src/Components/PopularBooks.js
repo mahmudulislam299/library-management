@@ -3,6 +3,7 @@ import "./PopularBooks.css";
 
 function PopularBooks() {
   const books = [
+    "uni6.jpg",
     "book1.jpg",
     "book2.webp",
     "book3.jpg",
@@ -15,7 +16,7 @@ function PopularBooks() {
     "book10.jpg",
     "book11.jpg",
     "book12.jpg",
-    "uni6.jpg",
+    
   ];
 
   return (
