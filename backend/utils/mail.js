@@ -57,12 +57,12 @@ const getCopyRecipients = (recipient) => {
 
 const shouldUseBrevoApi = mailProvider === "brevo" && Boolean(brevoApiKey);
 const shouldUseGmailApi =
-  mailProvider === "gmail" &&
+  (mailProvider === "gmail" || mailProvider === "gmail_api") &&
   (Boolean(gmailAccessToken) ||
     Boolean(gmailClientId && gmailClientSecret && gmailRefreshToken));
 const requestedApiProviderWithoutKey =
   (mailProvider === "brevo" && !brevoApiKey) ||
-  (mailProvider === "gmail" && !shouldUseGmailApi);
+  ((mailProvider === "gmail" || mailProvider === "gmail_api") && !shouldUseGmailApi);
 
 export const transporter = shouldUseBrevoApi || shouldUseGmailApi
   ? null
