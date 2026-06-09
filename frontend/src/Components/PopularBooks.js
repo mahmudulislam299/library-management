@@ -15,6 +15,7 @@ function PopularBooks() {
     "book10.jpg",
     "book11.jpg",
     "book12.jpg",
+    "uni6.jpg",
   ];
 
   return (
