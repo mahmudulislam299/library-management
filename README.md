@@ -14,7 +14,7 @@ Show some ❤️ and 🌟 the repo to support the project
 - [Library Management System 📚](#library-management-system-)
   - [Video Demo](#video-demo)
 - [Index ✏️](#index-️)
-- [Features Of LCMS 🚀](#features-of-lcms-)
+- [Features Of LMS 🚀](#features-of-lcms-)
 - [Setup 🔥](#setup-)
   - [Frontend Setup 🍧](#frontend-setup-)
   - [Backend Setup 🍿](#backend-setup-)
@@ -25,7 +25,7 @@ Show some ❤️ and 🌟 the repo to support the project
 - [Connect Me On 🌍](#connect-me-on-)
 - [License 🏆](#license-)
 
-## Features Of LCMS 🚀
+## Features Of LMS 🚀
 
 - Admin Login and Student Login
 - Admin and Student Dashboard

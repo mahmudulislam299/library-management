@@ -1,36 +1,68 @@
-import Home from './Pages/Home';
-import Signin from './Pages/Signin'
-import { BrowserRouter as Router, Switch, Redirect, Route } from "react-router-dom";
-import MemberDashboard from './Pages/Dashboard/MemberDashboard/MemberDashboard.js';
-import Allbooks from './Pages/Allbooks';
-import Header from './Components/Header';
-import AdminDashboard from './Pages/Dashboard/AdminDashboard/AdminDashboard.js';
-import { useContext } from "react"
-import { AuthContext } from "./Context/AuthContext.js"
+import React, { useContext } from "react";
+import Home from "./Pages/Home";
+import Signin from "./Pages/Signin";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Redirect,
+  Route,
+} from "react-router-dom";
+import MemberDashboard from "./Pages/Dashboard/MemberDashboard/MemberDashboard.js";
+import Allbooks from "./Pages/Allbooks";
+import Header from "./Components/Header";
+import AdminDashboard from "./Pages/Dashboard/AdminDashboard/AdminDashboard.js";
+import { AuthContext } from "./Context/AuthContext.js";
 
 function App() {
-
-  const { user } = useContext(AuthContext)
+  const { user } = useContext(AuthContext);
+  const isAdmin = user?.isAdmin === true;
+  const routerBaseName = process.env.REACT_APP_BASENAME || "";
 
   return (
-    <Router>
+    <Router basename={routerBaseName}>
       <Header />
       <div className="App">
         <Switch>
-          <Route exact path='/'>
+          {/* Home */}
+          <Route exact path="/">
             <Home />
           </Route>
-          <Route exact path='/signin'>
-            {user ? (user.isAdmin ? <Redirect to='/dashboard@admin' />:<Redirect to='/dashboard@member' />) : <Signin />}
+
+          {/* Signin */}
+          <Route exact path="/signin">
+            {user
+              ? isAdmin
+                ? <Redirect to="/dashboard@admin" />
+                : <Redirect to="/dashboard@member" />
+              : <Signin />}
           </Route>
-          <Route exact path='/dashboard@member'>
-            {user ? (user.isAdmin === false ? <MemberDashboard /> : <Redirect to='/' />) : <Redirect to='/' />}
+
+          {/* Member Dashboard (Student / Employee) */}
+          <Route exact path="/dashboard@member">
+            {user
+              ? isAdmin
+                ? <Redirect to="/dashboard@admin" />
+                : <MemberDashboard />
+              : <Redirect to="/signin" />}
           </Route>
-          <Route exact path='/dashboard@admin'>
-            {user ? (user.isAdmin === true ? <AdminDashboard /> : <Redirect to='/' />) : <Redirect to='/' />}
+
+          {/* Admin Dashboard */}
+          <Route exact path="/dashboard@admin">
+            {user
+              ? isAdmin
+                ? <AdminDashboard />
+                : <Redirect to="/dashboard@member" />
+              : <Redirect to="/signin" />}
           </Route>
-          <Route exact path='/books'>
+
+          {/* All Books (public or keep like this for now) */}
+          <Route exact path="/books">
             <Allbooks />
+          </Route>
+
+          {/* Fallback */}
+          <Route path="*">
+            <Redirect to="/" />
           </Route>
         </Switch>
       </div>

@@ -1,86 +1,156 @@
-import React, { useState } from 'react'
-import "./AdminDashboard.css"
-import AddTransaction from './Components/AddTransaction'
-import AddMember from './Components/AddMember'
-import AddBook from './Components/AddBook';
+import React, { useState } from "react";
+import "./AdminDashboard.css";
+import AddTransaction from "./Components/AddTransaction";
+import AddMember from "./Components/AddMember";
+import AddBook from "./Components/AddBook";
+import GetMember from "./Components/GetMember";
+import Return from "./Components/Return";
+import AdminProfile from "./Components/AdminProfile";
+import FineManagement from "./Components/FineManagement";
+import BookLibrary from "../SharedComponents/BookLibrary";
 
-import LibraryBooksIcon from '@material-ui/icons/LibraryBooks';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import BookIcon from '@material-ui/icons/Book';
-import ReceiptIcon from '@material-ui/icons/Receipt';
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
-import { IconButton } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
-import AccountBoxIcon from '@material-ui/icons/AccountBox';
-import GetMember from './Components/GetMember';
-import AssignmentReturnIcon from '@material-ui/icons/AssignmentReturn';
-import Return from './Components/Return';
-import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
+import {
+  LibraryBooks,
+  AccountCircle,
+  Book,
+  Receipt,
+  PersonAdd,
+  DoubleArrow,
+  Close,
+  AccountBox,
+  AssignmentReturn,
+  PowerSettingsNew,
+  Payment,
+} from "@material-ui/icons";
+import { IconButton } from "@material-ui/core";
 
-
-/* Semantic UI Dropdown Styles Import */
+// ✅ Semantic UI CSS
 const styleLink = document.createElement("link");
 styleLink.rel = "stylesheet";
-styleLink.href = "https://cdn.jsdelivr.net/npm/semantic-ui/dist/semantic.min.css";
+styleLink.href =
+  "https://cdn.jsdelivr.net/npm/semantic-ui/dist/semantic.min.css";
 document.head.appendChild(styleLink);
 
 function AdminDashboard() {
+  const [active, setActive] = useState("library");
+  const [sidebar, setSidebar] = useState(false);
 
-    const [active, setActive] = useState("addbooks")
-    const [sidebar, setSidebar] = useState(false)
+  const logout = () => {
+    localStorage.removeItem("user");
+    window.location.reload();
+  };
 
-    /* Logout Function*/
-    const logout = () => {
-        localStorage.removeItem("user");
-        window.location.reload();
-    }
+  // 🧭 Sidebar menu items
+  const menuItems = [
+    { id: "profile", icon: AccountCircle, label: "Admin Account" },
+    { id: "library", icon: LibraryBooks, label: "Library" }, // 🔹 New Tab
+    { id: "addbook", icon: Book, label: "Book Registration" },
+    { id: "addtransaction", icon: Receipt, label: "Issue Book" },
+    { id: "getmember", icon: AccountBox, label: "Member Full Info" },
+    { id: "finemanagement", icon: Payment, label: "Fine Tracking" },
+    { id: "addmember", icon: PersonAdd, label: "Member Registration" },
+    { id: "returntransaction", icon: AssignmentReturn, label: "Return Desk" },
+  ];
 
-
-    return (
-        <div className="dashboard">
-            <div className="dashboard-card">
-                <div className="sidebar-toggler" onClick={() => setSidebar(!sidebar)}>
-                    <IconButton>
-                        {sidebar ? <CloseIcon style={{ fontSize: 25, color: "rgb(234, 68, 74)" }} /> : <DoubleArrowIcon style={{ fontSize: 25, color: "rgb(234, 68, 74)" }} />}
-                    </IconButton>
-                </div>
-
-                {/* Sidebar */}
-                <div className={sidebar ? "dashboard-options active" : "dashboard-options"}>
-                    <div className='dashboard-logo'>
-                        <LibraryBooksIcon style={{ fontSize: 50 }} />
-                        <p className="logo-name">LCMS</p>
-                    </div>
-                    <p className={`dashboard-option ${active === "profile" ? "clicked" : ""}`} onClick={() => { setActive("profile"); setSidebar(false) }}><AccountCircleIcon className='dashboard-option-icon' /> Profile</p>
-                    <p className={`dashboard-option ${active === "addbook" ? "clicked" : ""}`} onClick={() => { setActive("addbook"); setSidebar(false) }}><BookIcon className='dashboard-option-icon' />Add Book</p>
-                    <p className={`dashboard-option ${active === "addtransaction" ? "clicked" : ""}`} onClick={() => { setActive("addtransaction"); setSidebar(false) }}><ReceiptIcon className='dashboard-option-icon' /> Add Transaction </p>
-                    <p className={`dashboard-option ${active === "getmember" ? "clicked" : ""}`} onClick={() => { setActive("getmember"); setSidebar(false) }}><AccountBoxIcon className='dashboard-option-icon' /> Get Member </p>
-                    <p className={`dashboard-option ${active === "addmember" ? "clicked" : ""}`} onClick={() => { setActive("addmember"); setSidebar(false) }}><PersonAddIcon className='dashboard-option-icon' /> Add Member </p>
-                    <p className={`dashboard-option ${active === "returntransaction" ? "clicked" : ""}`} onClick={() => { setActive("returntransaction"); setSidebar(false) }}><AssignmentReturnIcon className='dashboard-option-icon' /> Return </p>
-                    <p className={`dashboard-option`} onClick={logout}><PowerSettingsNewIcon className='dashboard-option-icon' /> Log out </p>
-
-                </div>
-                <div className="dashboard-option-content">
-                    <div className="dashboard-addbooks-content" style={active !== "addbook" ? { display: 'none' } : {}}>
-                        <AddBook />
-                    </div>
-                    <div className="dashboard-transactions-content" style={active !== "addtransaction" ? { display: 'none' } : {}}>
-                        <AddTransaction />
-                    </div>
-                    <div className="dashboard-addmember-content" style={active !== "addmember" ? { display: 'none' } : {}}>
-                        <AddMember />
-                    </div>
-                    <div className="dashboard-addmember-content" style={active !== "getmember" ? { display: 'none' } : {}}>
-                        <GetMember />
-                    </div>
-                    <div className="dashboard-addmember-content" style={active !== "returntransaction" ? { display: 'none' } : {}}>
-                        <Return />
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="dashboard">
+      <div className="dashboard-card">
+        {/* Sidebar Toggler */}
+        <div className="sidebar-toggler" onClick={() => setSidebar(!sidebar)}>
+          <IconButton>
+            {sidebar ? <Close /> : <DoubleArrow />}
+          </IconButton>
         </div>
-    )
+
+        {/* Sidebar */}
+        <div className={`dashboard-options ${sidebar ? "active" : ""}`}>
+          <div className="dashboard-logo">
+            <LibraryBooks />
+            <p className="logo-name">LMS</p>
+          </div>
+
+          {menuItems.map(({ id, icon: Icon, label }) => (
+            <p
+              key={id}
+              className={`dashboard-option ${
+                active === id ? "clicked" : ""
+              }`}
+              onClick={() => {
+                setActive(id);
+                setSidebar(false);
+              }}
+            >
+              <Icon className="dashboard-option-icon" /> {label}
+            </p>
+          ))}
+
+          <p className="dashboard-option" onClick={logout}>
+            <PowerSettingsNew className="dashboard-option-icon" /> Log out
+          </p>
+        </div>
+
+        {/* Content Area */}
+        <div className="dashboard-option-content">
+          <div
+            className="content-wrapper"
+            style={{ display: active === "profile" ? "block" : "none" }}
+          >
+            <AdminProfile />
+          </div>
+
+          <div
+            className="content-wrapper"
+            style={{ display: active === "addbook" ? "block" : "none" }}
+          >
+            <AddBook />
+          </div>
+
+          <div
+            className="content-wrapper"
+            style={{ display: active === "addtransaction" ? "block" : "none" }}
+          >
+            <AddTransaction />
+          </div>
+
+          <div
+            className="content-wrapper"
+            style={{ display: active === "addmember" ? "block" : "none" }}
+          >
+            <AddMember />
+          </div>
+
+          <div
+            className="content-wrapper"
+            style={{ display: active === "getmember" ? "block" : "none" }}
+          >
+            <GetMember />
+          </div>
+
+          <div
+            className="content-wrapper"
+            style={{ display: active === "returntransaction" ? "block" : "none" }}
+          >
+            <Return />
+          </div>
+
+          <div
+            className="content-wrapper"
+            style={{ display: active === "finemanagement" ? "block" : "none" }}
+          >
+            <FineManagement />
+          </div>
+
+          {/* 🔹 Library Tab */}
+          <div
+            className="content-wrapper"
+            style={{ display: active === "library" ? "block" : "none" }}
+          >
+            <BookLibrary />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default AdminDashboard
+export default AdminDashboard;

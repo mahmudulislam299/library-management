@@ -1,52 +1,161 @@
-.recentaddedbooks-container{
-    background-color: rgb(16,25,13);
-    display: flex;
-    flex-direction: column;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+:root {
+  --bg-main: #0f1a2e;          /* Deep Indigo */
+  --bg-card: #1a2338;          /* Soft Navy */
+  --text-gold: #d4a017;        /* Warm Gold */
+  --accent: #f59e0b;           /* Bright Amber */
+  --text-light: #e2e8f0;       /* Soft White */
+  --shadow: 0 6px 20px rgba(15, 26, 46, 0.6);
+  --radius: 16px;
+  --transition: all 0.35s ease;
+  --book-width: 150px;
+  --gap: 2.5vw;
+  --speed: 10s;
 }
 
-.recentbooks{
-    padding: 20px;
-    overflow: hidden;
-    width: 100%;
-    margin: 0 auto;	
-    position: relative;
-	display: flex;
+/* Container */
+.recentaddedbooks-container {
+  padding: 90px 20px;
+  background: linear-gradient(135deg, #0a1428 0%, var(--bg-main) 100%);
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  color: var(--text-light);
 }
 
-.recentbooks:hover div{
-    animation-play-state: paused;
+/* Title */
+.recentbooks-title {
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: var(--text-gold);
+  text-align: center;
+  margin-bottom: 55px;
+  position: relative;
+  letter-spacing: -0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.recentbooks-title{
-    position: relative;
-    color: rgb(238,129,30);
-    font-size: 32px;
-    text-align: center;
+.recentbooks-title::after {
+  content: '';
+  position: absolute;
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--text-gold), var(--accent));
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
 }
 
-.recent-book:hover{
-    transform: scale(1.15);
-    transition: all ease 0.7s;
-    animation-play-state: paused;
+/* Marquee Container */
+.recentbooks {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  padding: 25px 0;
+  border-radius: var(--radius);
+  background: rgba(26, 35, 56, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(212, 160, 23, 0.15);
+  box-shadow: var(--shadow);
 }
 
-.images{
-    animation: marquee 15s linear infinite;
-    display: flex;
-    position: relative;
-    align-items: center;
-    justify-content: center;
+/* Track */
+.recentbook-track {
+  display: flex;
+  gap: var(--gap);
+  animation: scroll-left var(--speed) linear infinite;
+  will-change: transform;
+  padding: 10px 0;
 }
 
-.recent-book{
-    display: block;
-    width: 150px;
-    height: auto;
-    margin: 0 1vw;
-    border-radius: 5px;
+/* Pause on Hover */
+.recentbooks:hover .recentbook-track {
+  animation-play-state: paused;
 }
 
-@keyframes marquee {
-	0%   { transform: translateX(0%); }
-	100% { transform: translateX(-100%); }
+/* Book Card */
+.recent-book {
+  width: var(--book-width);
+  height: 220px;
+  flex-shrink: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: var(--transition);
+  cursor: pointer;
+  border: 1px solid rgba(212, 160, 23, 0.2);
+}
+
+.recent-book:hover {
+  transform: scale(1.16);
+  box-shadow: 0 16px 32px rgba(245, 158, 11, 0.35);
+  border-color: var(--accent);
+  z-index: 5;
+}
+
+/* Image */
+.recent-book img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.recent-book:hover img {
+  transform: scale(1.08);
+}
+
+/* Fade Edges */
+.recentbooks::before,
+.recentbooks::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 120px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.recentbooks::before {
+  left: 0;
+  background: linear-gradient(to right, var(--bg-main), transparent);
+}
+
+.recentbooks::after {
+  right: 0;
+  background: linear-gradient(to left, var(--bg-main), transparent);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .recentbooks-title {
+    font-size: 2.1rem;
+    margin-bottom: 40px;
+  }
+  :root {
+    --book-width: 120px;
+    --gap: 3vw;
+  }
+  .recent-book {
+    height: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --book-width: 100px;
+    --gap: 3.5vw;
+  }
+  .recent-book {
+    height: 150px;
+  }
+  .recentaddedbooks-container {
+    padding: 70px 15px;
+  }
 }

@@ -1,59 +1,153 @@
-import { React, useState } from 'react'
-import { Link } from 'react-router-dom'
-import './Header.css'
-
-import MenuIcon from '@material-ui/icons/Menu';
-import ClearIcon from '@material-ui/icons/Clear';
+import React, { useState, useContext } from "react";
+import { Link, useHistory } from "react-router-dom";
+import "./Header.css";
+import MenuIcon from "@material-ui/icons/Menu";
+import CloseIcon from "@material-ui/icons/Close";
+import { AuthContext } from "../Context/AuthContext"; // adjust path if needed
 
 function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { user, dispatch } = useContext(AuthContext);
+  const history = useHistory();
 
-    const [menutoggle, setMenutoggle] = useState(false)
+  const toggleMenu = () => setMenuOpen((prev) => !prev);
+  const closeMenu = () => setMenuOpen(false);
 
-    const Toggle = () => {
-        setMenutoggle(!menutoggle)
-    }
+  const logout = () => {
+    localStorage.removeItem("user");
+    dispatch({ type: "LOGOUT" });
+    closeMenu();
+    history.push("/");
+  };
 
-    const closeMenu = () => {
-        setMenutoggle(false)
-    }
+  const getUserInitial = () => {
+    if (!user) return "";
+    if (user.userType === "Student") return "S";
+    if (user.userType === "Employee") return "E";
+    return "U";
+  };
 
-    return (
-        <div className="header">
-            <div className="logo-nav">
-            <Link to='/'>
-                <a href="#home">LIBRARY</a>
-            </Link>
-            </div>
-            <div className='nav-right'>
-                <input className='search-input' type='text' placeholder='Search a Book'/>
-                <ul className={menutoggle ? "nav-options active" : "nav-options"}>
-                    <li className="option" onClick={() => { closeMenu() }}>
-                        <Link to='/'>
-                            <a href="#home">Home</a>
-                        </Link>
-                    </li>
-                    <li className="option" onClick={() => { closeMenu() }}>
-                        <Link to='/books'>
-                        <a href="#books">Books</a>
-                        </Link>
-                    </li>
-                    <li className="option" onClick={() => { closeMenu() }}>
-                        <Link to='/signin'>
-                        <a href='signin'>Sign in</a>
-                        </Link>
-                    </li>
-                </ul>
-            </div>
+  const getIdLabel = () => {
+    if (!user) return "";
+    if (user.userType === "Student") return `Student ID: ${user.memberId}`;
+    if (user.userType === "Employee") return `Employee ID: ${user.memberId}`;
+    return `ID: ${user.memberId}`;
+  };
 
-            <div className="mobile-menu" onClick={() => { Toggle() }}>
-                {menutoggle ? (
-                    <ClearIcon className="menu-icon" style={{ fontSize: 40 }} />
-                ) : (
-                    <MenuIcon className="menu-icon" style={{ fontSize: 40 }} />
-                )}
-            </div>
+  return (
+    <header className="header">
+      {/* Logo */}
+      <div className="logo">
+        <Link to="/" onClick={closeMenu}>
+          <img
+            src={`${process.env.PUBLIC_URL}/logo1.png`}
+            alt="Library Logo"
+            className="logo-img"
+          />
+          <span className="logo-text">Stamford Library</span>
+        </Link>
+      </div>
+
+      {/* Desktop: Search + Nav */}
+      <div className="nav-center">
+        <input
+          type="text"
+          placeholder="Search books, authors..."
+          className="search-input"
+          aria-label="Search books"
+        />
+        <nav className="nav-options" aria-label="Main navigation">
+          <Link to="/" className="nav-link" onClick={closeMenu}>
+            Home
+          </Link>
+          <Link to="/books" className="nav-link" onClick={closeMenu}>
+            Books
+          </Link>
+          <Link to="/signin" className="nav-link" onClick={closeMenu}>
+            Browse Library
+          </Link>
+        </nav>
+      </div>
+
+      {/* Right side: user info OR Sign In */}
+      {user ? (
+        <div className="user-box">
+          <div className="user-avatar-wrapper">
+            <div className="user-avatar">{getUserInitial()}</div>
+          </div>
+          <div className="user-meta">
+            <span
+              className="user-name"
+              title={user.userFullName || user.name || "Member"}
+            >
+              {user.userFullName || user.name || "Member"}
+            </span>
+            <span className="user-id">{getIdLabel()}</span>
+          </div>
+          <button className="header-logout-btn" type="button" onClick={logout}>
+            Logout
+          </button>
         </div>
-    )
+      ) : (
+        <Link
+          to="/signin"
+          className="nav-link nav-login nav-login-right"
+          onClick={closeMenu}
+        >
+          Sign In
+        </Link>
+      )}
+
+      {/* Mobile Toggle */}
+      <button
+        className="mobile-toggle"
+        onClick={toggleMenu}
+        aria-label={menuOpen ? "Close menu" : "Open menu"}
+        aria-expanded={menuOpen}
+      >
+        {menuOpen ? <CloseIcon /> : <MenuIcon />}
+      </button>
+
+      {/* Mobile Menu */}
+      <div className={`mobile-menu ${menuOpen ? "active" : ""}`}>
+        <Link to="/" onClick={closeMenu}>
+          Home
+        </Link>
+        <Link to="/books" onClick={closeMenu}>
+          Books
+        </Link>
+        {user ? (
+          <button className="mobile-logout-btn" type="button" onClick={logout}>
+            Logout
+          </button>
+        ) : (
+          <Link to="/signin" onClick={closeMenu}>
+            Sign In
+          </Link>
+        )}
+
+        {/* User info inside mobile menu (optional but nice) */}
+        {user && (
+          <div className="mobile-user-box">
+            <div className="mobile-user-avatar">{getUserInitial()}</div>
+            <div className="mobile-user-meta">
+              <span className="mobile-user-name">
+                {user.userFullName || user.name || "Member"}
+              </span>
+              <span className="mobile-user-id">{getIdLabel()}</span>
+            </div>
+          </div>
+        )}
+
+        <input
+          type="text"
+          placeholder="Search..."
+          className="mobile-search"
+          aria-label="Mobile search"
+        />
+      </div>
+    </header>
+  );
 }
 
-export default Header
+export default Header;
