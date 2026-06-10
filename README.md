@@ -1,103 +1,285 @@
-## Library Management System 📚
+# Library Management System
 
-A web app for managing all the activities of a library like managing members and book transactions, built on MERN Stack
-![1](https://user-images.githubusercontent.com/73348574/205624307-6a1b18fa-5ef7-4de9-b141-9225eca62c6c.png)
+A full-stack Library Management System web application designed to manage books, users, borrowing records, returns, and library operations efficiently. The project includes a modern frontend, a backend REST API, and MongoDB database integration.
 
-### Video Demo
+## Overview
 
-[Demo Link](https://drive.google.com/file/d/1gddUdOE41WaEyY4OWoJtDa0l6VJZTg94/view?usp=sharing)
+The Library Management System is built to simplify and organize the daily activities of a library. It allows users or administrators to manage books, track issued and returned books, maintain user/member records, and monitor library activity from a web-based interface.
 
-Show some ❤️ and 🌟 the repo to support the project
+This project demonstrates full-stack web development using React.js, Node.js, Express.js, and MongoDB.
 
-## Index ✏️
+## Features
 
-- [Library Management System 📚](#library-management-system-)
-  - [Video Demo](#video-demo)
-- [Index ✏️](#index-️)
-- [Features Of LMS 🚀](#features-of-lcms-)
-- [Setup 🔥](#setup-)
-  - [Frontend Setup 🍧](#frontend-setup-)
-  - [Backend Setup 🍿](#backend-setup-)
-- [Technologies 🛠](#technologies-)
-- [Screenshots](#screenshots)
-- [References 💻](#references-)
-- [Author 📝](#author-)
-- [Connect Me On 🌍](#connect-me-on-)
-- [License 🏆](#license-)
+### Book Management
 
-## Features Of LMS 🚀
+* Add new books
+* View all books
+* Update book information
+* Delete books
+* Search and filter books
+* Track book availability
 
-- Admin Login and Student Login
-- Admin and Student Dashboard
-- Adding Library Members
-- Adding Books with Available Copies
-- Issue and Return Transaction tracking of a Book by the Member
-- Reserving a book for specific dates
-- Showing the Achievements, Event Gallery
+### User / Member Management
 
-## Setup 🔥
+* Register users or members
+* View user information
+* Manage user details
+* Track books borrowed by each user
 
-- Fork the Repo
+### Borrow and Return Management
 
-- Clone the repo to your local machine
-  `git clone <repo-url>`
+* Issue books to users
+* Return borrowed books
+* Track borrowing history
+* Update book availability automatically
+* Manage due dates and return status
 
-### Frontend Setup 🍧
+### Authentication
 
-1. Get into the chatapp directory
-   `cd frontend`
+* User registration
+* User login
+* Protected routes
+* Secure API access
+* JWT-based authentication
 
-2. Run `yarn` to install dependencies
+### Dashboard
 
-3. Create a `.env` file and create variables as mentioned in the `.env.example` with the values
+* View total books
+* View available books
+* View borrowed books
+* View registered users
+* Monitor recent library activities
 
-4. Run `yarn start` to start the application
+## Technology Stack
 
-### Backend Setup 🍿
+### Frontend
 
-1. Get into backend directory `cd backend`
+* React.js
+* JavaScript
+* HTML5
+* CSS3
+* Axios
+* React Router
 
-2. Run `yarn` to install dependencies
+### Backend
 
-3. Create a MongoDB account and get the MONOGO_URL for connecting the server and the Database
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
+* JWT Authentication
+* dotenv
+* CORS
 
-4. Create a `.env` file and create variables as mentioned in the `.env.example` with the values
+### Database
 
-5. Run `nodemon server.js` to start the server [Should have installed nodemon globally]
+* MongoDB
+* MongoDB Atlas or local MongoDB
 
-## Technologies 🛠
+## Project Structure
 
-- ReactJS[Hooks]
-- NodeJs
-- ExpressJs
-- MongoDB
+```bash
+library-management-system/
+│
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── routes/
+│   │   ├── App.js
+│   │   └── index.js
+│   ├── package.json
+│   └── .env
+│
+├── backend/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── middleware/
+│   ├── config/
+│   ├── server.js
+│   ├── package.json
+│   └── .env
+│
+└── README.md
+```
+
+## Installation and Setup
+
+Follow the steps below to run the project locally.
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/mahmudulislam299/library-management-system.git
+cd library-management-system
+```
+
+> If your repository name is different, replace `library-management-system` with your actual repository name.
+
+## 2. Backend Setup
+
+Go to the backend folder:
+
+```bash
+cd backend
+```
+
+Install backend dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env` file inside the `backend` folder and add the following environment variables:
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+```
+
+Start the backend server:
+
+```bash
+npm run dev
+```
+
+The backend server will run on:
+
+```bash
+http://localhost:5000
+```
+
+## 3. Frontend Setup
+
+Open another terminal and go to the frontend folder:
+
+```bash
+cd frontend
+```
+
+Install frontend dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env` file inside the `frontend` folder and add:
+
+```env
+REACT_APP_API_URL=http://localhost:5000
+```
+
+Start the frontend development server:
+
+```bash
+npm start
+```
+
+The frontend will run on:
+
+```bash
+http://localhost:3000
+```
+
+## API Routes
+
+Example API routes used in the project:
+
+```bash
+POST   /api/auth/register
+POST   /api/auth/login
+
+GET    /api/books
+POST   /api/books
+GET    /api/books/:id
+PUT    /api/books/:id
+DELETE /api/books/:id
+
+GET    /api/users
+GET    /api/users/:id
+PUT    /api/users/:id
+DELETE /api/users/:id
+
+POST   /api/borrow
+GET    /api/borrow
+GET    /api/borrow/:id
+PUT    /api/borrow/return/:id
+DELETE /api/borrow/:id
+```
+
+> API routes may vary depending on the final implementation.
+
+## Environment Variables
+
+### Backend `.env`
+
+| Variable     | Description                            |
+| ------------ | -------------------------------------- |
+| `PORT`       | Backend server port                    |
+| `MONGO_URI`  | MongoDB database connection string     |
+| `JWT_SECRET` | Secret key used for JWT authentication |
+
+### Frontend `.env`
+
+| Variable            | Description          |
+| ------------------- | -------------------- |
+| `REACT_APP_API_URL` | Backend API base URL |
+
+## Deployment
+
+This project can be deployed using:
+
+* Vercel for frontend
+* Render for backend
+* MongoDB Atlas for database
+
+For deployment, update the frontend environment variable with the deployed backend URL:
+
+```env
+REACT_APP_API_URL=https://your-backend-url.onrender.com
+```
+
+Also add the backend environment variables in the hosting platform dashboard.
 
 ## Screenshots
 
-![1](https://user-images.githubusercontent.com/73348574/205623377-999c0de5-6796-4100-85e6-96e3e7d4fb77.png)
-![2](https://user-images.githubusercontent.com/73348574/205632416-bfcc2c19-3f70-4688-bb7e-0ccd83be3038.png)
-![3](https://user-images.githubusercontent.com/73348574/205632598-6b009820-20ec-4e9f-92bf-00af92d4f1a4.png)
-![4](https://user-images.githubusercontent.com/73348574/205632198-d99fcc8d-903d-4b60-9cec-56f8e0716290.png)
-![5](https://user-images.githubusercontent.com/73348574/205631397-2793e97e-3cc6-4b60-8ee1-ec81716b9d6d.png)
-![6](https://user-images.githubusercontent.com/73348574/205631670-5dcb6437-afb1-4aaf-87d7-b47c3b01d7b1.png)
-![7](https://user-images.githubusercontent.com/73348574/205631804-6c631b5e-8bcd-41c4-bb73-bab6ea8b78f7.png)
-![8](https://user-images.githubusercontent.com/73348574/205631977-f393ca09-aa24-42a5-9bd7-d92d471c514c.png)
+Add project screenshots here after deployment or UI completion.
 
-## References 💻
+```md
+![Dashboard](./screenshots/dashboard.png)
+![Books Page](./screenshots/books.png)
+![Borrow Page](./screenshots/borrow.png)
+```
 
-- [NodeJs Documentation](https://nodejs.org/en/docs/)
-- [React Documentation](https://reactjs.org/docs/getting-started.html)
+## Future Improvements
 
-## Author 📝
+* Email notification for due dates
+* Fine calculation system
+* Advanced book search and filtering
+* Book category management
+* Separate admin and user dashboards
+* Report generation
+* QR code or barcode-based book tracking
+* Online book reservation system
+* Export reports as PDF or Excel
 
-- [@iampranavdhar](https://www.github.com/iampranavdhar)
+## Author
 
-## Connect Me On 🌍
+**Mahmudul Islam (Robince)**
+Embedded Software Engineer | IoT | Firmware | Embedded System | Hardware Design | PCB Design
 
-[![twitter badge](https://img.shields.io/badge/twitter-Pranavdhar-0077b5?style=social&logo=twitter)](https://twitter.com/iampranavdhar)<br/>
-[![linkedin badge](https://img.shields.io/badge/linkedin-Pranavdhar-0077b5?style=social&logo=linkedin)](https://in.linkedin.com/in/sai-pranavdhar-reddy-nalamalapu-038104206)
+* GitHub: https://github.com/mahmudulislam299
+* LinkedIn: https://www.linkedin.com/in/mahmudulrobince/
+* Location: Dhaka, Bangladesh
 
-## License 🏆
+## License
 
-This repository is licensed under MIT License. Find [LICENSE](LICENSE) to know more
-# library-management
+This project is licensed under the MIT License.
+
+## Conclusion
+
+The Library Management System is a complete full-stack web application that provides an organized and efficient way to manage library operations. It demonstrates practical knowledge of frontend development, backend API design, authentication, database management, and full-stack project deployment.
